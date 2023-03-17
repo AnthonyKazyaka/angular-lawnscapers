@@ -1,10 +1,12 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { GameService, Direction, Player } from '../game.service';
+import { SwipeDirective } from '../swipe.directive';
 
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
-  styleUrls: ['./game.component.css']
+  styleUrls: ['./game.component.css'],
+  providers: [SwipeDirective]
 })
 export class GameComponent implements OnInit {
   boardDisplay: string[][];
@@ -50,7 +52,7 @@ export class GameComponent implements OnInit {
     }
   }
 
-  handleSwipe(direction: Direction): void {
+  onSwipe(direction: Direction): void {
     this.gameService.puzzle.movePlayerUntilStopped(direction);
     this.boardDisplay = this.getBoardDisplay();
     if (this.gameService.puzzle.isComplete) {
