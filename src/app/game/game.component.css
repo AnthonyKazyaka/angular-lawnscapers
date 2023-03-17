@@ -1,0 +1,40 @@
+.game-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .game-board {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .game-row {
+    display: flex;
+  }
+  
+  .game-cell {
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  
+  .obstacle {
+    background-color: rgb(94, 92, 92);
+  }  
+  
+  .visited {
+    background-color: lightgreen;
+  }
+  
+  .unvisited {
+    background-color: darkgreen;
+  }
+
+  .player {
+    background-color: red;
+  }
+  
+  
