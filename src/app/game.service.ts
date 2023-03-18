@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 export interface ScoreEntry {
   playerName: string;
@@ -45,8 +45,13 @@ export class GameService {
       .list<ScoreEntry>('/leaderboard', (ref) =>
         ref.orderByChild('levelId_score').startAt(`${levelId}_`).endAt(`${levelId}_\uf8ff`).limitToFirst(10)
       )
-      .valueChanges();
-  }
+      .valueChanges()
+      .pipe(
+        map((entries: ScoreEntry[]) => {
+          return entries.sort((a, b) => a.score - b.score);
+        })
+      );
+  }  
 }
 
 export class Puzzle {
