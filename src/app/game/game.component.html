@@ -1,7 +1,33 @@
-<div class="game-container" appSwipe (swipe)="onSwipe($event)">
-  <div class="game-board">
-    <div *ngFor="let row of boardDisplay" class="game-row">
-      <div *ngFor="let cell of row" [ngClass]="cell" class="game-cell"></div>
-    </div>
+<div *ngIf="!gameStarted">
+  <label for="player-name">Player Name</label>
+  <input [(ngModel)]="playerName" id="player-name" type="text" />
+  <button (click)="startGame()">Start Game</button>
+</div>
+
+<div *ngIf="gameStarted" class="board" appSwipe (swipe)="handleSwipe($event)">
+  <div class="board-row" *ngFor="let row of boardDisplay">
+    <div class="board-tile" [ngClass]="tile" *ngFor="let tile of row"></div>
   </div>
+</div>
+
+<!-- Add leaderboard display after game completion -->
+<div *ngIf="gameCompleted" class="leaderboard">
+  <h2>Leaderboard</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Player Name</th>
+        <th>Moves</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let entry of leaderboard | async">
+        <td>{{ entry.playerName }}</td>
+        <td>{{ entry.score }}</td>
+        <td>{{ entry.timestamp | date }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <button *ngIf="gameCompleted" (click)="startGame()">Restart Game</button>
 </div>

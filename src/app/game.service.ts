@@ -1,20 +1,51 @@
 import { Injectable } from '@angular/core';
+import { AngularFireDatabase } from '@angular/fire/compat/database';
+import { Observable } from 'rxjs';
+
+export interface ScoreEntry {
+  playerName: string;
+  score: number;
+  levelId: string;
+  levelId_score: string;
+  timestamp: string;
+}
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GameService {
   puzzle: Puzzle;
+  db: AngularFireDatabase;
 
-  constructor() {
+  constructor(private angularFireDatabase: AngularFireDatabase) {
     const width = 5;
     const height = 5;
     const playerStartPosition = { x: 3, y: 1 };
-    this.puzzle = new Puzzle(width, height, playerStartPosition);
+    this.puzzle = new Puzzle("testLevel1", width, height, playerStartPosition);
+    this.db = angularFireDatabase;
   }
 
   get puzzleBoard(): Tile[][] {
     return this.puzzle.puzzleBoard;
+  }
+  
+  async saveScore(playerName: string, score: number, levelId: string): Promise<void> {
+    const entry: ScoreEntry = {
+      playerName,
+      score,
+      levelId,
+      levelId_score: `${levelId}_${score}`,
+      timestamp: new Date().toISOString()
+    };
+    await this.db.list('/leaderboard').push(entry);
+  }
+
+  getLeaderboard(levelId: string): Observable<ScoreEntry[]> {
+    return this.db
+      .list<ScoreEntry>('/leaderboard', (ref) =>
+        ref.orderByChild('levelId_score').startAt(`${levelId}_`).endAt(`${levelId}_\uf8ff`).limitToFirst(10)
+      )
+      .valueChanges();
   }
 }
 
@@ -23,13 +54,18 @@ export class Puzzle {
   player: Player;
   moveCount: number;
   lastDirection: Direction | null;
+  puzzleId: string;
+  instanceId: string;
 
-  constructor(width: number, height: number, playerStartPosition: { x: number; y: number }) {
+  constructor(name: string, width: number, height: number, playerStartPosition: { x: number; y: number }) {
     this.puzzleBoard = this.createGrid(width, height);
     this.player = new Player();
     this.initializePlayer(this.player, playerStartPosition);
     this.moveCount = 0;
     this.lastDirection = null;
+
+    this.puzzleId = name;
+    this.instanceId = `${this.puzzleId}-${Date.now()}`;
   }
 
   get isComplete(): boolean {
@@ -208,3 +244,4 @@ export class Tile {
     }
   }
 }
+

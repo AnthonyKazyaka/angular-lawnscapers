@@ -1,26 +1,41 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { GameService, Direction, Player } from '../game.service';
-import { SwipeDirective } from '../swipe.directive';
+import { GameService, Direction, ScoreEntry, Player, Puzzle } from '../game.service';
+import { Observable, EMPTY } from 'rxjs';
 
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
-  styleUrls: ['./game.component.css'],
-  providers: [SwipeDirective]
+  styleUrls: ['./game.component.css']
 })
 export class GameComponent implements OnInit {
   boardDisplay: string[][];
+  playerName: string = '';
+  gameStarted: boolean = false;
+  gameCompleted: boolean = false;
+  leaderboard: Observable<ScoreEntry[]>;
 
   constructor(private gameService: GameService) {
     this.boardDisplay = this.getBoardDisplay();
+    this.leaderboard = EMPTY;
   }
 
   ngOnInit(): void {
+    this.newPuzzle();
     this.gameService.puzzle.addObstacle({ x: 1, y: 1 });
     this.gameService.puzzle.addObstacle({ x: 4, y: 4 });
     this.gameService.puzzle.addObstacle({ x: 3, y: 0 });
     this.gameService.puzzle.addObstacle({ x: 0, y: 3 });
     this.boardDisplay = this.getBoardDisplay();
+  }
+
+  startGame() {
+    this.gameStarted = true;
+    this.gameCompleted = false;
+    this.boardDisplay = this.getBoardDisplay();
+  }  
+  
+  completeGame() {
+    this.gameCompleted = true;
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -42,25 +57,43 @@ export class GameComponent implements OnInit {
     }
 
     if (direction !== null) {
-      this.gameService.puzzle.movePlayerUntilStopped(direction);
-      this.boardDisplay = this.getBoardDisplay();
-      if (this.gameService.puzzle.isComplete) {
-        setTimeout(() => {
-          alert(`You completed the board in ${this.gameService.puzzle.moveCount} moves. Think you can do better next time?`);
-        }, 100);
-      }
+      this.handleSwipe(direction);
     }
   }
 
-  onSwipe(direction: Direction): void {
+  handleSwipe(direction: Direction): void {
     this.gameService.puzzle.movePlayerUntilStopped(direction);
     this.boardDisplay = this.getBoardDisplay();
     if (this.gameService.puzzle.isComplete) {
       setTimeout(() => {
-        alert(`You completed the board in ${this.gameService.puzzle.moveCount} moves. Think you can do better next time?`);
+        this.handleGameCompletion();
       }, 100);
     }
   }  
+
+  handleGameCompletion(): void {
+    this.gameCompleted = true;
+    this.gameService.saveScore(this.playerName, this.gameService.puzzle.moveCount, this.gameService.puzzle.puzzleId).then(() => {
+      this.leaderboard = this.gameService.getLeaderboard(this.gameService.puzzle.puzzleId);
+    });
+    this.startNewGame();
+  }
+  
+
+  submitScore(): void {
+    this.gameService.saveScore(this.playerName, this.gameService.puzzle.moveCount, this.gameService.puzzle.puzzleId).then(() => {
+      this.leaderboard = this.gameService.getLeaderboard(this.gameService.puzzle.puzzleId);
+    });
+  }
+
+  // Optionally accept in a string parameter to generate a new puzzle
+  newPuzzle(levelId?: string): void {
+    // Generate a new puzzle name
+    const puzzleName = levelId !== undefined ? levelId : `testLevel`;
+    
+    this.gameService.puzzle = new Puzzle(puzzleName, 5, 5, { x: 3, y: 1 });
+    this.leaderboard = this.gameService.getLeaderboard(puzzleName);
+  }
 
   private getBoardDisplay(): string[][] {
     const board = this.gameService.puzzleBoard;
@@ -69,7 +102,7 @@ export class GameComponent implements OnInit {
     for (let i = 0; i < board.length; i++) {
       const row: string[] = [];
       for (let j = 0; j < board[i].length; j++) {
-        const tile = board[i][j];
+        const tile = board[j][i];
         if (tile.occupier instanceof Player) {
           row.push('player');
         } else if (!tile.isOccupiable) {
@@ -86,4 +119,15 @@ export class GameComponent implements OnInit {
     return display;
   }
   
+
+  startNewGame(): void {
+    this.leaderboard = EMPTY;
+    
+    this.newPuzzle();
+    this.gameService.puzzle.addObstacle({ x: 1, y: 1 });
+    this.gameService.puzzle.addObstacle({ x: 4, y: 4 });
+    this.gameService.puzzle.addObstacle({ x: 3, y: 0 });
+    this.gameService.puzzle.addObstacle({ x: 0, y: 3 });
+    this.boardDisplay = this.getBoardDisplay();
+  }
 }
