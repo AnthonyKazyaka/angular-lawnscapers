@@ -1,6 +1,8 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { GameService, Direction, ScoreEntry, Player, Puzzle } from '../game.service';
 import { Observable, EMPTY } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { LeaderboardModalComponent } from '../leaderboard-modal/leaderboard-modal.component';
 
 @Component({
   selector: 'app-game',
@@ -14,7 +16,9 @@ export class GameComponent implements OnInit {
   gameCompleted: boolean = false;
   leaderboard: Observable<ScoreEntry[]>;
 
-  constructor(private gameService: GameService) {
+  public Direction = Direction;
+
+  constructor(private gameService: GameService, private dialog: MatDialog) {
     this.boardDisplay = this.getBoardDisplay();
     this.leaderboard = EMPTY;
   }
@@ -28,11 +32,21 @@ export class GameComponent implements OnInit {
     this.boardDisplay = this.getBoardDisplay();
   }
 
-  startGame() {
+  startGame(playerName: string): void {
+    this.playerName = playerName;
     this.gameStarted = true;
     this.gameCompleted = false;
+    this.newPuzzle();
+    this.gameService.puzzle.addObstacle({ x: 1, y: 1 });
+    this.gameService.puzzle.addObstacle({ x: 4, y: 4 });
+    this.gameService.puzzle.addObstacle({ x: 3, y: 0 });
+    this.gameService.puzzle.addObstacle({ x: 0, y: 3 });
     this.boardDisplay = this.getBoardDisplay();
   }  
+
+  restartGame(): void {
+    this.startGame(this.playerName);
+  }
   
   completeGame() {
     this.gameCompleted = true;
@@ -69,6 +83,10 @@ export class GameComponent implements OnInit {
         this.handleGameCompletion();
       }, 100);
     }
+  }
+
+  onSwipe(direction: Direction): void {
+    this.handleSwipe(direction);
   }  
 
   handleGameCompletion(): void {
@@ -76,9 +94,8 @@ export class GameComponent implements OnInit {
     this.gameService.saveScore(this.playerName, this.gameService.puzzle.moveCount, this.gameService.puzzle.puzzleId).then(() => {
       this.leaderboard = this.gameService.getLeaderboard(this.gameService.puzzle.puzzleId);
     });
-    this.startNewGame();
+    this.openLeaderboardModal();
   }
-  
 
   submitScore(): void {
     this.gameService.saveScore(this.playerName, this.gameService.puzzle.moveCount, this.gameService.puzzle.puzzleId).then(() => {
@@ -102,7 +119,7 @@ export class GameComponent implements OnInit {
     for (let i = 0; i < board.length; i++) {
       const row: string[] = [];
       for (let j = 0; j < board[i].length; j++) {
-        const tile = board[j][i];
+        const tile = board[i][j];
         if (tile.occupier instanceof Player) {
           row.push('player');
         } else if (!tile.isOccupiable) {
@@ -118,16 +135,13 @@ export class GameComponent implements OnInit {
   
     return display;
   }
-  
 
-  startNewGame(): void {
-    this.leaderboard = EMPTY;
-    
-    this.newPuzzle();
-    this.gameService.puzzle.addObstacle({ x: 1, y: 1 });
-    this.gameService.puzzle.addObstacle({ x: 4, y: 4 });
-    this.gameService.puzzle.addObstacle({ x: 3, y: 0 });
-    this.gameService.puzzle.addObstacle({ x: 0, y: 3 });
-    this.boardDisplay = this.getBoardDisplay();
+  openLeaderboardModal(): void {
+    this.dialog.open(LeaderboardModalComponent, {
+      data: {
+        leaderboard: this.leaderboard
+      }
+    });
   }
+  
 }

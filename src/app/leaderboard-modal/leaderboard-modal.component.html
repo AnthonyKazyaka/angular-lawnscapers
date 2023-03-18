@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>Leaderboard</h1>
+<div mat-dialog-content>
+  <table>
+    <tr>
+      <th>Player</th>
+      <th>Score</th>
+      <th>Date</th>
+    </tr>
+    <tr *ngFor="let entry of leaderboard | async">
+      <td>{{ entry.playerName }}</td>
+      <td>{{ entry.score }}</td>
+      <td>{{ entry.timestamp | date: 'short'}}</td>
+    </tr>
+  </table>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onCloseClick()">Close</button>
+</div>

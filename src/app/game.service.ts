@@ -18,8 +18,8 @@ export class GameService {
   db: AngularFireDatabase;
 
   constructor(private angularFireDatabase: AngularFireDatabase) {
-    const width = 5;
-    const height = 5;
+    const width = 8;
+    const height = 8;
     const playerStartPosition = { x: 3, y: 1 };
     this.puzzle = new Puzzle("testLevel1", width, height, playerStartPosition);
     this.db = angularFireDatabase;
@@ -40,7 +40,7 @@ export class GameService {
     await this.db.list('/leaderboard').push(entry);
   }
 
-  getLeaderboard(levelId: string): Observable<ScoreEntry[]> {
+  getLeaderboard(levelId: string = 'default'): Observable<ScoreEntry[]> {
     return this.db
       .list<ScoreEntry>('/leaderboard', (ref) =>
         ref.orderByChild('levelId_score').startAt(`${levelId}_`).endAt(`${levelId}_\uf8ff`).limitToFirst(10)

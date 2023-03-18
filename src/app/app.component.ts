@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { MatDialog } from '@angular/material/dialog';
+import { LeaderboardModalComponent } from './leaderboard-modal/leaderboard-modal.component';
 
 @Component({
   selector: 'app-root',
