@@ -1,0 +1,6 @@
+<mat-form-field appearance="fill">
+  <mat-label>Select a puzzle</mat-label>
+  <mat-select #puzzleSelect>
+    <mat-option *ngFor="let puzzleData of gameService.puzzlesData" [value]="puzzleData.id">{{ puzzleData.name }}</mat-option>
+  </mat-select>
+</mat-form-field>
