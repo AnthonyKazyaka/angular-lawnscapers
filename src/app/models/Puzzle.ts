@@ -36,6 +36,30 @@ export class Puzzle {
     }
   
     this.puzzleBoard[this.player.position.y][this.player.position.x].isOccupied = true;
+  }
+
+  getDisplayBoard(playerPosition: { x: number; y: number }): string[][] {
+    const displayBoard: string[][] = [];
+  
+    for (let y = 0; y < this.height; y++) {
+      const row: string[] = [];
+      for (let x = 0; x < this.width; x++) {
+        const tile = this.puzzleBoard[y][x];
+  
+        if (x === playerPosition.x && y === playerPosition.y) {
+          row.push('player');
+        } else if (!tile.isOccupiable) {
+          row.push('obstacle');
+        } else if (tile.isOccupied) {
+          row.push('visited');
+        } else {
+          row.push('unvisited');
+        }
+      }
+      displayBoard.push(row);
+    }
+  
+    return displayBoard;
   }  
 
   addObstacle(obstacle: { x: number; y: number; }): void {

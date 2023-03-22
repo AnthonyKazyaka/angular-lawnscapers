@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Direction } from '../direction/Direction';
+import { Puzzle } from "../models/Puzzle";
+import { Player } from "../models/Player";
 
 @Component({
   selector: 'app-puzzle-board',
@@ -8,14 +10,49 @@ import { Direction } from '../direction/Direction';
 })
 export class PuzzleBoardComponent implements OnInit {
   @Input() boardDisplay: string[][] = [];
-  @Output() swipe = new EventEmitter<Direction>();
+  @Input() puzzle: Puzzle | null = null;
+  @Input() player: Player | null = null;
+  @Output() gameCompleted = new EventEmitter<void>();
+  @Output() movePlayer = new EventEmitter<Direction>();
 
   constructor() { }
 
   ngOnInit(): void {
+    this.updateBoardDisplay();
+  }
+  
+  onSwipe(direction: Direction): void {
+    this.movePlayer.emit(direction);
+    this.updateBoardDisplay();
   }
 
-  onSwipe(direction: Direction): void {
-    this.swipe.emit(direction);
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent): void {
+    let direction: Direction | null = null;
+    switch (event.key) {
+      case 'ArrowUp':
+        direction = Direction.Up;
+        break;
+      case 'ArrowDown':
+        direction = Direction.Down;
+        break;
+      case 'ArrowLeft':
+        direction = Direction.Left;
+        break;
+      case 'ArrowRight':
+        direction = Direction.Right;
+        break;
+    }
+
+    if (direction !== null) {
+      this.movePlayer.emit(direction);
+      this.updateBoardDisplay();
+    }
+  }
+
+  updateBoardDisplay(): void {
+    if (this.puzzle && this.player) {
+      this.boardDisplay = this.puzzle.getDisplayBoard(this.player.position);
+    }
   }  
 }
