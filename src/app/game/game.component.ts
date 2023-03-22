@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ChangeDetectorRef  } from '@angular/core';
 import { GameService } from '../services/game.service';
 import { ScoreEntry } from "../models/ScoreEntry";
 import { Direction } from "../direction/Direction";
@@ -22,7 +22,7 @@ export class GameComponent implements OnInit {
   player: Player  = this.gameService.player ?? new Player({ x: 0, y: 0 });
   public Direction = Direction;
 
-  constructor(private gameService: GameService, private dialog: MatDialog) {
+  constructor(private gameService: GameService, private dialog: MatDialog, private changeDetector: ChangeDetectorRef) {
     this.boardDisplay = this.getBoardDisplay();
     this.leaderboard = EMPTY;
   }
@@ -102,13 +102,15 @@ export class GameComponent implements OnInit {
     if (this.gameService.puzzle) {
       this.gameService.puzzle.movePlayerUntilStopped(direction);
       this.boardDisplay = this.getBoardDisplay();
+      this.changeDetector.detectChanges(); // Manually trigger change detection
       if (this.gameService.puzzle.isComplete) {
         setTimeout(() => {
           this.handleGameCompletion();
         }, 100);
       }
     }
-  }  
+  }
+  
 
   onSwipe(direction: Direction): void {
     this.handleSwipe(direction);

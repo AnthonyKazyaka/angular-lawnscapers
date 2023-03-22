@@ -18,10 +18,11 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { environment } from '../environments/environment';
 import { SwipeDirective } from './swipe/swipe.directive';
 import { LevelSelectComponent } from './level-select/level-select.component';
+import { PuzzleBoardComponent } from './puzzle-board/puzzle-board.component';
 
 
 @NgModule({
-  declarations: [AppComponent, LeaderboardModalComponent, GameComponent, SwipeDirective, LevelSelectComponent],
+  declarations: [AppComponent, LeaderboardModalComponent, GameComponent, SwipeDirective, LevelSelectComponent, PuzzleBoardComponent],
   imports: [
     BrowserModule,
     FormsModule,

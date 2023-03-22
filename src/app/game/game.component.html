@@ -1,30 +1,26 @@
-<!-- <div *ngIf="!gameStarted">
+<div *ngIf="!gameStarted">
   <mat-form-field appearance="fill">
     <mat-label>Enter your name</mat-label>
     <input matInput #playerNameInput (keydown.enter)="startGame(playerNameInput.value, getNewestPuzzleId())" />
   </mat-form-field>
   <app-level-select (startGame)="startGame(playerNameInput.value, $event.puzzleId)"></app-level-select>
   <button mat-raised-button color="primary" (click)="startGame(playerNameInput.value, getNewestPuzzleId())">Start Game</button>
-</div> -->
+</div>
 
 <!-- Render the game board directly when the game has started -->
-<!-- <div *ngIf="gameStarted">
-  <div class="game-board" appSwipe (swipe)="onSwipe($event)">
-    <div *ngFor="let row of boardDisplay" class="game-row">
-      <div *ngFor="let cell of row" [ngClass]="['game-cell', cell]"></div>
-    </div>
-  </div>
+<div *ngIf="gameStarted" appSwipe (swipe)="onSwipe($event)">
+  <app-puzzle-board [boardDisplay]="boardDisplay"></app-puzzle-board>
   <button *ngIf="gameCompleted" mat-raised-button color="primary" (click)="restartGame()">Restart Game</button>
-</div> -->
-<div *ngIf="!gameStarted">
+</div>
+<!-- <div *ngIf="!gameStarted">
   <mat-form-field appearance="fill">
     <mat-label>Enter your name</mat-label>
     <input matInput #playerNameInput (keydown.enter)="startGame(playerNameInput.value, getNewestPuzzleId())" />
   </mat-form-field>
   <button mat-raised-button color="primary" (click)="startGame(playerNameInput.value, getNewestPuzzleId())">Start Game</button>
-</div>
+</div> -->
 
-<!-- Render the game board directly when the game has started -->
+<!-- Render the game board directly when the game has started
 <div *ngIf="gameStarted">
   <div class="game-board" appSwipe (swipe)="onSwipe($event)">
     <div *ngFor="let row of boardDisplay" class="game-row">
@@ -32,4 +28,4 @@
     </div>
   </div>
   <button *ngIf="gameCompleted" mat-raised-button color="primary" (click)="restartGame()">Restart Game</button>
-</div>
+</div> -->
