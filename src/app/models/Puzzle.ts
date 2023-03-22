@@ -37,30 +37,29 @@ export class Puzzle {
   
     this.puzzleBoard[this.player.position.y][this.player.position.x].isOccupied = true;
   }
-
-  getDisplayBoard(playerPosition: { x: number; y: number }): string[][] {
+  
+  getDisplayBoard(): string[][] {
     const displayBoard: string[][] = [];
   
-    for (let y = 0; y < this.height; y++) {
-      const row: string[] = [];
-      for (let x = 0; x < this.width; x++) {
-        const tile = this.puzzleBoard[y][x];
-  
-        if (x === playerPosition.x && y === playerPosition.y) {
-          row.push('player');
-        } else if (!tile.isOccupiable) {
-          row.push('obstacle');
-        } else if (tile.isOccupied) {
-          row.push('visited');
+    for (let i = 0; i < this.height; i++) {
+      displayBoard[i] = [];
+      for (let j = 0; j < this.width; j++) {
+        if (this.player.position.x === i && this.player.position.y === j) {
+          displayBoard[i][j] = "player";
+          console.log("set player class on cell at i:", i, "j:", j)
         } else {
-          row.push('unvisited');
+          const tile = this.puzzleBoard[i][j];
+          displayBoard[i][j] = tile.isOccupiable
+            ? tile.visited
+              ? "visited"
+              : "unvisited"
+            : "obstacle";
         }
       }
-      displayBoard.push(row);
     }
   
     return displayBoard;
-  }  
+  }
 
   addObstacle(obstacle: { x: number; y: number; }): void {
     this.puzzleBoard[obstacle.y][obstacle.x].isOccupiable = false;
@@ -69,7 +68,8 @@ export class Puzzle {
   movePlayerUntilStopped(direction: Direction): void {
     const directionOffset = getDirectionOffset(direction);
     let currentTile = this.puzzleBoard[this.player.position.y][this.player.position.x];
-  
+    currentTile.setOccupier(this.player);
+
     while (true) {
       const newPosition = {
         x: this.player.position.x + directionOffset.x,
@@ -94,6 +94,5 @@ export class Puzzle {
       newTile.setOccupier(this.player);
       currentTile = newTile;
     }
-    console.log("Player moved to:", this.player.position); // Add this log statement
   }
 }

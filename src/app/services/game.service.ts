@@ -133,13 +133,4 @@ export class GameService {
     const desiredTile = this.puzzleBoard[newPosition.y][newPosition.x];
     return desiredTile.isOccupiable && !desiredTile.isOccupied || !this.puzzle.isComplete;
   }
-
-  movePlayerUntilStopped(direction: Direction): void {
-    console.log("Moving player, direction:", direction); // Add this log statement
-    if (!this.canMovePlayer(direction)) {
-      return;
-    }
-
-    this.puzzle.movePlayerUntilStopped(direction);
-  }
 }

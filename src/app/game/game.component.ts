@@ -24,6 +24,10 @@ export class GameComponent implements OnInit {
     this.leaderboard = EMPTY;
   }
 
+  get puzzle() {
+    return this.gameService.puzzle;
+  }
+
   getNewestPuzzleId(): string {
     return this.gameService.newestPuzzleId;
   }
@@ -43,6 +47,7 @@ export class GameComponent implements OnInit {
 
   onMovePlayer(direction: Direction): void {
     if (this.gameService.puzzle) {
+      console.log("onMovePlayer")
       this.gameService.puzzle.movePlayerUntilStopped(direction);
       this.boardDisplay = this.getBoardDisplay();
       this.changeDetector.detectChanges(); // Manually trigger change detection
@@ -75,7 +80,9 @@ export class GameComponent implements OnInit {
       }
       display.push(row);
     }
-  
+
+    console.log(board)
+
     return display;
   }
 

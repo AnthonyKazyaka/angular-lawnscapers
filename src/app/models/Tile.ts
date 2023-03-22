@@ -16,5 +16,6 @@ export class Tile {
   setOccupier(occupier: Player | null): void {
     this.occupier = occupier;
     this.isOccupied = occupier !== null;
+    this.visited = this.visited || this.isOccupied;
   }
 }

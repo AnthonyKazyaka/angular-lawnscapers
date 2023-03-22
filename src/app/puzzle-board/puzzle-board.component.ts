@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, HostListener, ChangeDetectorRef, SimpleChanges, OnChanges } from '@angular/core';
 import { Direction } from '../direction/Direction';
 import { Puzzle } from "../models/Puzzle";
 import { Player } from "../models/Player";
@@ -8,22 +8,27 @@ import { Player } from "../models/Player";
   templateUrl: './puzzle-board.component.html',
   styleUrls: ['./puzzle-board.component.css']
 })
-export class PuzzleBoardComponent implements OnInit {
+export class PuzzleBoardComponent implements OnInit, OnChanges {
   @Input() boardDisplay: string[][] = [];
   @Input() puzzle: Puzzle | null = null;
   @Input() player: Player | null = null;
   @Output() gameCompleted = new EventEmitter<void>();
   @Output() movePlayer = new EventEmitter<Direction>();
 
-  constructor() { }
+  constructor(private changeDetector: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.updateBoardDisplay();
   }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['puzzle'] || changes['player']) {
+      this.updateBoardDisplay();
+    }
+  }
   
   onSwipe(direction: Direction): void {
-    this.movePlayer.emit(direction);
-    this.updateBoardDisplay();
+    this.handleMovePlayer(direction);
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -45,14 +50,24 @@ export class PuzzleBoardComponent implements OnInit {
     }
 
     if (direction !== null) {
-      this.movePlayer.emit(direction);
-      this.updateBoardDisplay();
+      this.handleMovePlayer(direction);
     }
   }
 
+  handleMovePlayer(direction: Direction): void {
+    this.movePlayer.emit(direction);
+    this.updateBoardDisplay();
+    this.changeDetector.detectChanges(); // Manually trigger change detection
+  }
+  
   updateBoardDisplay(): void {
+    console.log("updateBoardDisplay")
+    console.log(this.puzzle);
+    console.log(this.player);
     if (this.puzzle && this.player) {
-      this.boardDisplay = this.puzzle.getDisplayBoard(this.player.position);
+      this.boardDisplay = this.puzzle.getDisplayBoard();
+      console.log("updateBoardDisplay");
+      this.changeDetector.detectChanges(); // Manually trigger change detection
     }
   }  
 }
