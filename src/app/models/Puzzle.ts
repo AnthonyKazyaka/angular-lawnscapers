@@ -37,6 +37,18 @@ export class Puzzle {
   
     this.puzzleBoard[this.player.position.y][this.player.position.x].isOccupied = true;
   }
+
+  checkPuzzleCompletion(): boolean {
+    for (let i = 0; i < this.height; i++) {
+      for (let j = 0; j < this.width; j++) {
+        const tile = this.puzzleBoard[i][j];
+        if (tile.isOccupiable && !tile.visited) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }  
   
   getDisplayBoard(): string[][] {
     const displayBoard: string[][] = [];
@@ -94,5 +106,7 @@ export class Puzzle {
       newTile.setOccupier(this.player);
       currentTile = newTile;
     }
+
+    this.isComplete = this.checkPuzzleCompletion();
   }
 }
