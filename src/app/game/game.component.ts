@@ -49,7 +49,7 @@ export class GameComponent implements OnInit {
     if (this.gameService.puzzle) {
       console.log("onMovePlayer")
       this.gameService.puzzle.movePlayerUntilStopped(direction);
-      this.boardDisplay = this.getBoardDisplay();
+      this.boardDisplay = this.puzzle.getDisplayBoard();
       this.changeDetector.detectChanges(); // Manually trigger change detection
       if (this.gameService.puzzle.isComplete) {
         setTimeout(() => {
@@ -57,33 +57,6 @@ export class GameComponent implements OnInit {
         }, 100);
       }
     }
-  }
-
-  private getBoardDisplay(): string[][] {
-    const board = this.gameService.puzzleBoard;
-    const display: string[][] = [];
-  
-    for (let i = 0; i < board.length; i++) {
-      const row: string[] = [];
-      for (let j = 0; j < board[i].length; j++) {
-        const tile = board[i][j];
-        if (tile.isOccupied) {
-          console.log(`Player at (${j}, ${i})`); // Log the player's position
-          row.push('player');
-        } else if (!tile.isOccupiable) {
-          row.push('obstacle');
-        } else if (tile.visited) {
-          row.push('visited');
-        } else {
-          row.push('unvisited');
-        }
-      }
-      display.push(row);
-    }
-
-    console.log(board)
-
-    return display;
   }
 
   startGame(playerName: string, puzzleId: string): void {

@@ -44,7 +44,7 @@ export class Puzzle {
     for (let i = 0; i < this.height; i++) {
       displayBoard[i] = [];
       for (let j = 0; j < this.width; j++) {
-        if (this.player.position.x === i && this.player.position.y === j) {
+        if (this.player.position.y === i && this.player.position.x === j) { // Swap i and j here
           displayBoard[i][j] = "player";
           console.log("set player class on cell at i:", i, "j:", j)
         } else {
@@ -59,7 +59,7 @@ export class Puzzle {
     }
   
     return displayBoard;
-  }
+  }  
 
   addObstacle(obstacle: { x: number; y: number; }): void {
     this.puzzleBoard[obstacle.y][obstacle.x].isOccupiable = false;
