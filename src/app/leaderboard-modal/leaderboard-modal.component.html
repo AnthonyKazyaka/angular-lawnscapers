@@ -6,11 +6,11 @@
       <th>Score</th>
       <th>Date</th>
     </tr>
-    <tr *ngFor="let entry of leaderboardEntries">
+    <tr *ngFor="let entry of leaderboardEntries; index as i" [ngClass]="{'highlight': isPlayerScore(entry)}">
+      <td>{{ i + 1 }}</td>
       <td>{{ entry.playerName }}</td>
       <td>{{ entry.score }}</td>
-      <td>{{ entry.timestamp | date: 'short' }}</td>
-    </tr>
+    </tr>    
   </table>
 </div>
 <div mat-dialog-actions>

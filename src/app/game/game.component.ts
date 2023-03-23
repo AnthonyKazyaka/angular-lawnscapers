@@ -19,6 +19,7 @@ export class GameComponent implements OnInit {
   player: Player = this.gameService.player ?? new Player({ x: 0, y: 0 });
   boardDisplay: string[][] = [];
   moveCount: number = 0;
+  puzzleScore: ScoreEntry | null = null;
 
   constructor(private gameService: GameService, private dialog: MatDialog, private changeDetector: ChangeDetectorRef) { }
 
@@ -90,7 +91,7 @@ export class GameComponent implements OnInit {
     if (this.gameService.puzzle) {
       console.log('Puzzle ID in handleGameCompletion:', this.gameService.puzzle.id);
       this.gameCompleted = true;
-      await this.gameService.saveScore(this.playerName, this.moveCount, this.gameService.puzzle.id);
+      await this.submitScore();
       if (this.gameService.puzzle !== null) {
         this.leaderboard = await this.gameService.getLeaderboard(this.gameService.puzzle.id);
       }
@@ -100,7 +101,7 @@ export class GameComponent implements OnInit {
 
   async submitScore(): Promise<void> {
     if (this.gameService.puzzle !== null) {
-      await this.gameService.saveScore(
+      this.puzzleScore = await this.gameService.saveScore(
         this.playerName,
         this.moveCount,
         this.gameService.puzzle.id
@@ -123,9 +124,10 @@ export class GameComponent implements OnInit {
     if(this.gameService.puzzle !== null) {
       this.dialog.open(LeaderboardModalComponent, {
         data: {
-          puzzleId: this.gameService.puzzle.id
+          puzzleId: this.gameService.puzzle.id,
+          puzzleScore: this.puzzleScore
         }
       });
     }
-  }
+  }  
 }

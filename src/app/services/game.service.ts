@@ -49,17 +49,20 @@ export class GameService {
     return this.puzzle.puzzleBoard;
   }
 
-  async saveScore(playerName: string, score: number, levelId: string): Promise<void> {
+  async saveScore(playerName: string, score: number, levelId: string): Promise<ScoreEntry> {
     const timestamp: string = new Date().toISOString()
     
     const entry: ScoreEntry = {
       playerName,
       score,
       levelId,
-      levelId_score_timestamp: `${levelId}_${score}_${timestamp}}`,
+      levelId_score_timestamp: `${levelId}_${score}_${timestamp}`,
       timestamp: timestamp,
     };
+    
     await this.databaseService.addScoreToLeaderboard(entry);
+
+    return Promise.resolve(entry);
   }
 
   async getLeaderboard(levelId: string): Promise<ScoreEntry[]> {

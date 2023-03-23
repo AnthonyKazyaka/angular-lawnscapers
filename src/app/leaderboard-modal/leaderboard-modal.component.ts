@@ -10,6 +10,7 @@ import { ScoreEntry } from "../models/ScoreEntry";
 })
 export class LeaderboardModalComponent implements OnInit {
   leaderboardEntries: ScoreEntry[] = [];
+  puzzleScore: ScoreEntry | null = null;
   puzzleId: string;
 
   constructor(
@@ -19,6 +20,7 @@ export class LeaderboardModalComponent implements OnInit {
     private changeDetectorRef: ChangeDetectorRef
   ) {
     this.puzzleId = data.puzzleId;
+    this.puzzleScore = data.puzzleScore;
   }
 
   async ngOnInit(): Promise<void> {
@@ -32,5 +34,11 @@ export class LeaderboardModalComponent implements OnInit {
 
   onCloseClick(): void {
     this.dialogRef.close();
+  }
+
+  isPlayerScore(entry: ScoreEntry): boolean {
+    console.log("entry: ", entry.levelId_score_timestamp);
+    console.log("puzzleScore: ", this.puzzleScore?.levelId_score_timestamp);
+    return entry.levelId_score_timestamp == this.puzzleScore?.levelId_score_timestamp;
   }
 }
