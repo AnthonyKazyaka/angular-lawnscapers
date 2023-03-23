@@ -10,7 +10,6 @@ export class Puzzle {
   public height: number;
   public puzzleBoard: Tile[][];
   player: Player;
-  moveCount: number;
   isComplete: boolean;
 
   constructor(puzzleData: PuzzleData) {
@@ -19,7 +18,6 @@ export class Puzzle {
     this.width = puzzleData.width;
     this.height = puzzleData.height;
     this.isComplete = false;
-    this.moveCount = 0;
     this.player = new Player(puzzleData.playerStartPosition);
     this.puzzleBoard = [];
     const obstaclePositions: string[] = puzzleData.obstacles.map(obstacle => `${obstacle.x}-${obstacle.y}`);
@@ -99,7 +97,6 @@ export class Puzzle {
         break;
       }
   
-      this.moveCount++; // Increment moveCount
       this.player.position = newPosition;
       currentTile.setOccupier(null);
       newTile.setOccupier(this.player);

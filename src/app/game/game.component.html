@@ -9,6 +9,11 @@
 
 <!-- Render the game board directly when the game has started -->
 <div *ngIf="gameStarted" appSwipe (swipe)="onMovePlayer($event)">
-  <app-puzzle-board *ngIf="gameStarted" [boardDisplay]="boardDisplay" [puzzle]="puzzle" [player]="player" (movePlayer)="onMovePlayer($event)" (gameCompleted)="completeGame()"></app-puzzle-board>
-  <button *ngIf="gameCompleted" mat-raised-button color="primary" (click)="restartGame()">Restart Game</button>
+  <div class="game-container">
+    <div class="moves-counter">
+      <h3>Moves: {{ moveCount }}</h3>
+    </div>
+    <app-puzzle-board *ngIf="gameStarted" [boardDisplay]="boardDisplay" [puzzle]="puzzle" [player]="player" (movePlayer)="onMovePlayer($event)" (gameCompleted)="completeGame()"></app-puzzle-board>
+    <button *ngIf="gameCompleted" mat-raised-button color="primary" (click)="restartGame()">Restart Game</button>
+  </div>
 </div>

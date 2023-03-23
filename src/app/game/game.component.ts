@@ -2,7 +2,6 @@ import { Component, OnInit, ChangeDetectorRef  } from '@angular/core';
 import { GameService } from '../services/game.service';
 import { ScoreEntry } from "../models/ScoreEntry";
 import { Player } from "../models/Player";
-import { Observable, EMPTY } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { LeaderboardModalComponent } from '../leaderboard-modal/leaderboard-modal.component';
 import { Direction } from '../direction/Direction';
@@ -19,6 +18,7 @@ export class GameComponent implements OnInit {
   leaderboard: ScoreEntry[] = [];
   player: Player = this.gameService.player ?? new Player({ x: 0, y: 0 });
   boardDisplay: string[][] = [];
+  moveCount: number = 0;
 
   constructor(private gameService: GameService, private dialog: MatDialog, private changeDetector: ChangeDetectorRef) { }
 
@@ -44,9 +44,9 @@ export class GameComponent implements OnInit {
   }
 
   onMovePlayer(direction: Direction): void {
-    if (this.gameService.puzzle) {
-      console.log("onMovePlayer")
+    if (this.gameService.puzzle && !this.gameCompleted) {
       this.gameService.puzzle.movePlayerUntilStopped(direction);
+      this.moveCount++;
       this.boardDisplay = this.puzzle.getDisplayBoard();
       this.changeDetector.detectChanges(); // Manually trigger change detection
       if (this.gameService.puzzle.isComplete) {
@@ -55,13 +55,14 @@ export class GameComponent implements OnInit {
         }, 100);
       }
     }
-  }  
+  }
 
   startGame(playerName: string, puzzleId: string): void {
     this.playerName = playerName;
     this.gameStarted = true;
     this.gameCompleted = false;
-
+    this.moveCount = 0;
+    
     this.gameService.initializePuzzle(puzzleId).then(() => {
       this.gameStarted = true;
 
@@ -89,7 +90,7 @@ export class GameComponent implements OnInit {
     if (this.gameService.puzzle) {
       console.log('Puzzle ID in handleGameCompletion:', this.gameService.puzzle.id);
       this.gameCompleted = true;
-      await this.gameService.saveScore(this.playerName, this.gameService.puzzle.moveCount, this.gameService.puzzle.id);
+      await this.gameService.saveScore(this.playerName, this.moveCount, this.gameService.puzzle.id);
       if (this.gameService.puzzle !== null) {
         this.leaderboard = await this.gameService.getLeaderboard(this.gameService.puzzle.id);
       }
@@ -101,7 +102,7 @@ export class GameComponent implements OnInit {
     if (this.gameService.puzzle !== null) {
       await this.gameService.saveScore(
         this.playerName,
-        this.gameService.puzzle.moveCount,
+        this.moveCount,
         this.gameService.puzzle.id
       );
       if (this.gameService.puzzle !== null) {

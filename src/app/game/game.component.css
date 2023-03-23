@@ -1,6 +1,13 @@
 .game-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   height: 100vh;
+  width: 100%;
+  gap: 16px; /* Add this to create some space between the puzzle board and the button */
+}
+
+.moves-counter {
+  text-align: center;
 }
