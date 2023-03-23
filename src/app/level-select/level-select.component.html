@@ -1,8 +1,7 @@
 <form (submit)="$event.preventDefault()">
   <mat-form-field appearance="fill">
     <mat-label>Select Level</mat-label>
-    <mat-select [(ngModel)]="selectedPuzzleId" name="selectedPuzzleId"
-      (selectionChange)="onPuzzleSelectionChange($event)">
+    <mat-select [(ngModel)]="selectedPuzzleId" name="selectedPuzzleId" (selectionChange)="onPuzzleSelectionChange($event)">
       <mat-option *ngFor="let puzzle of availablePuzzles" [value]="puzzle.id">
         {{ puzzle.name }}
       </mat-option>

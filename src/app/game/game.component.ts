@@ -90,6 +90,7 @@ export class GameComponent implements OnInit {
   
   returnToMainMenu(): void {
     this.gameStarted = false;
+    this.selectedPuzzleId = this.gameService.newestPuzzleId
   }
   
   async handleGameCompletion(): Promise<void> {

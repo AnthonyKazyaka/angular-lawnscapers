@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { MatSelectChange } from '@angular/material/select';
 import { GameService } from '../services/game.service';
 
 @Component({
@@ -25,9 +26,9 @@ export class LevelSelectComponent implements OnInit {
     }
   }
 
-  onPuzzleSelectionChange(event: { value: string }): void {
+  onPuzzleSelectionChange(event: MatSelectChange): void {
     this.selectedPuzzleId = event.value;
     console.log(event);
     this.selectedPuzzleIdChange.emit(this.selectedPuzzleId);
-  }
+  }  
 }
