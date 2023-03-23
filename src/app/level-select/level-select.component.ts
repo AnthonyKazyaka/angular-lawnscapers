@@ -28,7 +28,6 @@ export class LevelSelectComponent implements OnInit {
 
   onPuzzleSelectionChange(event: MatSelectChange): void {
     this.selectedPuzzleId = event.value;
-    console.log(event);
     this.selectedPuzzleIdChange.emit(this.selectedPuzzleId);
   }  
 }

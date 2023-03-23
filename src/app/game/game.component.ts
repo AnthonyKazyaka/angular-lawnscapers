@@ -58,6 +58,10 @@ export class GameComponent implements OnInit {
   }
 
   startGame(playerName: string, puzzleId: string): void {
+    if (puzzleId === 'default') {
+      console.warn('Default puzzle is not allowed.');
+      return;
+    }
     this.playerName = playerName;
     localStorage.setItem('playerName', playerName);
 
@@ -95,7 +99,6 @@ export class GameComponent implements OnInit {
   
   async handleGameCompletion(): Promise<void> {
     if (this.gameService.puzzle) {
-      console.log('Puzzle ID in handleGameCompletion:', this.gameService.puzzle.id);
       this.gameCompleted = true;
       await this.submitScore();
       if (this.gameService.puzzle !== null) {

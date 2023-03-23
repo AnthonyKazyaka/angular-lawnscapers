@@ -24,7 +24,7 @@ export class GameService {
     id: "default",
     name: "Default Level 1",
     obstacles: [{x: 1,y: 1},{x: 4,y: 4},{x: 3,y: 0},{x: 0,y: 3}],
-    playerStartPosition: {x: 3,y: 1},
+    playerStartPosition: {x: 2,y: 2},
     width: 5
   };
   public newestPuzzleId: string;
@@ -38,9 +38,14 @@ export class GameService {
   async initializeApp(): Promise<void> {
     await this.loadPuzzlesData();
     const puzzles = this.getSortedPuzzles();
-    this.newestPuzzleId = puzzles.length > 0 ? puzzles[0].id : this.defaultPuzzleData.id;
-    console.log("Newest puzzle ID:", this.newestPuzzleId);
-  }
+    if (puzzles.length > 0) {
+      this.newestPuzzleId = puzzles[0].id;
+      this.puzzle = new Puzzle(puzzles[0]);
+      this.puzzleBoard = this.puzzle.puzzleBoard;
+    } else {
+      console.warn('No puzzles found. Default puzzle will be used.');
+    }
+  }  
 
   get tiles(): Tile[][] {
     return this.puzzle.puzzleBoard;
@@ -76,14 +81,12 @@ export class GameService {
   }
 
   async initializePuzzle(puzzleId: string): Promise<void> {
-    console.log('Initializing puzzle with ID:', puzzleId);
+    console.log('Initializing puzzle:', puzzleId);
   
     if (!this.puzzlesData || this.puzzlesData.length === 0) {
       console.log('Loading puzzles data...');
       await this.loadPuzzlesData();
     }
-  
-    console.log('Puzzles data:', this.puzzlesData);
   
     const puzzleData = this.puzzlesData.find(pd => pd.id === puzzleId);
   
@@ -92,7 +95,6 @@ export class GameService {
       this.puzzleBoard = this.puzzle.puzzleBoard; // Add this line to update the puzzleBoard reference
       this.player = new Player({x: puzzleData.playerStartPosition.x, y: puzzleData.playerStartPosition.y});
       this.puzzle.puzzleBoard[this.player.position.y][this.player.position.x].occupier = this.player;
-      console.log("Player initialized at:", this.player.position);
     } else {
       throw new Error(`Puzzle with id "${puzzleId}" not found.`);
     } 
