@@ -13,6 +13,7 @@ import { Direction } from '../direction/Direction';
 })
 export class GameComponent implements OnInit {
   playerName: string = '';
+  newestPuzzleId: string = '';
   gameStarted: boolean = false;
   gameCompleted: boolean = false;
   leaderboard: ScoreEntry[] = [];
@@ -27,21 +28,12 @@ export class GameComponent implements OnInit {
     return this.gameService.puzzle;
   }
 
-  getNewestPuzzleId(): string {
-    return this.gameService.newestPuzzleId;
-  }
-
   ngOnInit(): void {
-    this.gameService.initializePuzzle(this.getNewestPuzzleId()).then(() => {
-      if (this.gameService.puzzle !== null) {
-        this.gameService.puzzle.addObstacle({ x: 1, y: 1 });
-        this.gameService.puzzle.addObstacle({ x: 4, y: 4 });
-        this.gameService.puzzle.addObstacle({ x: 3, y: 0 });
-        this.gameService.puzzle.addObstacle({ x: 0, y: 3 });
-      }
-    }).catch(error => {
-      console.error(error);
-    });
+    this.newestPuzzleId = this.gameService.newestPuzzleId;
+    const savedPlayerName = localStorage.getItem('playerName');
+    if (savedPlayerName) {
+      this.playerName = savedPlayerName;
+    }
   }
 
   onMovePlayer(direction: Direction): void {
@@ -60,10 +52,12 @@ export class GameComponent implements OnInit {
 
   startGame(playerName: string, puzzleId: string): void {
     this.playerName = playerName;
+    localStorage.setItem('playerName', playerName);
+
     this.gameStarted = true;
     this.gameCompleted = false;
     this.moveCount = 0;
-    
+
     this.gameService.initializePuzzle(puzzleId).then(() => {
       this.gameStarted = true;
 
@@ -119,7 +113,7 @@ export class GameComponent implements OnInit {
       this.restartGame();
     }
   }
-  
+
   openLeaderboardModal(): void {
     if(this.gameService.puzzle !== null) {
       this.dialog.open(LeaderboardModalComponent, {
@@ -129,5 +123,5 @@ export class GameComponent implements OnInit {
         }
       });
     }
-  }  
+  }
 }

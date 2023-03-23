@@ -11,3 +11,18 @@
 .moves-counter {
   text-align: center;
 }
+
+.start-game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.start-game-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}

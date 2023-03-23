@@ -21,8 +21,8 @@ export class GameService {
   puzzlesData: PuzzleData[] = [];
   defaultPuzzleData: PuzzleData = {
     height: 5,
-    id: "testLevel",
-    name: "Test Level 1",
+    id: "default",
+    name: "Default Level 1",
     obstacles: [{x: 1,y: 1},{x: 4,y: 4},{x: 3,y: 0},{x: 0,y: 3}],
     playerStartPosition: {x: 3,y: 1},
     width: 5
@@ -30,24 +30,23 @@ export class GameService {
   public newestPuzzleId: string;
   
   constructor(private databaseService: DatabaseService) {
-    try{
-    this.loadPuzzlesData();
-    // Get newest puzzle id
-    this.puzzle = this.puzzlesData.length > 0 ? new Puzzle(this.puzzlesData[0]) : new Puzzle(this.defaultPuzzleData);
+    this.puzzle = new Puzzle(this.defaultPuzzleData);
     this.puzzleBoard = this.puzzle.puzzleBoard;
     this.newestPuzzleId = this.puzzle.id;
+  }  
 
-    } catch (e) {
-      console.log("Failed to initialize GameService", e);
-      this.puzzle = new Puzzle(this.defaultPuzzleData);
-      this.puzzleBoard = this.puzzle.puzzleBoard;
-      this.newestPuzzleId = this.puzzle.id;
-    }
+  async initializeApp(): Promise<void> {
+    await this.loadPuzzlesData();
+    this.newestPuzzleId = this.puzzlesData.length > 0 ? this.puzzlesData[0].id : this.defaultPuzzleData.id;
   }
 
   get tiles(): Tile[][] {
     return this.puzzle.puzzleBoard;
   }
+
+  getSortedPuzzles(): PuzzleData[] {
+    return [...this.puzzlesData].sort((a, b) => b.id.localeCompare(a.id));
+  }  
 
   async saveScore(playerName: string, score: number, levelId: string): Promise<ScoreEntry> {
     const timestamp: string = new Date().toISOString()

@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER  } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 
+import { GameService } from './services/game.service';
 import { LeaderboardModalComponent } from './leaderboard-modal/leaderboard-modal.component';
 import { GameComponent } from './game/game.component';
 
@@ -20,6 +21,9 @@ import { SwipeDirective } from './swipe/swipe.directive';
 import { LevelSelectComponent } from './level-select/level-select.component';
 import { PuzzleBoardComponent } from './puzzle-board/puzzle-board.component';
 
+export function initializeApp(gameService: GameService) {
+  return () => gameService.initializeApp();
+}
 
 @NgModule({
   declarations: [AppComponent, LeaderboardModalComponent, GameComponent, SwipeDirective, LevelSelectComponent, PuzzleBoardComponent],
@@ -32,11 +36,17 @@ import { PuzzleBoardComponent } from './puzzle-board/puzzle-board.component';
     MatInputModule,
     MatFormFieldModule,
     MatSelectModule,
-    // Initialize AngularFire with your Firebase configuration
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeApp,
+      deps: [GameService],
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
