@@ -112,6 +112,12 @@ export class GameComponent implements OnInit {
       }
     }
   }
+
+  async promptRestart(): Promise<void> {
+    if (this.gameCompleted || confirm('Are you sure you want to restart the game?')) {
+      this.restartGame();
+    }
+  }
   
   openLeaderboardModal(): void {
     if(this.gameService.puzzle !== null) {
