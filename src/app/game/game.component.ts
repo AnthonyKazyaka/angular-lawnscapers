@@ -37,7 +37,8 @@ export class GameComponent implements OnInit {
   }
 
   onMovePlayer(direction: Direction): void {
-    if (this.gameService.puzzle && !this.gameCompleted) {
+    if (this.gameService.puzzle && this.gameService.canMovePlayer(direction) && !this.gameCompleted) {
+      console.log("Can Move Player")
       this.gameService.puzzle.movePlayerUntilStopped(direction);
       this.moveCount++;
       this.boardDisplay = this.puzzle.getDisplayBoard();

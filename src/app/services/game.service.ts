@@ -117,7 +117,6 @@ export class GameService {
   }
 
   canMovePlayer(direction: Direction): boolean {
-
     const desiredDirection = getDirectionOffset(direction);
     const newPosition = {
       x: this.puzzle.player.position.x + desiredDirection.x,
@@ -134,6 +133,6 @@ export class GameService {
     }
 
     const desiredTile = this.puzzleBoard[newPosition.y][newPosition.x];
-    return desiredTile.isOccupiable && !desiredTile.isOccupied || !this.puzzle.isComplete;
+    return desiredTile.isOccupiable && !desiredTile.isOccupied && !this.puzzle.isComplete;
   }
 }

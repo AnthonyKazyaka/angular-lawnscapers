@@ -1,10 +1,12 @@
-<div *ngIf="!gameStarted">
-  <mat-form-field appearance="fill">
-    <mat-label>Enter your name</mat-label>
-    <input matInput [(ngModel)]="playerName" #playerNameInput (keydown.enter)="startGame(playerNameInput.value, newestPuzzleId)" />
-  </mat-form-field>
-  <app-level-select [selectedPuzzleId]="newestPuzzleId" [newestPuzzleId]="newestPuzzleId" (startGame)="startGame(playerNameInput.value, $event.puzzleId)"></app-level-select>
-  <button mat-raised-button color="primary" (click)="startGame(playerNameInput.value, newestPuzzleId)">Start Game</button>
+<div *ngIf="!gameStarted" class="start-game-container">
+  <mat-card class="start-game-card">
+    <mat-form-field appearance="fill">
+      <mat-label>Enter your name</mat-label>
+      <input matInput [(ngModel)]="playerName" #playerNameInput (keydown.enter)="startGame(playerNameInput.value, newestPuzzleId)" />
+    </mat-form-field>
+    <app-level-select [selectedPuzzleId]="newestPuzzleId" [newestPuzzleId]="newestPuzzleId" (startGame)="startGame(playerNameInput.value, $event.puzzleId)"></app-level-select>
+    <button mat-raised-button color="primary" (click)="startGame(playerNameInput.value, newestPuzzleId)">Start Game</button>
+  </mat-card>
 </div>
 
 <!-- Render the game board directly when the game has started -->
