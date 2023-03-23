@@ -14,6 +14,7 @@ import { Direction } from '../direction/Direction';
 export class GameComponent implements OnInit {
   playerName: string = '';
   newestPuzzleId: string = '';
+  selectedPuzzleId: string = '';
   gameStarted: boolean = false;
   gameCompleted: boolean = false;
   leaderboard: ScoreEntry[] = [];
@@ -30,11 +31,16 @@ export class GameComponent implements OnInit {
 
   ngOnInit(): void {
     this.newestPuzzleId = this.gameService.newestPuzzleId;
+    this.selectedPuzzleId = this.newestPuzzleId;
     const savedPlayerName = localStorage.getItem('playerName');
     if (savedPlayerName) {
       this.playerName = savedPlayerName;
     }
   }
+  
+  onSelectedPuzzleIdChange(puzzleId: string): void {
+    this.selectedPuzzleId = puzzleId;
+  }  
 
   onMovePlayer(direction: Direction): void {
     if (this.gameService.puzzle && this.gameService.canMovePlayer(direction) && !this.gameCompleted) {
@@ -81,7 +87,11 @@ export class GameComponent implements OnInit {
   completeGame() {
     this.gameCompleted = true;
   }
-
+  
+  returnToMainMenu(): void {
+    this.gameStarted = false;
+  }
+  
   async handleGameCompletion(): Promise<void> {
     if (this.gameService.puzzle) {
       console.log('Puzzle ID in handleGameCompletion:', this.gameService.puzzle.id);

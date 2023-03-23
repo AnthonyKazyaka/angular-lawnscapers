@@ -37,8 +37,6 @@ export class LeaderboardModalComponent implements OnInit {
   }
 
   isPlayerScore(entry: ScoreEntry): boolean {
-    console.log("entry: ", entry.levelId_score_timestamp);
-    console.log("puzzleScore: ", this.puzzleScore?.levelId_score_timestamp);
     return entry.levelId_score_timestamp == this.puzzleScore?.levelId_score_timestamp;
   }
 }

@@ -1,33 +1,33 @@
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
-import { PuzzleData } from '../models/PuzzleData';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { GameService } from '../services/game.service';
 
 @Component({
   selector: 'app-level-select',
   templateUrl: './level-select.component.html',
-  styleUrls: ['./level-select.component.css'],
+  styleUrls: ['./level-select.component.css']
 })
 export class LevelSelectComponent implements OnInit {
-  @Input() newestPuzzleId: string = '';
   @Input() selectedPuzzleId: string = '';
-  @Output() startGame = new EventEmitter<{ puzzleId: string }>();
-  puzzles: PuzzleData[] = [];
+  @Input() newestPuzzleId: string = '';
+  @Output() selectedPuzzleIdChange = new EventEmitter<string>();
+
+  availablePuzzles: { id: string, name: string }[] = [];
 
   constructor(private gameService: GameService) {}
 
   ngOnInit(): void {
-    // Get all puzzles sorted by ID
-    this.puzzles = this.gameService.getSortedPuzzles();
-    this.selectedPuzzleId = this.puzzles[0].id;
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes["selectedPuzzleId"]) {
-      this.selectedPuzzleId = changes["selectedPuzzleId"].currentValue;
+    const puzzles = this.gameService.getSortedPuzzles();
+    this.availablePuzzles = puzzles;
+    if (puzzles.length > 0) {
+      this.selectedPuzzleId = puzzles[0].id; // Grab the most recent puzzle ID (sorted in descending order)
+    } else {
+      this.selectedPuzzleId = this.newestPuzzleId;
     }
   }
 
-  onPuzzleSelectionChange(event: any) {
-    this.startGame.emit({ puzzleId: event.value });
+  onPuzzleSelectionChange(event: { value: string }): void {
+    this.selectedPuzzleId = event.value;
+    console.log(event);
+    this.selectedPuzzleIdChange.emit(this.selectedPuzzleId);
   }
 }
