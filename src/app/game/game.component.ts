@@ -22,6 +22,7 @@ export class GameComponent implements OnInit {
   boardDisplay: string[][] = [];
   moveCount: number = 0;
   puzzleScore: ScoreEntry | null = null;
+  loading: boolean = true;
 
   constructor(private gameService: GameService, private dialog: MatDialog, private changeDetector: ChangeDetectorRef) { }
 
@@ -29,13 +30,15 @@ export class GameComponent implements OnInit {
     return this.gameService.puzzle;
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    //await this.gameService.initializeApp();
     this.newestPuzzleId = this.gameService.newestPuzzleId;
     this.selectedPuzzleId = this.newestPuzzleId;
     const savedPlayerName = localStorage.getItem('playerName');
     if (savedPlayerName) {
       this.playerName = savedPlayerName;
     }
+    this.loading = false;
   }
   
   onSelectedPuzzleIdChange(puzzleId: string): void {
