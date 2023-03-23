@@ -61,12 +61,8 @@ export class PuzzleBoardComponent implements OnInit, OnChanges {
   }
   
   updateBoardDisplay(): void {
-    console.log("updateBoardDisplay")
-    console.log(this.puzzle);
-    console.log(this.player);
     if (this.puzzle && this.player) {
       this.boardDisplay = this.puzzle.getDisplayBoard();
-      console.log("updateBoardDisplay");
       this.changeDetector.detectChanges(); // Manually trigger change detection
     }
   }  

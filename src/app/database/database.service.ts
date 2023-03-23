@@ -27,6 +27,7 @@ export class DatabaseService {
   async getLeaderboardScores(puzzleId: string): Promise<ScoreEntry[]> {
     const scores$ = this.db.list<ScoreEntry>(`leaderboards/${puzzleId}`).valueChanges();
     const scores = await firstValueFrom(scores$);
+    console.log("scores", scores)
     return scores || [];
   }
 

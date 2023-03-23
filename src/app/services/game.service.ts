@@ -62,7 +62,9 @@ export class GameService {
     await this.databaseService.addScoreToLeaderboard(entry);
   }
 
-  async getLeaderboard(levelId: string = 'default'): Promise<ScoreEntry[]> {
+  async getLeaderboard(levelId: string): Promise<ScoreEntry[]> {
+    
+    console.log("Getting leaderboard for level:", levelId)
     return this.databaseService.getLeaderboardScores(levelId)
         .then((entries: ScoreEntry[]) => {
           return entries.sort((a, b) => a.score - b.score);
@@ -71,16 +73,16 @@ export class GameService {
 
   async initializePuzzle(puzzleId: string): Promise<void> {
     console.log('Initializing puzzle with ID:', puzzleId); // Add this logging statement
-  
+
     if (!this.puzzlesData || this.puzzlesData.length === 0) {
       console.log('Loading puzzles data...');
       await this.loadPuzzlesData();
     }
-  
+
     console.log('Puzzles data:', this.puzzlesData); // Add this logging statement
-  
+
     const puzzleData = this.puzzlesData.find(pd => pd.id === puzzleId);
-  
+
     if (puzzleData) {
       this.puzzle = new Puzzle(puzzleData);
       this.player = new Player({x: puzzleData.playerStartPosition.x, y: puzzleData.playerStartPosition.y});
@@ -88,9 +90,8 @@ export class GameService {
       console.log("Player initialized at:", this.player.position); // Add this log statement
     } else {
       throw new Error(`Puzzle with id "${puzzleId}" not found.`);
-    }
+    } 
   }
-  
 
   private async loadPuzzlesData(): Promise<void> {
     try {

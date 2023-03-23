@@ -1,7 +1,6 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectorRef, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
-import { DatabaseService } from '../database/database.service';
+import { GameService } from '../services/game.service';
 import { ScoreEntry } from "../models/ScoreEntry";
 
 @Component({
@@ -9,28 +8,26 @@ import { ScoreEntry } from "../models/ScoreEntry";
   templateUrl: './leaderboard-modal.component.html',
   styleUrls: ['./leaderboard-modal.component.css']
 })
-export class LeaderboardModalComponent {
-  leaderboard: Observable<ScoreEntry[]>;
+export class LeaderboardModalComponent implements OnInit {
   leaderboardEntries: ScoreEntry[] = [];
+  puzzleId: string;
 
   constructor(
     public dialogRef: MatDialogRef<LeaderboardModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private databaseService: DatabaseService
-  )
-   {
-    this.leaderboard = data.leaderboard;
+    private gameService: GameService,
+    private changeDetectorRef: ChangeDetectorRef
+  ) {
+    this.puzzleId = data.puzzleId;
   }
 
-  ngOnInit(): void {
-    this.databaseService
-      .getLeaderboardScores(this.data.puzzleId)
-      .then((scores) => {
-        this.leaderboardEntries = scores.sort((a, b) => a.score - b.score);
-      })
-      .catch((error) => {
-        console.error('Failed to load leaderboard scores:', error);
-      });
+  async ngOnInit(): Promise<void> {
+    try {
+      this.leaderboardEntries = await this.gameService.getLeaderboard(this.puzzleId);
+      this.changeDetectorRef.detectChanges();
+    } catch (error) {
+      console.error('Failed to load leaderboard scores:', error);
+    }
   }
 
   onCloseClick(): void {

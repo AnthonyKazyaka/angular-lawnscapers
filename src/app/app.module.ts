@@ -19,11 +19,10 @@ import { environment } from '../environments/environment';
 import { SwipeDirective } from './swipe/swipe.directive';
 import { LevelSelectComponent } from './level-select/level-select.component';
 import { PuzzleBoardComponent } from './puzzle-board/puzzle-board.component';
-import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 
 
 @NgModule({
-  declarations: [AppComponent, LeaderboardModalComponent, GameComponent, SwipeDirective, LevelSelectComponent, PuzzleBoardComponent, LeaderboardComponent],
+  declarations: [AppComponent, LeaderboardModalComponent, GameComponent, SwipeDirective, LevelSelectComponent, PuzzleBoardComponent],
   imports: [
     BrowserModule,
     FormsModule,

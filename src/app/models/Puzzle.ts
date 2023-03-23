@@ -58,7 +58,6 @@ export class Puzzle {
       for (let j = 0; j < this.width; j++) {
         if (this.player.position.y === i && this.player.position.x === j) { // Swap i and j here
           displayBoard[i][j] = "player";
-          console.log("set player class on cell at i:", i, "j:", j)
         } else {
           const tile = this.puzzleBoard[i][j];
           displayBoard[i][j] = tile.isOccupiable

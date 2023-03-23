@@ -6,10 +6,10 @@
       <th>Score</th>
       <th>Date</th>
     </tr>
-    <tr *ngFor="let entry of leaderboard | async">
+    <tr *ngFor="let entry of leaderboardEntries">
       <td>{{ entry.playerName }}</td>
       <td>{{ entry.score }}</td>
-      <td>{{ entry.timestamp | date: 'short'}}</td>
+      <td>{{ entry.timestamp | date: 'short' }}</td>
     </tr>
   </table>
 </div>

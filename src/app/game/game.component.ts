@@ -16,13 +16,11 @@ export class GameComponent implements OnInit {
   playerName: string = '';
   gameStarted: boolean = false;
   gameCompleted: boolean = false;
-  leaderboard: Promise<ScoreEntry[]> | Observable<ScoreEntry[]>;
+  leaderboard: ScoreEntry[] = [];
   player: Player = this.gameService.player ?? new Player({ x: 0, y: 0 });
   boardDisplay: string[][] = [];
 
-  constructor(private gameService: GameService, private dialog: MatDialog, private changeDetector: ChangeDetectorRef) {
-    this.leaderboard = EMPTY;
-  }
+  constructor(private gameService: GameService, private dialog: MatDialog, private changeDetector: ChangeDetectorRef) { }
 
   get puzzle() {
     return this.gameService.puzzle;
@@ -57,7 +55,7 @@ export class GameComponent implements OnInit {
         }, 100);
       }
     }
-  }
+  }  
 
   startGame(playerName: string, puzzleId: string): void {
     this.playerName = playerName;
@@ -87,40 +85,40 @@ export class GameComponent implements OnInit {
     this.gameCompleted = true;
   }
 
-  handleGameCompletion(): void {
+  async handleGameCompletion(): Promise<void> {
     if (this.gameService.puzzle) {
+      console.log('Puzzle ID in handleGameCompletion:', this.gameService.puzzle.id);
       this.gameCompleted = true;
-      this.gameService.saveScore(this.playerName, this.gameService.puzzle.moveCount, this.gameService.puzzle.id).then(() => {
-        if (this.gameService.puzzle !== null) {
-          this.leaderboard = this.gameService.getLeaderboard(this.gameService.puzzle.id);
-        }
-      });
+      await this.gameService.saveScore(this.playerName, this.gameService.puzzle.moveCount, this.gameService.puzzle.id);
+      if (this.gameService.puzzle !== null) {
+        this.leaderboard = await this.gameService.getLeaderboard(this.gameService.puzzle.id);
+      }
       this.openLeaderboardModal();
     }
   }
 
-  submitScore(): void {
+  async submitScore(): Promise<void> {
+    if (this.gameService.puzzle !== null) {
+      await this.gameService.saveScore(
+        this.playerName,
+        this.gameService.puzzle.moveCount,
+        this.gameService.puzzle.id
+      );
+      if (this.gameService.puzzle !== null) {
+        this.leaderboard = await this.gameService.getLeaderboard(
+          this.gameService.puzzle.id
+        );
+      }
+    }
+  }
+  
+  openLeaderboardModal(): void {
     if(this.gameService.puzzle !== null) {
-      this.gameService.saveScore(this.playerName, this.gameService.puzzle.moveCount, this.gameService.puzzle.id).then(() => {
-        if(this.gameService.puzzle !== null) {
-          this.leaderboard = this.gameService.getLeaderboard(this.gameService.puzzle.id);
+      this.dialog.open(LeaderboardModalComponent, {
+        data: {
+          puzzleId: this.gameService.puzzle.id
         }
       });
     }
-  }
-
-  newPuzzle(levelId?: string): void {
-    // Generate a new puzzle name
-    const puzzleName = levelId !== undefined ? levelId : `testLevel`;
-    
-    this.leaderboard = this.gameService.getLeaderboard(puzzleName);
-  }
-
-  openLeaderboardModal(): void {
-    this.dialog.open(LeaderboardModalComponent, {
-      data: {
-        leaderboard: this.leaderboard
-      }
-    });
   }
 }
