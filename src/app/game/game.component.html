@@ -1,32 +1,15 @@
-<div *ngIf="loading">
-  Loading...
-</div>
 
-<div *ngIf="!loading" class="loading-container">
-  <div *ngIf="!gameStarted" class="start-game-container">
-    <mat-card class="start-game-card">
-      <form class="form-container" (ngSubmit)="startGame(playerNameInput.value, selectedPuzzleId)">
-        <mat-form-field appearance="fill" class="form-field">
-          <mat-label>Enter your name</mat-label>
-          <input matInput [(ngModel)]="playerName" name="playerName" #playerNameInput />
-        </mat-form-field>
-        <app-level-select [selectedPuzzleId]="selectedPuzzleId" [newestPuzzleId]="newestPuzzleId" (selectedPuzzleIdChange)="onSelectedPuzzleIdChange($event)"></app-level-select>
-        <button mat-raised-button color="primary" type="submit">Start Game</button>
-      </form>
-    </mat-card>
-  </div>
-
-  <!-- Render the game board directly when the game has started -->
-  <div *ngIf="gameStarted" appSwipe (swipe)="onMovePlayer($event)">
-    <div class="game-container">
-      <div class="moves-counter">
-        <h3>Moves: {{ moveCount }}</h3>
-      </div>
-      <app-puzzle-board *ngIf="gameStarted" [boardDisplay]="boardDisplay" [puzzle]="puzzle" [player]="player" (movePlayer)="onMovePlayer($event)" (gameCompleted)="completeGame()"></app-puzzle-board>
-      <div class="button-container">
-        <button mat-raised-button class="restart-game-button" (click)="promptRestart()">Restart Game</button>
-        <button mat-raised-button class="main-menu-button" (click)="returnToMainMenu()">Main Menu</button>
-      </div>
+<!-- Render the game board directly when loading has completed and the game has started -->
+<div *ngIf="!loading" appSwipe (swipe)="onMovePlayer($event)">
+  <div *ngIf="gameService.gameState === GameState.Playing" class="game-container">
+    <div class="moves-counter">
+      <h3>Moves: {{ moveCount }}</h3>
+    </div>
+    <app-puzzle-board [boardDisplay]="boardDisplay" [puzzle]="puzzle" [player]="player"
+      (movePlayer)="onMovePlayer($event)" (gameCompleted)="completeGame()"></app-puzzle-board>
+    <div class="button-container">
+      <button mat-raised-button class="restart-game-button" (click)="promptRestart()">Restart Game</button>
+      <button mat-raised-button class="main-menu-button" (click)="returnToMainMenu()">Main Menu</button>
     </div>
   </div>
 </div>

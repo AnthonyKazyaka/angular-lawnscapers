@@ -1,32 +1,34 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/compat/database';
-import { Observable, map } from 'rxjs';
-import { timestamp } from 'rxjs/internal/operators/timestamp';
-import { take } from 'rxjs/operators';
-import { DatabaseService } from '../database/database.service';
+import { DatabaseService } from './database.service';
 import { Direction, getDirectionOffset } from '../direction/Direction';
 import { Player } from '../models/Player';
 import { Puzzle } from '../models/Puzzle';
 import { PuzzleData } from '../models/PuzzleData';
 import { ScoreEntry } from '../models/ScoreEntry';
 import { Tile } from '../models/Tile';
+import { GameState } from '../models/GameState';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GameService {
   player: Player = new Player({ x: 0, y: 0 });
+  playerName: string = '';
   puzzle: Puzzle;
   puzzleBoard: Tile[][];
   puzzlesData: PuzzleData[] = [];
   defaultPuzzleData: PuzzleData = {
     height: 5,
     id: "default",
+    creator: "default",
     name: "Default Level 1",
-    obstacles: [{x: 1,y: 1},{x: 4,y: 4},{x: 3,y: 0},{x: 0,y: 3}],
-    playerStartPosition: {x: 2,y: 2},
-    width: 5
+    obstacles: [{ x: 1, y: 1 }, { x: 4, y: 4 }, { x: 3, y: 0 }, { x: 0, y: 3 }],
+    playerStartPosition: { x: 2, y: 2 },
+    width: 5,
+    created_at: new Date().toISOString()
   };
+  gameState: GameState = GameState.MainMenu;
+  
   public newestPuzzleId: string;
   
   constructor(private databaseService: DatabaseService) {
@@ -46,12 +48,13 @@ export class GameService {
       console.warn('No puzzles found. Default puzzle will be used.');
     }
   }  
-
+  
   get tiles(): Tile[][] {
     return this.puzzle.puzzleBoard;
   }
 
   getSortedPuzzles(): PuzzleData[] {
+    // Currently sorted by id in descending order - need to decide how to order the puzzles
     return [...this.puzzlesData].sort((a, b) => b.id.localeCompare(a.id));
   }  
 
@@ -78,6 +81,12 @@ export class GameService {
         .then((entries: ScoreEntry[]) => {
           return entries.sort((a, b) => a.score - b.score);
         })
+  }
+
+  async savePuzzle(puzzleData: PuzzleData): Promise<PuzzleData> {
+    const newPuzzleData: PuzzleData = { ...puzzleData, id: puzzleData.id};
+    await this.databaseService.savePuzzle(newPuzzleData);
+    return newPuzzleData;
   }
 
   async initializePuzzle(puzzleId: string): Promise<void> {

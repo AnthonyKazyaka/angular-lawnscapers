@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 
@@ -19,16 +20,19 @@ import { environment } from '../environments/environment';
 import { SwipeDirective } from './swipe/swipe.directive';
 import { LevelSelectComponent } from './level-select/level-select.component';
 import { PuzzleBoardComponent } from './puzzle-board/puzzle-board.component';
+import { CreatePuzzleComponent } from './create-puzzle/create-puzzle.component';
+import { MainMenuComponent } from './main-menu/main-menu.component';
 
 export function initializeApp(gameService: GameService) {
   return () => gameService.initializeApp();
 }
 
 @NgModule({
-  declarations: [AppComponent, LeaderboardModalComponent, GameComponent, SwipeDirective, LevelSelectComponent, PuzzleBoardComponent],
+  declarations: [AppComponent, LeaderboardModalComponent, GameComponent, SwipeDirective, LevelSelectComponent, PuzzleBoardComponent, CreatePuzzleComponent, MainMenuComponent],
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     BrowserAnimationsModule,
     MatButtonModule,
     MatDialogModule,

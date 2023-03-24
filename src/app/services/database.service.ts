@@ -24,10 +24,13 @@ export class DatabaseService {
     return puzzles || [];
   }
 
+  async savePuzzle(puzzleData: PuzzleData): Promise<void> {
+    return this.db.object(`puzzles/${puzzleData.id}`).set(puzzleData);
+  }
+
   async getLeaderboardScores(puzzleId: string): Promise<ScoreEntry[]> {
     const scores$ = this.db.list<ScoreEntry>(`leaderboards/${puzzleId}`).valueChanges();
     const scores = await firstValueFrom(scores$);
-    console.log("scores", scores)
     return scores || [];
   }
 

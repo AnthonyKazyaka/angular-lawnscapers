@@ -5,6 +5,7 @@ import { Player } from "../models/Player";
 import { MatDialog } from '@angular/material/dialog';
 import { LeaderboardModalComponent } from '../leaderboard-modal/leaderboard-modal.component';
 import { Direction } from '../direction/Direction';
+import { GameState } from '../models/GameState';
 
 @Component({
   selector: 'app-game',
@@ -12,11 +13,10 @@ import { Direction } from '../direction/Direction';
   styleUrls: ['./game.component.css']
 })
 export class GameComponent implements OnInit {
+  GameState = GameState;
   playerName: string = '';
   newestPuzzleId: string = '';
   selectedPuzzleId: string = '';
-  gameStarted: boolean = false;
-  gameCompleted: boolean = false;
   leaderboard: ScoreEntry[] = [];
   player: Player = this.gameService.player ?? new Player({ x: 0, y: 0 });
   boardDisplay: string[][] = [];
@@ -24,7 +24,7 @@ export class GameComponent implements OnInit {
   puzzleScore: ScoreEntry | null = null;
   loading: boolean = true;
 
-  constructor(private gameService: GameService, private dialog: MatDialog, private changeDetector: ChangeDetectorRef) { }
+  constructor(public gameService: GameService, private dialog: MatDialog, private changeDetector: ChangeDetectorRef) { }
 
   get puzzle() {
     return this.gameService.puzzle;
@@ -40,13 +40,9 @@ export class GameComponent implements OnInit {
     }
     this.loading = false;
   }
-  
-  onSelectedPuzzleIdChange(puzzleId: string): void {
-    this.selectedPuzzleId = puzzleId;
-  }  
 
   onMovePlayer(direction: Direction): void {
-    if (this.gameService.puzzle && this.gameService.canMovePlayer(direction) && !this.gameCompleted) {
+    if (this.gameService.puzzle && this.gameService.canMovePlayer(direction) && !(this.gameService.gameState == GameState.Completed)) {
       console.log("Can Move Player")
       this.gameService.puzzle.movePlayerUntilStopped(direction);
       this.moveCount++;
@@ -68,22 +64,27 @@ export class GameComponent implements OnInit {
     this.playerName = playerName;
     localStorage.setItem('playerName', playerName);
 
-    this.gameStarted = true;
-    this.gameCompleted = false;
+    this.setGameState(GameState.Playing);
     this.moveCount = 0;
 
     this.gameService.initializePuzzle(puzzleId).then(() => {
-      this.gameStarted = true;
-
       // Use the player instance from GameService
       this.player = this.gameService.player;
       if (!this.player) {
         console.error('Player not initialized');
       }
+
+      this.boardDisplay = this.puzzle.getDisplayBoard();
+      this.changeDetector.detectChanges();
     }).catch(error => {
       console.error(error);
     });
   }
+
+  setGameState(newState: GameState): void {
+    this.gameService.gameState = newState;
+    this.changeDetector.detectChanges(); // Manually trigger change detection
+  }  
 
   restartGame(): void {
     if (this.gameService.puzzle) {
@@ -92,17 +93,18 @@ export class GameComponent implements OnInit {
   }
 
   completeGame() {
-    this.gameCompleted = true;
+    this.setGameState(GameState.Completed);
   }
   
   returnToMainMenu(): void {
-    this.gameStarted = false;
-    this.selectedPuzzleId = this.gameService.newestPuzzleId
-  }
+    console.log("Returning to Main Menu");
+    this.setGameState(GameState.MainMenu);
+    this.selectedPuzzleId = this.gameService.newestPuzzleId;
+  }  
   
   async handleGameCompletion(): Promise<void> {
     if (this.gameService.puzzle) {
-      this.gameCompleted = true;
+      this.gameService.gameState = GameState.Completed;
       await this.submitScore();
       if (this.gameService.puzzle !== null) {
         this.leaderboard = await this.gameService.getLeaderboard(this.gameService.puzzle.id);
@@ -127,7 +129,7 @@ export class GameComponent implements OnInit {
   }
 
   async promptRestart(): Promise<void> {
-    if (this.gameCompleted || confirm('Are you sure you want to restart the game?')) {
+    if (this.gameService.gameState == GameState.Completed || confirm('Are you sure you want to restart the game?')) {
       this.restartGame();
     }
   }

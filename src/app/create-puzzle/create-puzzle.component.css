@@ -1,0 +1,23 @@
+table {
+    border-collapse: collapse;
+  }
+  
+  td {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+  }
+  
+  td.empty {
+    background-color: #fff;
+  }
+  
+  td.obstacle {
+    background-color: #000;
+  }
+  
+  td.player {
+    background-color: #f00;
+  }
+  

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { MatDialog } from '@angular/material/dialog';
 import { LeaderboardModalComponent } from './leaderboard-modal/leaderboard-modal.component';
+import { GameService } from './services/game.service';
+import { GameState } from "./models/GameState";
 
 @Component({
   selector: 'app-root',
@@ -9,7 +11,8 @@ import { LeaderboardModalComponent } from './leaderboard-modal/leaderboard-modal
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  constructor(private angularFirebaseAuth: AngularFireAuth) {}
+  GameState = GameState;
+  constructor(public gameService: GameService, private angularFirebaseAuth: AngularFireAuth) {}
 
   ngOnInit() {
     this.angularFirebaseAuth.signInAnonymously().catch((error) => {

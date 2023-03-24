@@ -1,0 +1,36 @@
+<form [formGroup]="puzzleForm" (ngSubmit)="onSubmit()">
+    <div>
+      <label for="creatorName">Creator Name:</label>
+      <input formControlName="creatorName" type="text" id="creatorName" required />
+    </div>
+    <div>
+      <label for="puzzleName">Puzzle Name:</label>
+      <input formControlName="puzzleName" type="text" id="puzzleName" required />
+    </div>
+    <div>
+      <label for="width">Width:</label>
+      <input formControlName="width" type="number" id="width" required />
+    </div>
+    <div>
+      <label for="height">Height:</label>
+      <input formControlName="height" type="number" id="height" required />
+    </div>
+    <div>
+      <button type="button" (click)="onSizeSubmit()">Generate Board</button>
+    </div>
+  </form>
+  
+  <div *ngIf="board.length">
+    <table>
+      <tr *ngFor="let row of board; index as rowIndex">
+        <td *ngFor="let cell of row; index as colIndex" [ngClass]="cell" (click)="onCellClick(rowIndex, colIndex)">
+        </td>
+      </tr>
+    </table>
+  
+    <div>
+      <button type="button" (click)="onSubmit()">Submit</button>
+      <button type="button" routerLink="/">Main Menu</button>
+    </div>
+  </div>
+  
