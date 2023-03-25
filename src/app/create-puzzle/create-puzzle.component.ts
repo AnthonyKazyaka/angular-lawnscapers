@@ -1,42 +1,66 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { GameService } from '../services/game.service';
 import { PuzzleData } from '../models/PuzzleData';
+import { GameState } from '../models/GameState';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-create-puzzle',
   templateUrl: './create-puzzle.component.html',
-  styleUrls: ['./create-puzzle.component.css']
+  styleUrls: ['./create-puzzle.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreatePuzzleComponent implements OnInit {
-  puzzleForm: FormGroup;
+  puzzleForm!: FormGroup;
   submitted = false;
   success = false;
   board: string[][] = [];
   playerPosition = { x: -1, y: -1 };
+  minWidth = 3;
+  maxWidth = 16;
+  minHeight = 3;
+  maxHeight = 16;
 
   puzzleCompleted: boolean = false;
 
-  constructor(private gameService: GameService) {
-    this.puzzleForm = new FormGroup({
-      creatorName: new FormControl('', Validators.required),
-      puzzleName: new FormControl('', Validators.required),
-      width: new FormControl('', [Validators.required, Validators.min(1), Validators.max(16)]),
-      height: new FormControl('', [Validators.required, Validators.min(1), Validators.max(16)]),
+  constructor(public gameService: GameService, private changeDetector: ChangeDetectorRef) {
+    this.createForm();
+
+    this.gameService.gameState$.subscribe((newState: GameState) => {
+      if (newState === GameState.CreatingPuzzle) {
+        this.board = this.gameService.createdPuzzleBoard;
+        this.playerPosition = this.gameService.createdPuzzlePlayerPosition;
+        this.puzzleCompleted = this.gameService.createdPuzzleCompleted;
+        this.changeDetector.markForCheck();
+      }
     });
   }
 
   ngOnInit(): void {
+    this.board = this.gameService.createdPuzzleBoard;
+    this.playerPosition = this.gameService.createdPuzzlePlayerPosition;
+    this.puzzleCompleted = this.gameService.createdPuzzleCompleted;
+    this.createForm();
+    this.gameService.puzzleTestCompletedEvent.subscribe((completed: boolean) => {
+      this.puzzleCompleted = completed;
+    });
+  }
+
+  createForm(): void {
+    this.puzzleForm = new FormGroup({
+      creatorName: new FormControl(this.gameService.playerName, Validators.required),
+      puzzleName: new FormControl(this.gameService.createdPuzzleName, Validators.required),
+      width: new FormControl(3, [Validators.required, Validators.min(1), Validators.max(16)]),
+      height: new FormControl(3, [Validators.required, Validators.min(1), Validators.max(16)]),
+    });
   }
 
   onSizeSubmit(): void {
     const width = this.puzzleForm.value.width;
     const height = this.puzzleForm.value.height;
     this.board = Array(height).fill(null).map(() => Array(width).fill('empty'));
-  }
-
-  onPuzzleCompleted(): void {
-    this.puzzleCompleted = true;
+    this.gameService.createdPuzzleBoard = this.board;
   }
 
   onCellClick(row: number, col: number): void {
@@ -49,68 +73,83 @@ export class CreatePuzzleComponent implements OnInit {
       }
       this.board[row][col] = 'player';
       this.playerPosition = { x: col, y: row };
+      this.gameService.createdPuzzlePlayerPosition = this.playerPosition;
     } else {
       this.board[row][col] = 'empty';
       this.playerPosition = { x: -1, y: -1 };
     }
   }
 
- async onSubmit(): Promise<void> {
+  async onSubmit(): Promise<void> {
+    console.log("onSubmit")
     if (this.puzzleForm.invalid || !this.validPlayerPosition() || !this.puzzleCompleted) {
       // Show an error message or handle the error
       return;
     }
-  
-    const { creatorName, puzzleName, width, height } = this.puzzleForm.value;
-    const puzzle : PuzzleData = {
-      id: this.generatePuzzleId(),
-      name: puzzleName,
-      creator: creatorName,
-      created_at: new Date().getTime().toString(),
-      width,
-      height,
-      playerStartPosition: this.getPlayerStartPosition(),
-      obstacles: this.getObstaclesFromBoard(),
-    };
-  
-    try {
-      const createdPuzzle = await this.gameService.savePuzzle(puzzle);
-      // Navigate to the main menu or show a success message
-    } catch (error) {
-      // Handle the error, show an error message, or log it
+
+    // Ask the player if they want to submit the level
+    const confirmSubmit = window.confirm('Would you like to submit this level?');
+
+    if (confirmSubmit) {
+      const puzzleData: PuzzleData = {
+        id: uuidv4(),
+        name: this.puzzleForm.value.puzzleName,
+        creator: this.puzzleForm.value.creatorName,
+        playerStartPosition: this.playerPosition,
+        width: this.puzzleForm.value.width,
+        height: this.puzzleForm.value.height,
+        obstacles: this.getObstaclePositions(),
+        created_at: new Date().toISOString(),
+      };
+
+      const newPuzzleData = await this.gameService.savePuzzle(puzzleData);
+      console.log("Saved puzzle data: ", newPuzzleData);
+      this.success = true;
+      this.gameService.createdPuzzleCompleted = false;
+      this.gameService.createdPuzzleBoard = [];
+      this.gameService.createdPuzzlePlayerPosition = { x: -1, y: -1 };
+      this.gameService.setGameState(GameState.MainMenu);
     }
   }
-  
+
   validPlayerPosition(): boolean {
-    return this.playerPosition.x >= 0 && this.playerPosition.y >= 0;
+    return this.playerPosition.x !== -1 && this.playerPosition.y !== -1;
   }
 
-  validatePuzzle(puzzleData: PuzzleData): boolean {
-    // Implement your puzzle validation logic here
-    // Return true if the puzzle is valid, false otherwise
-    return true;
-  }
+  getObstaclePositions(): { x: number; y: number }[] {
+    const obstaclePositions = [];
 
-  generatePuzzleId(): string {
-    // Implement your puzzle ID generation logic here
-    // For example, you can use a timestamp or a random string
-    return new Date().getTime().toString();
-  }
-
-  getPlayerStartPosition(): { x: number; y: number } {
-    return { x: this.playerPosition.x, y: this.playerPosition.y };
-  }
-
-  getObstaclesFromBoard(): { x: number; y: number }[] {
-    const obstacles: { x: number; y: number }[] = [];
-    for (let row = 0; row < this.board.length; row++) {
-      for (let col = 0; col < this.board[row].length; col++) {
-        if (this.board[row][col] === 'obstacle') {
-          obstacles.push({ x: col, y: row });
+    for (let y = 0; y < this.board.length; y++) {
+      for (let x = 0; x < this.board[y].length; x++) {
+        if (this.board[y][x] === 'obstacle') {
+          obstaclePositions.push({ x, y });
         }
       }
     }
-    return obstacles;
+
+    return obstaclePositions;
+  }
+
+  onMainMenu(): void {
+    this.gameService.setGameState(GameState.MainMenu);
+  }
+
+  async testPuzzle(): Promise<void> {
+    const puzzleData: PuzzleData = {
+      id: '',
+      name: this.puzzleForm.value.puzzleName,
+      creator: this.puzzleForm.value.creatorName,
+      playerStartPosition: this.playerPosition,
+      width: this.puzzleForm.value.width,
+      height: this.puzzleForm.value.height,
+      obstacles: this.getObstaclePositions(),
+      created_at: new Date().toISOString(),
+    };
+
+    this.gameService.createdPuzzleName = puzzleData.name;
+
+    await this.gameService.initializePuzzleFromData(puzzleData);
+    this.gameService.setGameState(GameState.TestingPuzzle);
   }
 }
 

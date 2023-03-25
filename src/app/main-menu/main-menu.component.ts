@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { GameService } from '../services/game.service';
 import { GameState } from "../models/GameState";
 
@@ -19,17 +19,36 @@ export class MainMenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.loading = false;
-    this.preSelectedPuzzleId = this.gameService.newestPuzzleId;
-    this.selectedPuzzleId = this.preSelectedPuzzleId;
-  }  
+
+    if (this.gameService.getSortedPuzzles().length === 0) {
+      this.gameService.loadPuzzlesData();
+
+      this.preSelectedPuzzleId = this.gameService.newestPuzzleId;
+      this.selectedPuzzleId = this.preSelectedPuzzleId;
+    }
+    
+    const savedPlayerName = localStorage.getItem('playerName');
+      if (savedPlayerName) {
+        this.playerName = savedPlayerName;
+        this.gameService.playerName = savedPlayerName;
+      }
+  }
 
   startGame(playerName: string, puzzleId: string): void {
     this.gameService.playerName = playerName;
     this.gameService.initializePuzzle(puzzleId);
-    this.gameService.gameState = GameState.Playing;
+    this.gameService.setGameState(GameState.Playing);
   }
 
   onSelectedPuzzleIdChange(puzzleId: string): void {
     this.selectedPuzzleId = puzzleId;
-  }  
+  }
+
+  createPuzzle(): void {
+    this.gameService.setGameState(GameState.CreatingPuzzle);
+  }
+
+  goToMainMenu(): void {
+    this.gameService.setGameState(GameState.MainMenu);
+  }
 }

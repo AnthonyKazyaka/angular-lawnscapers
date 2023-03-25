@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef  } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { GameService } from '../services/game.service';
 import { ScoreEntry } from "../models/ScoreEntry";
 import { Player } from "../models/Player";
@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { LeaderboardModalComponent } from '../leaderboard-modal/leaderboard-modal.component';
 import { Direction } from '../direction/Direction';
 import { GameState } from '../models/GameState';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-game',
@@ -23,6 +24,8 @@ export class GameComponent implements OnInit {
   moveCount: number = 0;
   puzzleScore: ScoreEntry | null = null;
   loading: boolean = true;
+  puzzleCompleted: boolean = false;
+  subscription: Subscription = new Subscription;
 
   constructor(public gameService: GameService, private dialog: MatDialog, private changeDetector: ChangeDetectorRef) { }
 
@@ -31,14 +34,35 @@ export class GameComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    //await this.gameService.initializeApp();
+    this.logCurrentGameState();
+    console.log('Game component initialized');
     this.newestPuzzleId = this.gameService.newestPuzzleId;
     this.selectedPuzzleId = this.newestPuzzleId;
-    const savedPlayerName = localStorage.getItem('playerName');
-    if (savedPlayerName) {
-      this.playerName = savedPlayerName;
-    }
     this.loading = false;
+
+    this.gameService.puzzleCompletedEvent.subscribe((completed: boolean) => {
+      this.puzzleCompleted = completed;
+      console.log('Puzzle completed status:', completed);
+    });
+
+    this.subscription = this.gameService.gameState$.subscribe((newState: GameState) => {
+      if (newState === GameState.TestingPuzzle || newState === GameState.Playing) {
+        this.boardDisplay = this.gameService.getDisplayBoard();
+        console.log('Puzzle board updated:', this.boardDisplay);
+      }
+    });
+
+    this.gameService.puzzleTestCompletedEvent.subscribe((completed: boolean) => {
+      if (completed) {
+        this.gameService.setGameState(GameState.CreatingPuzzle);
+        this.boardDisplay = this.gameService.getDisplayBoard(); // Update the board display
+        this.changeDetector.detectChanges(); // Manually trigger change detection
+      }
+    });
+  }
+
+  logCurrentGameState(): void {
+    console.log('Current game state:', GameState[this.gameService.gameState]);
   }
 
   onMovePlayer(direction: Direction): void {
@@ -82,9 +106,10 @@ export class GameComponent implements OnInit {
   }
 
   setGameState(newState: GameState): void {
-    this.gameService.gameState = newState;
+    this.gameService.setGameState(newState);
+    this.logCurrentGameState();
     this.changeDetector.detectChanges(); // Manually trigger change detection
-  }  
+  }
 
   restartGame(): void {
     if (this.gameService.puzzle) {
@@ -93,23 +118,32 @@ export class GameComponent implements OnInit {
   }
 
   completeGame() {
-    this.setGameState(GameState.Completed);
+    this.gameService.setPuzzleCompleted(true);
   }
-  
+
   returnToMainMenu(): void {
     console.log("Returning to Main Menu");
     this.setGameState(GameState.MainMenu);
     this.selectedPuzzleId = this.gameService.newestPuzzleId;
-  }  
-  
+  }
+
   async handleGameCompletion(): Promise<void> {
     if (this.gameService.puzzle) {
-      this.gameService.gameState = GameState.Completed;
-      await this.submitScore();
-      if (this.gameService.puzzle !== null) {
-        this.leaderboard = await this.gameService.getLeaderboard(this.gameService.puzzle.id);
+      if(this.gameService.gameState == GameState.TestingPuzzle){
+        this.gameService.setGameState(GameState.CreatingPuzzle);
+        this.gameService.setPuzzleTestCompleted(true);
+        console.log("Puzzle board:", this.gameService.puzzle.getDisplayBoard());
       }
-      this.openLeaderboardModal();
+      else{
+        this.setGameState(GameState.Completed);
+        await this.submitScore();
+
+        if (this.gameService.puzzle !== null) {
+          this.leaderboard = await this.gameService.getLeaderboard(this.gameService.puzzle.id);
+        }
+  
+        this.openLeaderboardModal();
+      }
     }
   }
 
@@ -135,7 +169,8 @@ export class GameComponent implements OnInit {
   }
 
   openLeaderboardModal(): void {
-    if(this.gameService.puzzle !== null) {
+    this.logCurrentGameState();
+    if (this.gameService.puzzle !== null && !this.gameService.isPuzzleBeingTested) {
       this.dialog.open(LeaderboardModalComponent, {
         data: {
           puzzleId: this.gameService.puzzle.id,

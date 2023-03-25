@@ -1,7 +1,6 @@
-
 <!-- Render the game board directly when loading has completed and the game has started -->
 <div *ngIf="!loading" appSwipe (swipe)="onMovePlayer($event)">
-  <div *ngIf="gameService.gameState === GameState.Playing" class="game-container">
+  <div *ngIf="gameService.gameState === GameState.Playing || gameService.gameState === GameState.TestingPuzzle || (gameService.gameState === GameState.Completed && !gameService.isPuzzleBeingTested)" class="game-container">
     <div class="moves-counter">
       <h3>Moves: {{ moveCount }}</h3>
     </div>

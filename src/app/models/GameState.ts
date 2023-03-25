@@ -1,6 +1,9 @@
 
 export enum GameState {
   MainMenu,
+  SelectingLevel,
   Playing,
-  Completed
+  Completed,
+  CreatingPuzzle,
+  TestingPuzzle
 }
