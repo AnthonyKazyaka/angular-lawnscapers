@@ -1,4 +1,3 @@
-<!-- app.component.html -->
 <app-main-menu *ngIf="gameService.gameState === GameState.MainMenu"></app-main-menu>
 <app-game *ngIf="gameService.gameState === GameState.Playing || gameService.gameState === GameState.TestingPuzzle || gameService.gameState === GameState.Completed"></app-game>
 <app-create-puzzle *ngIf="gameService.gameState === GameState.CreatingPuzzle"></app-create-puzzle>

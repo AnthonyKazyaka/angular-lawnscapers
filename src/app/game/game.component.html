@@ -6,9 +6,10 @@
     </div>
     <app-puzzle-board [boardDisplay]="boardDisplay" [puzzle]="puzzle" [player]="player"
       (movePlayer)="onMovePlayer($event)" (gameCompleted)="completeGame()"></app-puzzle-board>
-    <div class="button-container">
-      <button mat-raised-button class="restart-game-button" (click)="promptRestart()">Restart Game</button>
-      <button mat-raised-button class="main-menu-button" (click)="returnToMainMenu()">Main Menu</button>
-    </div>
+      <div class="button-container">
+        <button mat-raised-button class="restart-game-button" (click)="promptRestart()">Restart Game</button>
+        <button *ngIf="gameService.gameState !== GameState.TestingPuzzle" mat-raised-button class="main-menu-button" (click)="returnToMainMenu()">Main Menu</button>
+        <button *ngIf="gameService.gameState === GameState.TestingPuzzle" mat-raised-button class="go-back-button" (click)="goBackToPuzzleCreation()">Go Back</button>
+      </div>
   </div>
 </div>
