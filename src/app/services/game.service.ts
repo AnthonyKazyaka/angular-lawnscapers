@@ -34,6 +34,7 @@ export class GameService {
   createdPuzzleName: string = '';
   createdPuzzleBoard: string[][] = [];
   createdPuzzlePlayerPosition: { x: number, y: number } = { x: -1, y: -1 };
+  createdPuzzleDimensions: { width: number, height: number } = { width: 3, height: 3 };
   createdPuzzleCompleted: boolean = false;
 
   puzzleCompletedEvent: EventEmitter<boolean> = new EventEmitter<boolean>();

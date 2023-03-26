@@ -15,7 +15,6 @@ import { Subscription } from 'rxjs';
 })
 export class GameComponent implements OnInit {
   GameState = GameState;
-  playerName: string = '';
   newestPuzzleId: string = '';
   selectedPuzzleId: string = '';
   leaderboard: ScoreEntry[] = [];
@@ -85,7 +84,7 @@ export class GameComponent implements OnInit {
       console.warn('Default puzzle is not allowed.');
       return;
     }
-    this.playerName = playerName;
+    this.gameService.playerName = playerName;
     localStorage.setItem('playerName', playerName);
 
     this.setGameState(GameState.Playing);
@@ -113,7 +112,7 @@ export class GameComponent implements OnInit {
 
   restartGame(): void {
     if (this.gameService.puzzle) {
-      this.startGame(this.playerName, this.gameService.puzzle.id);
+      this.startGame(this.gameService.playerName, this.gameService.puzzle.id);
     }
   }
 
@@ -125,6 +124,12 @@ export class GameComponent implements OnInit {
     console.log("Returning to Main Menu");
     this.setGameState(GameState.MainMenu);
     this.selectedPuzzleId = this.gameService.newestPuzzleId;
+  }
+
+  goBackToPuzzleCreation(): void {
+    this.gameService.setGameState(GameState.CreatingPuzzle);
+    this.boardDisplay = this.gameService.getDisplayBoard(); // Update the board display
+    this.changeDetector.detectChanges(); // Manually trigger change detection
   }
 
   async handleGameCompletion(): Promise<void> {
@@ -150,7 +155,7 @@ export class GameComponent implements OnInit {
   async submitScore(): Promise<void> {
     if (this.gameService.puzzle !== null) {
       this.puzzleScore = await this.gameService.saveScore(
-        this.playerName,
+        this.gameService.playerName,
         this.moveCount,
         this.gameService.puzzle.id
       );

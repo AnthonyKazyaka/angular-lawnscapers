@@ -18,9 +18,9 @@ export class CreatePuzzleComponent implements OnInit {
   board: string[][] = [];
   playerPosition = { x: -1, y: -1 };
   minWidth = 3;
-  maxWidth = 16;
+  maxWidth = 12;
   minHeight = 3;
-  maxHeight = 16;
+  maxHeight = 12;
 
   puzzleCompleted: boolean = false;
 
@@ -51,8 +51,8 @@ export class CreatePuzzleComponent implements OnInit {
     this.puzzleForm = new FormGroup({
       creatorName: new FormControl(this.gameService.playerName, Validators.required),
       puzzleName: new FormControl(this.gameService.createdPuzzleName, Validators.required),
-      width: new FormControl(3, [Validators.required, Validators.min(1), Validators.max(16)]),
-      height: new FormControl(3, [Validators.required, Validators.min(1), Validators.max(16)]),
+      width: new FormControl(this.gameService.createdPuzzleDimensions.width, [Validators.required, Validators.min(3), Validators.max(12)]),
+      height: new FormControl(this.gameService.createdPuzzleDimensions.height, [Validators.required, Validators.min(3), Validators.max(12)]),
     });
   }
 
@@ -61,6 +61,8 @@ export class CreatePuzzleComponent implements OnInit {
     const height = this.puzzleForm.value.height;
     this.board = Array(height).fill(null).map(() => Array(width).fill('empty'));
     this.gameService.createdPuzzleBoard = this.board;
+    this.gameService.createdPuzzleDimensions.width = width; // Add this line
+    this.gameService.createdPuzzleDimensions.height = height; // Add this line
   }
 
   onCellClick(row: number, col: number): void {
@@ -147,9 +149,7 @@ export class CreatePuzzleComponent implements OnInit {
     };
 
     this.gameService.createdPuzzleName = puzzleData.name;
-
     await this.gameService.initializePuzzleFromData(puzzleData);
     this.gameService.setGameState(GameState.TestingPuzzle);
   }
 }
-
