@@ -26,7 +26,7 @@ export class MainMenuComponent implements OnInit {
       this.preSelectedPuzzleId = this.gameService.newestPuzzleId;
       this.selectedPuzzleId = this.preSelectedPuzzleId;
     }
-    
+
     const savedPlayerName = localStorage.getItem('playerName');
       if (savedPlayerName) {
         this.playerName = savedPlayerName;
@@ -42,13 +42,11 @@ export class MainMenuComponent implements OnInit {
 
   onSelectedPuzzleIdChange(puzzleId: string): void {
     this.selectedPuzzleId = puzzleId;
+    this.gameService.playerName = this.playerName;
   }
 
   createPuzzle(): void {
+    this.gameService.playerName = this.playerName;
     this.gameService.setGameState(GameState.CreatingPuzzle);
-  }
-
-  goToMainMenu(): void {
-    this.gameService.setGameState(GameState.MainMenu);
   }
 }

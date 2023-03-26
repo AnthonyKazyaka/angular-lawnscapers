@@ -63,6 +63,7 @@ export class CreatePuzzleComponent implements OnInit {
     this.gameService.createdPuzzleBoard = this.board;
     this.gameService.createdPuzzleDimensions.width = width; // Add this line
     this.gameService.createdPuzzleDimensions.height = height; // Add this line
+    localStorage.setItem('playerName', this.gameService.playerName);
   }
 
   onCellClick(row: number, col: number): void {
@@ -148,8 +149,12 @@ export class CreatePuzzleComponent implements OnInit {
       created_at: new Date().toISOString(),
     };
 
+    this.gameService.playerName = this.puzzleForm.value.creatorName;
+    localStorage.setItem('playerName', this.gameService.playerName);
     this.gameService.createdPuzzleName = puzzleData.name;
+    
     await this.gameService.initializePuzzleFromData(puzzleData);
+    
     this.gameService.setGameState(GameState.TestingPuzzle);
   }
 }
