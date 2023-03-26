@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { GameService } from './game.service';
-import { DatabaseService } from '../database/database.service';
+import { DatabaseService } from './database.service';
 import { PuzzleData } from '../models/PuzzleData';
 
 describe('GameService', () => {

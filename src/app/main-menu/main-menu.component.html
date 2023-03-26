@@ -1,0 +1,18 @@
+<div *ngIf="loading">
+    Loading...
+</div>
+
+<div *ngIf="!loading" class="loading-container">
+    <mat-card class="start-game-card">
+        <div class="form-container">
+            <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Enter your name</mat-label>
+                <input matInput [(ngModel)]="playerName" name="playerName" #playerNameInput />
+            </mat-form-field>
+            <app-level-select [selectedPuzzleId]="selectedPuzzleId" [preSelectedPuzzleId]="preSelectedPuzzleId"
+                (selectedPuzzleIdChange)="onSelectedPuzzleIdChange($event)"></app-level-select>
+            <button mat-raised-button color="primary" (click)="startGame(playerNameInput.value, selectedPuzzleId)">Start Game</button>
+            <button mat-raised-button class="create-puzzle-button" (click)="createPuzzle()">Create Puzzle</button>
+        </div>
+    </mat-card>
+</div>

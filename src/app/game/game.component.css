@@ -19,14 +19,6 @@
   height: 100%;
 }
 
-.start-game-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-}
-
 .button-container {
   display: flex;
   justify-content: center;
@@ -42,16 +34,6 @@
 .restart-game-button {
   background-color: #d62121; /* Use any color you prefer */
   color: white;
-}
-
-.form-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.form-field {
-  width: 100%;
 }
 
 .loading-container {
