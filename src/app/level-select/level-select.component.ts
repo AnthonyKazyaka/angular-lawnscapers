@@ -9,7 +9,7 @@ import { GameService } from '../services/game.service';
 })
 export class LevelSelectComponent implements OnInit {
   @Input() selectedPuzzleId: string = '';
-  @Input() newestPuzzleId: string = '';
+  @Input() preSelectedPuzzleId: string = '';
   @Output() selectedPuzzleIdChange = new EventEmitter<string>();
 
   availablePuzzles: { id: string, name: string }[] = [];
@@ -20,9 +20,9 @@ export class LevelSelectComponent implements OnInit {
     const puzzles = this.gameService.getSortedPuzzles();
     this.availablePuzzles = puzzles;
     if (puzzles.length > 0) {
-      this.selectedPuzzleId = puzzles[0].id; // Grab the most recent puzzle ID (sorted in descending order)
+      this.selectedPuzzleId = puzzles[0].id; // Grab the most recent puzzle ID (sorted in descending order currently, so it'll be the newest puzzle)
     } else {
-      this.selectedPuzzleId = this.newestPuzzleId;
+      this.selectedPuzzleId = this.preSelectedPuzzleId;
     }
   }
 

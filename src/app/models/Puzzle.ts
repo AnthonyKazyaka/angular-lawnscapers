@@ -6,6 +6,7 @@ import { Direction, getDirectionOffset } from "../direction/Direction";
 export class Puzzle {
   public id: string;
   public name: string;
+  public creator: string | null = null;
   public width: number;
   public height: number;
   public puzzleBoard: Tile[][];
