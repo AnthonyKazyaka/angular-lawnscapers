@@ -1,1 +1,29 @@
-<p>help-modal works!</p>
+<div *ngIf="helpContext === 'create'">
+    <h2>Creating a Puzzle</h2>
+    <p>
+        To create a puzzle, provide the dimensions of your puzzle and click on "Generate Board". Once you see the board,
+        you can click or tap once on a tile to place an obstacle, and tap twice on a tile to place a player on
+        the board. As you place the obstacles and the player, keep in mind that the player must be able to move over
+        each grass tile on the board. When you're ready, click "Test Puzzle" to test
+        your creation. Once you complete the level you've created, then it can be submitted for others to play!
+    </p>
+</div>
+
+<div *ngIf="helpContext === 'testing'">
+    <h2>Testing a Puzzle</h2>
+    <p>
+        When testing a puzzle, play through the level to ensure it's solvable. If
+        the level is too difficult or impossible, you may have to return to the creation screen to
+        make adjustments. Once the puzzle is complete and satisfactory, and you have successfully completed the level once, submit it
+        for others to play!
+    </p>
+</div>
+
+<div *ngIf="helpContext === 'playing'">
+    <h2>Playing a Puzzle</h2>
+    <p>
+        To play a puzzle, swipe or use arrow keys to move the player in the desired
+        direction. The player will continue to move in that direction until they
+        hit an obstacle or the edge of the board. Mow over each grass tile on the board to complete the level!
+    </p>
+</div>
