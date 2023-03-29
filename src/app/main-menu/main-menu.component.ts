@@ -2,6 +2,8 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameService } from '../services/game.service';
 import { GameState } from "../models/GameState";
+import { HowToPlayModalComponent } from '../how-to-play-modal/how-to-play-modal.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-main-menu',
@@ -14,7 +16,7 @@ export class MainMenuComponent implements OnInit {
   selectedPuzzleId: string = '';
   preSelectedPuzzleId: string = '';
 
-  constructor(private gameService: GameService, private router: Router) {
+  constructor(private gameService: GameService, private router: Router, private dialog: MatDialog) {
 
   }
 
@@ -48,5 +50,9 @@ export class MainMenuComponent implements OnInit {
 
   createPuzzle(): void {
     this.router.navigate(['/create']);
+  }
+
+  openHowToPlayModal(): void {
+    this.dialog.open(HowToPlayModalComponent);
   }
 }
