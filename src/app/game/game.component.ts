@@ -8,6 +8,7 @@ import { Direction } from '../direction/Direction';
 import { GameState } from '../models/GameState';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HelpModalComponent } from '../help-modal/help-modal.component';
 
 @Component({
   selector: 'app-game',
@@ -138,6 +139,13 @@ export class GameComponent implements OnInit {
     this.gameService.setGameState(GameState.CreatingPuzzle);
     this.boardDisplay = this.gameService.getDisplayBoard(); // Update the board display
     this.changeDetector.detectChanges(); // Manually trigger change detection
+    this.router.navigate(['/create']);
+  }
+
+  openHelpModal(): void {
+    this.dialog.open(HelpModalComponent, {
+      data: this.gameService.gameState === GameState.TestingPuzzle ? 'testing' : 'playing'
+    });
   }
 
   async handleGameCompletion(): Promise<void> {
