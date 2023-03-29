@@ -22,6 +22,7 @@ import { LevelSelectComponent } from './level-select/level-select.component';
 import { PuzzleBoardComponent } from './puzzle-board/puzzle-board.component';
 import { CreatePuzzleComponent } from './create-puzzle/create-puzzle.component';
 import { MainMenuComponent } from './main-menu/main-menu.component';
+import { AppRoutingModule } from './app-routing.module';
 
 export function initializeApp(gameService: GameService) {
   return () => gameService.initializeApp();
@@ -42,6 +43,7 @@ export function initializeApp(gameService: GameService) {
     MatCardModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
+    AppRoutingModule,
   ],
   providers: [
     {
