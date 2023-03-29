@@ -37,7 +37,7 @@ td.player {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1em;
+  gap: 0.5em;
 }
 
 .form-group {
