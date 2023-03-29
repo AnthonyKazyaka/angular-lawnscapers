@@ -1,41 +1,43 @@
-<div class="container">
-  <form [formGroup]="puzzleForm" class="form">
-    <div class="form-group">
-      <label for="creatorName">Creator Name:</label>
-      <input formControlName="creatorName" type="text" id="creatorName" required />
-    </div>
-    <div class="form-group">
-      <label for="puzzleName">Puzzle Name:</label>
-      <input formControlName="puzzleName" type="text" id="puzzleName" required />
-    </div>
-    <div class="form-group">
-      <label for="width">Width:</label>
-      <input formControlName="width" type="number" id="width" required />
-    </div>
-    <div class="form-group">
-      <label for="height">Height:</label>
-      <input formControlName="height" type="number" id="height" required />
-    </div>
-    <div class="form-group">
-      <button type="button" (click)="onSizeSubmit()" class="btn">Generate Board</button>
-      <button type="button" (click)="onMainMenu()" class="btn">Main Menu</button>
-    </div>
-  </form>
-</div>
-
-<div *ngIf="board.length" class="container">
-  <div class="board">
-    <table>
-      <tr *ngFor="let row of board; index as rowIndex">
-        <td *ngFor="let cell of row; index as colIndex" [ngClass]="cell" (click)="onCellClick(rowIndex, colIndex)">
-        </td>
-      </tr>
-    </table>
+<div class="main-container">
+  <div class="container">
+    <form [formGroup]="puzzleForm" class="form">
+      <mat-form-field appearance="fill">
+        <mat-label>Creator Name</mat-label>
+        <input matInput formControlName="creatorName" type="text" id="creatorName" required />
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Puzzle Name</mat-label>
+        <input matInput formControlName="puzzleName" type="text" id="puzzleName" required />
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Width</mat-label>
+        <input matInput formControlName="width" type="number" id="width" required />
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Height</mat-label>
+        <input matInput formControlName="height" type="number" id="height" required />
+      </mat-form-field>
+      <div class="form-group">
+        <button mat-raised-button type="button" (click)="onSizeSubmit()">Generate Board</button>
+        <button mat-raised-button type="button" (click)="onMainMenu()">Main Menu</button>
+      </div>
+    </form>
   </div>
 
-  <div class="button-group">
-    <button type="button" (click)="testPuzzle()" [disabled]="!validPlayerPosition()" class="btn">Test Puzzle</button>
-    <button type="submit" (click)="onSubmit()" class="btn btn-primary" [disabled]="!puzzleForm.valid || !this.gameService.createdPuzzleCompleted">Submit</button>
-    <button type="button" (click)="onMainMenu()" class="btn">Main Menu</button>
+  <div *ngIf="board.length" class="container">
+    <div class="board">
+      <table>
+        <tr *ngFor="let row of board; index as rowIndex">
+          <td *ngFor="let cell of row; index as colIndex" [ngClass]="cell" (click)="onCellClick(rowIndex, colIndex)">
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="button-group">
+      <button mat-raised-button type="button" (click)="testPuzzle()" [disabled]="!validPlayerPosition()">Test Puzzle</button>
+      <button mat-raised-button color="primary" type="submit" (click)="onSubmit()" [disabled]="!puzzleForm.valid || !this.gameService.createdPuzzleCompleted">Submit</button>
+      <button mat-raised-button type="button" (click)="onMainMenu()">Main Menu</button>
+    </div>
   </div>
 </div>
