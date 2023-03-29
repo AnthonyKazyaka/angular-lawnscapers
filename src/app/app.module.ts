@@ -23,13 +23,14 @@ import { PuzzleBoardComponent } from './puzzle-board/puzzle-board.component';
 import { CreatePuzzleComponent } from './create-puzzle/create-puzzle.component';
 import { MainMenuComponent } from './main-menu/main-menu.component';
 import { AppRoutingModule } from './app-routing.module';
+import { HowToPlayModalComponent } from './how-to-play-modal/how-to-play-modal.component';
 
 export function initializeApp(gameService: GameService) {
   return () => gameService.initializeApp();
 }
 
 @NgModule({
-  declarations: [AppComponent, LeaderboardModalComponent, GameComponent, SwipeDirective, LevelSelectComponent, PuzzleBoardComponent, CreatePuzzleComponent, MainMenuComponent],
+  declarations: [AppComponent, LeaderboardModalComponent, GameComponent, SwipeDirective, LevelSelectComponent, PuzzleBoardComponent, CreatePuzzleComponent, MainMenuComponent, HowToPlayModalComponent],
   imports: [
     BrowserModule,
     FormsModule,
