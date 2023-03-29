@@ -31,6 +31,8 @@ export class GameService {
   gameState: GameState = GameState.MainMenu;
   gameState$ = new BehaviorSubject<GameState>(this.gameState);
 
+  currentPuzzleId: string = '';
+
   createdPuzzleName: string = '';
   createdPuzzleBoard: string[][] = [];
   createdPuzzlePlayerPosition: { x: number, y: number } = { x: -1, y: -1 };

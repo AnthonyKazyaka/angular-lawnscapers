@@ -7,6 +7,7 @@ import { LeaderboardModalComponent } from '../leaderboard-modal/leaderboard-moda
 import { Direction } from '../direction/Direction';
 import { GameState } from '../models/GameState';
 import { Subscription } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-game',
@@ -26,17 +27,23 @@ export class GameComponent implements OnInit {
   puzzleCompleted: boolean = false;
   subscription: Subscription = new Subscription;
 
-  constructor(public gameService: GameService, private dialog: MatDialog, private changeDetector: ChangeDetectorRef) { }
+  constructor(public gameService: GameService, private dialog: MatDialog, private changeDetector: ChangeDetectorRef, private router: Router, private route: ActivatedRoute) { }
 
   get puzzle() {
     return this.gameService.puzzle;
   }
 
   async ngOnInit(): Promise<void> {
+    this.route.paramMap.subscribe((params) => {
+      const puzzleId = params.get('puzzleId');
+      if (puzzleId) {
+        this.selectedPuzzleId = puzzleId;
+        this.gameService.currentPuzzleId = puzzleId;
+      }
+    });
     this.logCurrentGameState();
     console.log('Game component initialized');
     this.newestPuzzleId = this.gameService.newestPuzzleId;
-    this.selectedPuzzleId = this.newestPuzzleId;
     this.loading = false;
 
     this.gameService.puzzleCompletedEvent.subscribe((completed: boolean) => {
@@ -122,6 +129,7 @@ export class GameComponent implements OnInit {
 
   returnToMainMenu(): void {
     console.log("Returning to Main Menu");
+    this.router.navigate(['/']);
     this.setGameState(GameState.MainMenu);
     this.selectedPuzzleId = this.gameService.newestPuzzleId;
   }
