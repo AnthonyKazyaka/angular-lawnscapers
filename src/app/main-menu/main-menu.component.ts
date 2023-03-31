@@ -24,10 +24,8 @@ export class MainMenuComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loading = false;
-
     if (this.gameService.getSortedPuzzles().length === 0) {
-      this.gameService.loadPuzzlesData();
+      this.gameService.initializeApp();
     }
   
     this.puzzlesLoadedSubscription = this.gameService.puzzlesLoaded$.subscribe((loaded: boolean) => {
@@ -43,6 +41,8 @@ export class MainMenuComponent implements OnInit {
       this.playerName = savedPlayerName;
       this.gameService.playerName = savedPlayerName;
     }
+
+    this.loading = false;
   }
 
   ngOnDestroy(): void {
@@ -50,6 +50,7 @@ export class MainMenuComponent implements OnInit {
   }  
 
   startGame(playerName: string, puzzleId: string): void {
+    console.log("puzzleId", puzzleId)
     this.gameService.playerName = playerName;
     this.gameService.currentPuzzleId = puzzleId;
     this.router.navigate(['/play', puzzleId]);
