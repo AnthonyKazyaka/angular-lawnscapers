@@ -7,6 +7,8 @@ import { LeaderboardModalComponent } from '../leaderboard-modal/leaderboard-moda
 import { Direction } from '../direction/Direction';
 import { GameState } from '../models/GameState';
 import { Subscription } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HelpModalComponent } from '../help-modal/help-modal.component';
 
 @Component({
   selector: 'app-game',
@@ -26,28 +28,33 @@ export class GameComponent implements OnInit {
   puzzleCompleted: boolean = false;
   subscription: Subscription = new Subscription;
 
-  constructor(public gameService: GameService, private dialog: MatDialog, private changeDetector: ChangeDetectorRef) { }
+  constructor(public gameService: GameService, private dialog: MatDialog, private changeDetector: ChangeDetectorRef, private router: Router, private route: ActivatedRoute) { }
 
   get puzzle() {
     return this.gameService.puzzle;
   }
 
   async ngOnInit(): Promise<void> {
-    this.logCurrentGameState();
-    console.log('Game component initialized');
+    this.route.paramMap.subscribe(async (params) => {
+      const puzzleId = params.get('puzzleId');
+      if (puzzleId) {
+        this.selectedPuzzleId = puzzleId;
+        this.gameService.currentPuzzleId = puzzleId;
+        // Call startGame when the component initializes with a valid puzzleId
+        await this.startGame(this.gameService.playerName, puzzleId);
+      }
+    });
+    
     this.newestPuzzleId = this.gameService.newestPuzzleId;
-    this.selectedPuzzleId = this.newestPuzzleId;
     this.loading = false;
 
     this.gameService.puzzleCompletedEvent.subscribe((completed: boolean) => {
       this.puzzleCompleted = completed;
-      console.log('Puzzle completed status:', completed);
     });
 
     this.subscription = this.gameService.gameState$.subscribe((newState: GameState) => {
       if (newState === GameState.TestingPuzzle || newState === GameState.Playing) {
         this.boardDisplay = this.gameService.getDisplayBoard();
-        console.log('Puzzle board updated:', this.boardDisplay);
       }
     });
 
@@ -66,7 +73,6 @@ export class GameComponent implements OnInit {
 
   onMovePlayer(direction: Direction): void {
     if (this.gameService.puzzle && this.gameService.canMovePlayer(direction) && !(this.gameService.gameState == GameState.Completed)) {
-      console.log("Can Move Player")
       this.gameService.puzzle.movePlayerUntilStopped(direction);
       this.moveCount++;
       this.boardDisplay = this.puzzle.getDisplayBoard();
@@ -121,7 +127,7 @@ export class GameComponent implements OnInit {
   }
 
   returnToMainMenu(): void {
-    console.log("Returning to Main Menu");
+    this.router.navigate(['/']);
     this.setGameState(GameState.MainMenu);
     this.selectedPuzzleId = this.gameService.newestPuzzleId;
   }
@@ -130,23 +136,30 @@ export class GameComponent implements OnInit {
     this.gameService.setGameState(GameState.CreatingPuzzle);
     this.boardDisplay = this.gameService.getDisplayBoard(); // Update the board display
     this.changeDetector.detectChanges(); // Manually trigger change detection
+    this.router.navigate(['/create']);
+  }
+
+  openHelpModal(): void {
+    this.dialog.open(HelpModalComponent, {
+      data: this.gameService.gameState === GameState.TestingPuzzle ? 'testing' : 'playing'
+    });
   }
 
   async handleGameCompletion(): Promise<void> {
     if (this.gameService.puzzle) {
-      if(this.gameService.gameState == GameState.TestingPuzzle){
+      if (this.gameService.gameState == GameState.TestingPuzzle) {
         this.gameService.setGameState(GameState.CreatingPuzzle);
         this.gameService.setPuzzleTestCompleted(true);
-        console.log("Puzzle board:", this.gameService.puzzle.getDisplayBoard());
+        this.goBackToPuzzleCreation();
       }
-      else{
+      else {
         this.setGameState(GameState.Completed);
         await this.submitScore();
 
         if (this.gameService.puzzle !== null) {
           this.leaderboard = await this.gameService.getLeaderboard(this.gameService.puzzle.id);
         }
-  
+
         this.openLeaderboardModal();
       }
     }
