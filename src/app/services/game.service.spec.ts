@@ -24,17 +24,6 @@ describe('GameService', () => {
   it('should load puzzle from the database', async () => {
     const puzzleData: PuzzleData[] = [
       // Replace this with actual puzzle data from your application
-      {
-        id: 'testPuzzleId',
-        name: 'Test Puzzle',
-        width: 5,
-        height: 5,
-        playerStartPosition: { x: 0, y: 0 },
-        obstacles: [
-          { x: 1, y: 1 },
-          { x: 2, y: 2 }
-        ]
-      }
     ];
     databaseService.getPuzzlesData.and.returnValue(Promise.resolve(puzzleData));
 
