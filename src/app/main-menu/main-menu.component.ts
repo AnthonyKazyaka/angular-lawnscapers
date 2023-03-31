@@ -1,6 +1,10 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { GameService } from '../services/game.service';
 import { GameState } from "../models/GameState";
+import { HowToPlayModalComponent } from '../how-to-play-modal/how-to-play-modal.component';
+import { MatDialog } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-main-menu',
@@ -13,40 +17,56 @@ export class MainMenuComponent implements OnInit {
   selectedPuzzleId: string = '';
   preSelectedPuzzleId: string = '';
 
-  constructor(private gameService: GameService) {
+  private puzzlesLoadedSubscription: Subscription | null = null;
+
+  constructor(private gameService: GameService, private router: Router, private dialog: MatDialog) {
 
   }
 
   ngOnInit(): void {
-    this.loading = false;
-
     if (this.gameService.getSortedPuzzles().length === 0) {
-      this.gameService.loadPuzzlesData();
-
-      this.preSelectedPuzzleId = this.gameService.newestPuzzleId;
-      this.selectedPuzzleId = this.preSelectedPuzzleId;
+      this.gameService.initializeApp();
     }
+  
+    this.puzzlesLoadedSubscription = this.gameService.puzzlesLoaded$.subscribe((loaded: boolean) => {
+      if (loaded) {
+        this.selectedPuzzleId = this.gameService.currentPuzzleId ? this.gameService.currentPuzzleId : this.gameService.newestPuzzleId;
+      }
+    });
+
+    this.selectedPuzzleId = this.gameService.currentPuzzleId ? this.gameService.currentPuzzleId : this.gameService.newestPuzzleId;
 
     const savedPlayerName = localStorage.getItem('playerName');
-      if (savedPlayerName) {
-        this.playerName = savedPlayerName;
-        this.gameService.playerName = savedPlayerName;
-      }
+    if (savedPlayerName) {
+      this.playerName = savedPlayerName;
+      this.gameService.playerName = savedPlayerName;
+    }
+
+    this.loading = false;
   }
 
+  ngOnDestroy(): void {
+    this.puzzlesLoadedSubscription?.unsubscribe();
+  }  
+
   startGame(playerName: string, puzzleId: string): void {
+    console.log("puzzleId", puzzleId)
     this.gameService.playerName = playerName;
-    this.gameService.initializePuzzle(puzzleId);
-    this.gameService.setGameState(GameState.Playing);
+    this.gameService.currentPuzzleId = puzzleId;
+    this.router.navigate(['/play', puzzleId]);
   }
 
   onSelectedPuzzleIdChange(puzzleId: string): void {
     this.selectedPuzzleId = puzzleId;
+    this.gameService.currentPuzzleId = puzzleId;
     this.gameService.playerName = this.playerName;
   }
 
   createPuzzle(): void {
-    this.gameService.playerName = this.playerName;
-    this.gameService.setGameState(GameState.CreatingPuzzle);
+    this.router.navigate(['/create']);
+  }
+
+  openHowToPlayModal(): void {
+    this.dialog.open(HowToPlayModalComponent);
   }
 }

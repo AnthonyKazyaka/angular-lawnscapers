@@ -8,6 +8,7 @@ import { ScoreEntry } from '../models/ScoreEntry';
 import { Tile } from '../models/Tile';
 import { GameState } from '../models/GameState';
 import { BehaviorSubject } from 'rxjs';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -30,6 +31,9 @@ export class GameService {
   };
   gameState: GameState = GameState.MainMenu;
   gameState$ = new BehaviorSubject<GameState>(this.gameState);
+  puzzlesLoaded$ = new BehaviorSubject<boolean>(false);
+
+  currentPuzzleId: string = '';
 
   createdPuzzleName: string = '';
   createdPuzzleBoard: string[][] = [];
@@ -41,14 +45,19 @@ export class GameService {
   public puzzleTestCompletedEvent: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public newestPuzzleId: string;
   public isPuzzleBeingTested: boolean = false;
-  
-  constructor(private databaseService: DatabaseService) {
+
+  constructor(private databaseService: DatabaseService, private fireAuth: AngularFireAuth) {
     this.puzzle = new Puzzle(this.defaultPuzzleData);
     this.puzzleBoard = this.puzzle.puzzleBoard;
     this.newestPuzzleId = this.puzzle.id;
-  }  
+  }
 
   async initializeApp(): Promise<void> {
+    console.log("Initializing app...")
+    await this.fireAuth.signInAnonymously().catch((error) => {
+      console.error("Error signing in anonymously:", error);
+    });
+
     await this.loadPuzzlesData();
     const puzzles = this.getSortedPuzzles();
     if (puzzles.length > 0) {
@@ -59,13 +68,13 @@ export class GameService {
       console.warn('No puzzles found. Default puzzle will be used.');
     }
   }  
-  
+
+
   get tiles(): Tile[][] {
     return this.puzzle.puzzleBoard;
   }
-  
+
   setPuzzleTestCompleted(completed: boolean): void {
-    console.log("Setting puzzle test completed to:", completed)
     this.puzzleTestCompletedEvent.next(completed);
     this.createdPuzzleCompleted = true;
     this.isPuzzleBeingTested = false;
@@ -88,11 +97,11 @@ export class GameService {
   getSortedPuzzles(): PuzzleData[] {
     // Currently sorted by id in descending order - need to decide how to order the puzzles
     return [...this.puzzlesData].sort((a, b) => b.id.localeCompare(a.id));
-  }  
+  }
 
   async saveScore(playerName: string, score: number, levelId: string): Promise<ScoreEntry> {
     const timestamp: string = new Date().toISOString()
-    
+
     const entry: ScoreEntry = {
       playerName,
       score,
@@ -100,64 +109,55 @@ export class GameService {
       levelId_score_timestamp: `${levelId}_${score}_${timestamp}`,
       timestamp: timestamp,
     };
-    
+
     await this.databaseService.addScoreToLeaderboard(entry);
 
     return Promise.resolve(entry);
   }
 
   async getLeaderboard(levelId: string): Promise<ScoreEntry[]> {
-    
-    console.log("Getting leaderboard for level:", levelId)
     return this.databaseService.getLeaderboardScores(levelId)
-        .then((entries: ScoreEntry[]) => {
-          return entries.sort((a, b) => a.score - b.score);
-        })
+      .then((entries: ScoreEntry[]) => {
+        return entries.sort((a, b) => a.score - b.score);
+      })
   }
 
   async savePuzzle(puzzleData: PuzzleData): Promise<PuzzleData> {
-    const newPuzzleData: PuzzleData = { ...puzzleData, id: puzzleData.id};
+    const newPuzzleData: PuzzleData = { ...puzzleData, id: puzzleData.id };
     await this.databaseService.savePuzzle(newPuzzleData);
     this.createdPuzzleName = '';
     return newPuzzleData;
   }
 
   async initializePuzzle(puzzleId: string): Promise<void> {
-    console.log('Initializing puzzle:', puzzleId);
-  
-    if (!this.puzzlesData || this.puzzlesData.length === 0) {
-      console.log('Loading puzzles data...');
-      await this.loadPuzzlesData();
-    }
-  
     const puzzleData = this.puzzlesData.find(pd => pd.id === puzzleId);
-  
+
     if (puzzleData) {
       this.puzzle = new Puzzle(puzzleData);
       this.puzzleBoard = this.puzzle.puzzleBoard; // Add this line to update the puzzleBoard reference
-      this.player = new Player({x: puzzleData.playerStartPosition.x, y: puzzleData.playerStartPosition.y});
+      this.player = new Player({ x: puzzleData.playerStartPosition.x, y: puzzleData.playerStartPosition.y });
       this.puzzle.puzzleBoard[this.player.position.y][this.player.position.x].occupier = this.player;
     } else {
       throw new Error(`Puzzle with id "${puzzleId}" not found.`);
-    } 
+    }
   }
-  
+
   async initializePuzzleFromData(puzzleData: PuzzleData): Promise<void> {
-    console.log('Initializing puzzle from data:', puzzleData.id);
     this.isPuzzleBeingTested = true;
     if (puzzleData) {
       this.puzzle = new Puzzle(puzzleData);
       this.puzzleBoard = this.puzzle.puzzleBoard; // Add this line to update the puzzleBoard reference
-      this.player = new Player({x: puzzleData.playerStartPosition.x, y: puzzleData.playerStartPosition.y});
+      this.player = new Player({ x: puzzleData.playerStartPosition.x, y: puzzleData.playerStartPosition.y });
       this.puzzle.puzzleBoard[this.player.position.y][this.player.position.x].occupier = this.player;
     } else {
       throw new Error('Provided puzzle data was null');
-    } 
+    }
   }
 
   async loadPuzzlesData(): Promise<void> {
     try {
       this.puzzlesData = await this.databaseService.getPuzzlesData();
+      this.puzzlesLoaded$.next(true);
     } catch (error) {
       console.error('Failed to load puzzle data:', error);
     }

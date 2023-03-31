@@ -2,17 +2,28 @@
     Loading...
 </div>
 
-<div *ngIf="!loading" class="loading-container">
+<div *ngIf="!loading" class="main-container">
+    <div class="game-title">
+        <h1>Lawnscapers</h1>
+    </div>
     <mat-card class="start-game-card">
         <div class="form-container">
-            <mat-form-field appearance="fill" class="form-field">
-                <mat-label>Enter your name</mat-label>
-                <input matInput [(ngModel)]="playerName" name="playerName" #playerNameInput />
-            </mat-form-field>
-            <app-level-select [selectedPuzzleId]="selectedPuzzleId" [preSelectedPuzzleId]="preSelectedPuzzleId"
-                (selectedPuzzleIdChange)="onSelectedPuzzleIdChange($event)"></app-level-select>
-            <button mat-raised-button color="primary" (click)="startGame(playerNameInput.value, selectedPuzzleId)">Start Game</button>
-            <button mat-raised-button class="create-puzzle-button" (click)="createPuzzle()">Create Puzzle</button>
+            <div class="form-inputs">
+                <mat-form-field appearance="fill" class="form-field">
+                    <mat-label>Enter your name</mat-label>
+                    <input matInput [(ngModel)]="playerName" name="playerName" #playerNameInput />
+                </mat-form-field>
+                <app-level-select [selectedPuzzleId]="selectedPuzzleId" [preSelectedPuzzleId]="preSelectedPuzzleId"
+                    (selectedPuzzleIdChange)="onSelectedPuzzleIdChange($event)"></app-level-select>
+            </div>
+            <div class="button-container">
+                <button mat-raised-button color="primary"
+                    (click)="startGame(playerNameInput.value, selectedPuzzleId)">Start Game</button>
+                <button mat-raised-button color="accent" class="create-puzzle-button" (click)="createPuzzle()">Create Puzzle</button>
+                <button mat-raised-button color="primary" (click)="openHowToPlayModal()">
+                    How To Play
+                  </button>
+            </div>
         </div>
     </mat-card>
 </div>

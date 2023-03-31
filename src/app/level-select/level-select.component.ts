@@ -20,7 +20,11 @@ export class LevelSelectComponent implements OnInit {
     const puzzles = this.gameService.getSortedPuzzles();
     this.availablePuzzles = puzzles;
     if (puzzles.length > 0) {
-      this.selectedPuzzleId = puzzles[0].id; // Grab the most recent puzzle ID (sorted in descending order currently, so it'll be the newest puzzle)
+      if (this.preSelectedPuzzleId) {
+        this.selectedPuzzleId = this.preSelectedPuzzleId;
+      } else {
+        this.selectedPuzzleId = puzzles[0].id;
+      }
     } else {
       this.selectedPuzzleId = this.preSelectedPuzzleId;
     }
@@ -28,6 +32,7 @@ export class LevelSelectComponent implements OnInit {
 
   onPuzzleSelectionChange(event: MatSelectChange): void {
     this.selectedPuzzleId = event.value;
+    this.gameService.currentPuzzleId = this.selectedPuzzleId;
     this.selectedPuzzleIdChange.emit(this.selectedPuzzleId);
   }  
 }

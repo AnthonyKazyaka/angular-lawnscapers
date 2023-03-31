@@ -4,6 +4,9 @@ import { GameService } from '../services/game.service';
 import { PuzzleData } from '../models/PuzzleData';
 import { GameState } from '../models/GameState';
 import { v4 as uuidv4 } from 'uuid';
+import { Router } from '@angular/router';
+import { HelpModalComponent } from '../help-modal/help-modal.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-create-puzzle',
@@ -24,7 +27,7 @@ export class CreatePuzzleComponent implements OnInit {
 
   puzzleCompleted: boolean = false;
 
-  constructor(public gameService: GameService, private changeDetector: ChangeDetectorRef) {
+  constructor(public gameService: GameService, private changeDetector: ChangeDetectorRef, private router: Router, private dialog: MatDialog) {
     this.createForm();
 
     this.gameService.gameState$.subscribe((newState: GameState) => {
@@ -134,7 +137,13 @@ export class CreatePuzzleComponent implements OnInit {
   }
 
   onMainMenu(): void {
-    this.gameService.setGameState(GameState.MainMenu);
+    this.router.navigate(['/']);
+  }
+
+  openHelpModal(): void {
+    this.dialog.open(HelpModalComponent, {
+      data: 'create'
+    });
   }
 
   async testPuzzle(): Promise<void> {
@@ -154,7 +163,8 @@ export class CreatePuzzleComponent implements OnInit {
     this.gameService.createdPuzzleName = puzzleData.name;
     
     await this.gameService.initializePuzzleFromData(puzzleData);
-    
+
     this.gameService.setGameState(GameState.TestingPuzzle);
+    this.router.navigate(['/testing']);
   }
 }
