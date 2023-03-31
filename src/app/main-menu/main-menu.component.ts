@@ -4,6 +4,7 @@ import { GameService } from '../services/game.service';
 import { GameState } from "../models/GameState";
 import { HowToPlayModalComponent } from '../how-to-play-modal/how-to-play-modal.component';
 import { MatDialog } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-main-menu',
@@ -16,6 +17,8 @@ export class MainMenuComponent implements OnInit {
   selectedPuzzleId: string = '';
   preSelectedPuzzleId: string = '';
 
+  private puzzlesLoadedSubscription: Subscription | null = null;
+
   constructor(private gameService: GameService, private router: Router, private dialog: MatDialog) {
 
   }
@@ -26,6 +29,12 @@ export class MainMenuComponent implements OnInit {
     if (this.gameService.getSortedPuzzles().length === 0) {
       this.gameService.loadPuzzlesData();
     }
+  
+    this.puzzlesLoadedSubscription = this.gameService.puzzlesLoaded$.subscribe((loaded: boolean) => {
+      if (loaded) {
+        this.selectedPuzzleId = this.gameService.currentPuzzleId ? this.gameService.currentPuzzleId : this.gameService.newestPuzzleId;
+      }
+    });
 
     this.selectedPuzzleId = this.gameService.currentPuzzleId ? this.gameService.currentPuzzleId : this.gameService.newestPuzzleId;
 
@@ -35,6 +44,10 @@ export class MainMenuComponent implements OnInit {
       this.gameService.playerName = savedPlayerName;
     }
   }
+
+  ngOnDestroy(): void {
+    this.puzzlesLoadedSubscription?.unsubscribe();
+  }  
 
   startGame(playerName: string, puzzleId: string): void {
     this.gameService.playerName = playerName;
