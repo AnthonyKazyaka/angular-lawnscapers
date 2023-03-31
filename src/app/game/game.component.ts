@@ -35,27 +35,26 @@ export class GameComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.route.paramMap.subscribe((params) => {
+    this.route.paramMap.subscribe(async (params) => {
       const puzzleId = params.get('puzzleId');
       if (puzzleId) {
         this.selectedPuzzleId = puzzleId;
         this.gameService.currentPuzzleId = puzzleId;
+        // Call startGame when the component initializes with a valid puzzleId
+        await this.startGame(this.gameService.playerName, puzzleId);
       }
     });
-    this.logCurrentGameState();
-    console.log('Game component initialized');
+    
     this.newestPuzzleId = this.gameService.newestPuzzleId;
     this.loading = false;
 
     this.gameService.puzzleCompletedEvent.subscribe((completed: boolean) => {
       this.puzzleCompleted = completed;
-      console.log('Puzzle completed status:', completed);
     });
 
     this.subscription = this.gameService.gameState$.subscribe((newState: GameState) => {
       if (newState === GameState.TestingPuzzle || newState === GameState.Playing) {
         this.boardDisplay = this.gameService.getDisplayBoard();
-        console.log('Puzzle board updated:', this.boardDisplay);
       }
     });
 
@@ -74,7 +73,6 @@ export class GameComponent implements OnInit {
 
   onMovePlayer(direction: Direction): void {
     if (this.gameService.puzzle && this.gameService.canMovePlayer(direction) && !(this.gameService.gameState == GameState.Completed)) {
-      console.log("Can Move Player")
       this.gameService.puzzle.movePlayerUntilStopped(direction);
       this.moveCount++;
       this.boardDisplay = this.puzzle.getDisplayBoard();
@@ -129,7 +127,6 @@ export class GameComponent implements OnInit {
   }
 
   returnToMainMenu(): void {
-    console.log("Returning to Main Menu");
     this.router.navigate(['/']);
     this.setGameState(GameState.MainMenu);
     this.selectedPuzzleId = this.gameService.newestPuzzleId;
@@ -150,19 +147,19 @@ export class GameComponent implements OnInit {
 
   async handleGameCompletion(): Promise<void> {
     if (this.gameService.puzzle) {
-      if(this.gameService.gameState == GameState.TestingPuzzle){
+      if (this.gameService.gameState == GameState.TestingPuzzle) {
         this.gameService.setGameState(GameState.CreatingPuzzle);
         this.gameService.setPuzzleTestCompleted(true);
-        console.log("Puzzle board:", this.gameService.puzzle.getDisplayBoard());
+        this.goBackToPuzzleCreation();
       }
-      else{
+      else {
         this.setGameState(GameState.Completed);
         await this.submitScore();
 
         if (this.gameService.puzzle !== null) {
           this.leaderboard = await this.gameService.getLeaderboard(this.gameService.puzzle.id);
         }
-  
+
         this.openLeaderboardModal();
       }
     }

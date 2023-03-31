@@ -75,7 +75,6 @@ export class GameService {
   }
 
   setPuzzleTestCompleted(completed: boolean): void {
-    console.log("Setting puzzle test completed to:", completed)
     this.puzzleTestCompletedEvent.next(completed);
     this.createdPuzzleCompleted = true;
     this.isPuzzleBeingTested = false;
@@ -117,8 +116,6 @@ export class GameService {
   }
 
   async getLeaderboard(levelId: string): Promise<ScoreEntry[]> {
-
-    console.log("Getting leaderboard for level:", levelId)
     return this.databaseService.getLeaderboardScores(levelId)
       .then((entries: ScoreEntry[]) => {
         return entries.sort((a, b) => a.score - b.score);
@@ -133,7 +130,6 @@ export class GameService {
   }
 
   async initializePuzzle(puzzleId: string): Promise<void> {
-    console.log('Initializing puzzle:', puzzleId);
     const puzzleData = this.puzzlesData.find(pd => pd.id === puzzleId);
 
     if (puzzleData) {
@@ -147,7 +143,6 @@ export class GameService {
   }
 
   async initializePuzzleFromData(puzzleData: PuzzleData): Promise<void> {
-    console.log('Initializing puzzle from data:', puzzleData.id);
     this.isPuzzleBeingTested = true;
     if (puzzleData) {
       this.puzzle = new Puzzle(puzzleData);
