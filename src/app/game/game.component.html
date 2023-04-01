@@ -12,8 +12,7 @@
       (movePlayer)="onMovePlayer($event)" (gameCompleted)="completeGame()"></app-puzzle-board>
     <div class="button-container">
       <button mat-raised-button class="restart-game-button" (click)="promptRestart()">Restart Game</button>
-      <button *ngIf="!gameService.isPuzzleBeingTested" mat-raised-button class="main-menu-button" (click)="returnToMainMenu()">Main Menu</button>
-      <button *ngIf="gameService.isPuzzleBeingTested" mat-raised-button class="go-back-button" (click)="goBackToPuzzleCreation()">Go Back</button>
+      <button mat-raised-button class="go-back-button" (click)="goBack()">Go Back</button>
     </div>
   </div>
 </div>

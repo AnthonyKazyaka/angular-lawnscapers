@@ -24,8 +24,22 @@ export class DatabaseService {
     return puzzles || [];
   }
 
+  async getCommunityPuzzlesData(): Promise<PuzzleData[]> {
+    const puzzles$ = this.db
+      .object<{ [key: string]: PuzzleData }>('communityPuzzles')
+      .valueChanges()
+      .pipe(
+        map((puzzleObj) => {
+          if (!puzzleObj) return [];
+          return Object.values(puzzleObj);
+        })
+      );
+    const puzzles = await firstValueFrom(puzzles$);
+    return puzzles || [];
+  }
+
   async savePuzzle(puzzleData: PuzzleData): Promise<void> {
-    return this.db.object(`puzzles/${puzzleData.id}`).set(puzzleData);
+    return this.db.object(`submittedPuzzles/${puzzleData.id}`).set(puzzleData);
   }
 
   async getLeaderboardScores(puzzleId: string): Promise<ScoreEntry[]> {

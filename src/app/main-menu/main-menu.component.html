@@ -11,18 +11,22 @@
             <div class="form-inputs">
                 <mat-form-field appearance="fill" class="form-field">
                     <mat-label>Enter your name</mat-label>
-                    <input matInput [(ngModel)]="playerName" name="playerName" #playerNameInput />
+                    <input matInput [(ngModel)]="playerName" name="playerName" #playerNameInput (blur)="onPlayerNameBlur()" />
                 </mat-form-field>
-                <app-level-select [selectedPuzzleId]="selectedPuzzleId" [preSelectedPuzzleId]="preSelectedPuzzleId"
-                    (selectedPuzzleIdChange)="onSelectedPuzzleIdChange($event)"></app-level-select>
+                <button mat-raised-button color="primary" (click)="onLevelSelectClick()">
+                    Level Select
+                </button>
+
             </div>
             <div class="button-container">
                 <button mat-raised-button color="primary"
                     (click)="startGame(playerNameInput.value, selectedPuzzleId)">Start Game</button>
-                <button mat-raised-button color="accent" class="create-puzzle-button" (click)="createPuzzle()">Create Puzzle</button>
+                <!-- update this to daily puzzle, otherwise select level -->
+                <button mat-raised-button color="accent" class="create-puzzle-button" (click)="createPuzzle()">Create
+                    Puzzle</button>
                 <button mat-raised-button color="primary" (click)="openHowToPlayModal()">
                     How To Play
-                  </button>
+                </button>
             </div>
         </div>
     </mat-card>
