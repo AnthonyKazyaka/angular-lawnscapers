@@ -12,7 +12,7 @@
       </ng-container>
     </div>
     <div *ngIf="selectedTabIndex === 1" class="level-grid">
-      <ng-container *ngFor="let puzzle of communityPuzzles">
+        <ng-container *ngFor="let puzzle of communityPuzzles">
         <app-level-card [puzzle]="puzzle" (selected)="onLevelSelected(puzzle)"></app-level-card>
       </ng-container>
     </div>

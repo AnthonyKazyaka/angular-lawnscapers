@@ -1,8 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { MatSelectChange } from '@angular/material/select';
-import { MatTabsModule } from '@angular/material/tabs';
 import { Router } from '@angular/router';
-import { Puzzle } from '../models/Puzzle';
 import { PuzzleData } from '../models/PuzzleData';
 import { GameService } from '../services/game.service';
 
