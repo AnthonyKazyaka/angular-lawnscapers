@@ -22,11 +22,12 @@
   }
   
   .tabs-wrapper {
+    display: flex;
+    justify-content: center;
     width: 100%;
   }
   
   .centered-tab-group {
-    max-width: 600px;
     width: 100%;
     margin-bottom: 1rem;
   }
