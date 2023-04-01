@@ -44,7 +44,7 @@ export class GameComponent implements OnInit {
         await this.startGame(this.gameService.playerName, puzzleId);
       }
     });
-    
+
     this.newestPuzzleId = this.gameService.newestPuzzleId;
     this.loading = false;
 
@@ -187,7 +187,6 @@ export class GameComponent implements OnInit {
   }
 
   openLeaderboardModal(): void {
-    this.logCurrentGameState();
     if (this.gameService.puzzle !== null && !this.gameService.isPuzzleBeingTested) {
       this.dialog.open(LeaderboardModalComponent, {
         data: {
