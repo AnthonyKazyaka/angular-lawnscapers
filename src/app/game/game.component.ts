@@ -126,10 +126,9 @@ export class GameComponent implements OnInit {
     this.gameService.setPuzzleCompleted(true);
   }
 
-  returnToMainMenu(): void {
-    this.router.navigate(['/']);
-    this.setGameState(GameState.MainMenu);
-    this.selectedPuzzleId = this.gameService.newestPuzzleId;
+  returnToLevelSelect(): void {
+    this.gameService.setGameState(GameState.SelectingLevel);
+    this.router.navigate(['/level-select']);
   }
 
   goBackToPuzzleCreation(): void {
@@ -137,6 +136,15 @@ export class GameComponent implements OnInit {
     this.boardDisplay = this.gameService.getDisplayBoard(); // Update the board display
     this.changeDetector.detectChanges(); // Manually trigger change detection
     this.router.navigate(['/create']);
+  }
+  
+  goBack(): void {
+    if(this.gameService.gameState == GameState.TestingPuzzle) {
+      this.goBackToPuzzleCreation();
+    }
+    else {
+      this.returnToLevelSelect();
+    }
   }
 
   openHelpModal(): void {

@@ -16,6 +16,7 @@ export class LevelSelectScreenComponent implements OnInit {
   @Input() preSelectedPuzzleId: string = '';
   @Output() selectedPuzzleIdChange = new EventEmitter<string>();
 
+  selectedTabIndex: number = 0;
   communityPuzzles: PuzzleData[] = [];
   officialPuzzles: PuzzleData[] = [];
   availablePuzzles: { id: string, name: string }[] = [];
@@ -39,6 +40,10 @@ export class LevelSelectScreenComponent implements OnInit {
   }
 
   goBackToMainMenu(): void {
-    this.router.navigate(['/main-menu']);
+    this.router.navigate(['/']);
+  }
+
+  onTabChange(event: any): void {
+    this.selectedTabIndex = event.index;
   }
 }

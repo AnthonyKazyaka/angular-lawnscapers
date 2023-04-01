@@ -9,7 +9,7 @@ export class LevelCardComponent {
   @Input() puzzle: any;
   @Output() selected = new EventEmitter<any>();
 
-  onCardClick(): void {
+  onSelected(): void {
     this.selected.emit(this.puzzle);
   }
 }

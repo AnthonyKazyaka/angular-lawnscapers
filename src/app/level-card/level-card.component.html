@@ -1,9 +1,8 @@
-<mat-card (click)="onCardClick()" class="level-card">
-    <img mat-card-image [src]="puzzle.previewUrl" alt="{{puzzle.name}} preview">
-    <mat-card-content>
-        <h3>{{puzzle.name}}</h3>
-    </mat-card-content>
-    <mat-card-actions *ngIf="puzzle.completed">
-        <mat-icon>check_circle</mat-icon>
-    </mat-card-actions>
-</mat-card>
+<div class="level-card" (click)="onSelected()">
+    <app-puzzle-preview [puzzle]="puzzle"></app-puzzle-preview>
+    <div class="level-card-content">
+      <h3>{{ puzzle.name }}</h3>
+      <p>By {{ puzzle.creator || 'Unknown' }}</p>
+    </div>
+  </div>
+  

@@ -29,13 +29,14 @@ import { HowToPlayModalComponent } from './how-to-play-modal/how-to-play-modal.c
 import { HelpModalComponent } from './help-modal/help-modal.component';
 import { LevelCardComponent } from './level-card/level-card.component';
 import { MatTabsModule } from '@angular/material/tabs';
+import { PuzzlePreviewComponent } from './puzzle-preview/puzzle-preview.component';
 
 export function initializeApp(gameService: GameService) {
   return () => gameService.initializeApp();
 }
 
 @NgModule({
-  declarations: [AppComponent, LeaderboardModalComponent, GameComponent, SwipeDirective, LevelSelectScreenComponent, PuzzleBoardComponent, CreatePuzzleComponent, MainMenuComponent, HowToPlayModalComponent, HelpModalComponent, LevelCardComponent],
+  declarations: [AppComponent, LeaderboardModalComponent, GameComponent, SwipeDirective, LevelSelectScreenComponent, PuzzleBoardComponent, CreatePuzzleComponent, MainMenuComponent, HowToPlayModalComponent, HelpModalComponent, LevelCardComponent, PuzzlePreviewComponent],
   imports: [
     BrowserModule,
     FormsModule,

@@ -1,0 +1,6 @@
+<div class="puzzle-preview">
+    <div *ngFor="let row of [].constructor(puzzle.height); let y = index" class="game-row">
+      <div *ngFor="let cell of [].constructor(puzzle.width); let x = index" [ngClass]="getCellClass(x, y)" class="game-cell"></div>
+    </div>
+  </div>
+  
