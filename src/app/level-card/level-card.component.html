@@ -1,0 +1,8 @@
+<div class="level-card" (click)="onSelected()">
+    <app-puzzle-preview [puzzle]="puzzle"></app-puzzle-preview>
+    <div class="level-card-content">
+      <h3>{{ puzzle.name }}</h3>
+      <p>By {{ puzzle.creator || 'Unknown' }}</p>
+    </div>
+  </div>
+  
