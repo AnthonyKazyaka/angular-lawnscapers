@@ -20,21 +20,22 @@ import { LeaderboardModalComponent } from './leaderboard-modal/leaderboard-modal
 import { GameComponent } from './game/game.component';
 import { environment } from '../environments/environment';
 import { SwipeDirective } from './swipe/swipe.directive';
-import { LevelSelectComponent } from './level-select/level-select.component';
+import { LevelSelectScreenComponent } from './level-select-screen/level-select-screen.component';
 import { PuzzleBoardComponent } from './puzzle-board/puzzle-board.component';
 import { CreatePuzzleComponent } from './create-puzzle/create-puzzle.component';
 import { MainMenuComponent } from './main-menu/main-menu.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HowToPlayModalComponent } from './how-to-play-modal/how-to-play-modal.component';
 import { HelpModalComponent } from './help-modal/help-modal.component';
-import { LevelSelectCardComponent } from './level-select-card/level-select-card.component';
+import { LevelCardComponent } from './level-card/level-card.component';
+import { MatTabsModule } from '@angular/material/tabs';
 
 export function initializeApp(gameService: GameService) {
   return () => gameService.initializeApp();
 }
 
 @NgModule({
-  declarations: [AppComponent, LeaderboardModalComponent, GameComponent, SwipeDirective, LevelSelectComponent, PuzzleBoardComponent, CreatePuzzleComponent, MainMenuComponent, HowToPlayModalComponent, HelpModalComponent, LevelSelectCardComponent],
+  declarations: [AppComponent, LeaderboardModalComponent, GameComponent, SwipeDirective, LevelSelectScreenComponent, PuzzleBoardComponent, CreatePuzzleComponent, MainMenuComponent, HowToPlayModalComponent, HelpModalComponent, LevelCardComponent],
   imports: [
     BrowserModule,
     FormsModule,
@@ -47,6 +48,7 @@ export function initializeApp(gameService: GameService) {
     MatSelectModule,
     MatCardModule,
     MatIconModule,
+    MatTabsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AppRoutingModule,

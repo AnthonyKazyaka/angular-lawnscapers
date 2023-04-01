@@ -1,0 +1,31 @@
+<mat-dialog-content>
+  <div class="content-container">
+    <div class="tabs-wrapper">
+      <mat-tab-group class="centered-tab-group" mat-align-tabs="center">
+        <mat-tab label="Official Levels">
+          <div class="level-grid">
+            <ng-container *ngFor="let puzzle of officialPuzzles">
+              <app-level-card [puzzle]="puzzle" (selected)="onLevelSelected(puzzle)"></app-level-card>
+            </ng-container>
+          </div>
+          <div class="no-puzzles-message" *ngIf="officialPuzzles.length === 0">
+            <mat-icon>sentiment_very_dissatisfied</mat-icon>
+            <p>Oops! We had some trouble loading the puzzles. Please try again later.</p>
+          </div>
+        </mat-tab>
+        <mat-tab label="Community Levels">
+          <div class="level-grid">
+            <ng-container *ngFor="let puzzle of communityPuzzles">
+              <app-level-card [puzzle]="puzzle" (selected)="onLevelSelected(puzzle)"></app-level-card>
+            </ng-container>
+          </div>
+          <div class="no-puzzles-message" *ngIf="communityPuzzles.length === 0">
+            <mat-icon>sentiment_very_dissatisfied</mat-icon>
+            <p>Oops! We had some trouble loading the puzzles. Please try again later.</p>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+    <button mat-button color="primary" class="back-to-menu-button" (click)="goBackToMainMenu()">Back to Main Menu</button>
+  </div>
+</mat-dialog-content>
