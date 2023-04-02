@@ -1,20 +1,36 @@
 <div class="content-container">
   <div class="tabs-wrapper">
-    <mat-tab-group class="centered-tab-group" mat-align-tabs="center" (selectedTabChange)="onTabChange($event)">
-      <mat-tab label="Official Levels"></mat-tab>
-      <mat-tab label="Community Levels"></mat-tab>
-    </mat-tab-group>
+    <div class="custom-tabs">
+      <div class="tab"
+           [ngClass]="{ 'active': selectedTabIndex === 0 }"
+           (click)="onTabChange(0)">
+        Official Levels
+      </div>
+      <div class="tab"
+           [ngClass]="{ 'active': selectedTabIndex === 1 }"
+           (click)="onTabChange(1)">
+        Community Levels
+      </div>
+    </div>
   </div>
   <mat-dialog-content>
     <div *ngIf="selectedTabIndex === 0" class="level-grid">
       <ng-container *ngFor="let puzzle of officialPuzzles">
         <app-level-card [puzzle]="puzzle" (selected)="onLevelSelected(puzzle)"></app-level-card>
       </ng-container>
+      <div class="no-puzzles-message" *ngIf="officialPuzzles.length === 0">
+        <mat-icon>sentiment_very_dissatisfied</mat-icon>
+        <p>Oops! We had some trouble loading the official puzzles. Please try again later.</p>
+      </div>
     </div>
     <div *ngIf="selectedTabIndex === 1" class="level-grid">
         <ng-container *ngFor="let puzzle of communityPuzzles">
         <app-level-card [puzzle]="puzzle" (selected)="onLevelSelected(puzzle)"></app-level-card>
       </ng-container>
+      <div class="no-puzzles-message" *ngIf="communityPuzzles.length === 0">
+        <mat-icon>sentiment_very_dissatisfied</mat-icon>
+        <p>Oops! We had some trouble loading the community puzzles. Please try again later.</p>
+      </div>
     </div>
   </mat-dialog-content>
   <button mat-button color="primary" class="back-to-menu-button" (click)="goBackToMainMenu()">Back to Main Menu</button>
