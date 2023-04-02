@@ -5,6 +5,7 @@ import { GameState } from "../models/GameState";
 import { HowToPlayModalComponent } from '../how-to-play-modal/how-to-play-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
+import { LevelSelectScreenComponent } from '../level-select-screen/level-select-screen.component';
 
 @Component({
   selector: 'app-main-menu',
@@ -69,4 +70,19 @@ export class MainMenuComponent implements OnInit {
   openHowToPlayModal(): void {
     this.dialog.open(HowToPlayModalComponent);
   }
+
+  openLevelSelectScreen(): void {
+
+  }
+
+  onPlayerNameBlur(): void {
+    localStorage.setItem('playerName', this.playerName);
+    this.gameService.playerName = this.playerName;
+  }
+
+  onLevelSelectClick(): void {
+    
+    this.router.navigate(['/level-select']);
+  }
+
 }

@@ -1,4 +1,3 @@
-
 export interface PuzzleData {
   id: string;
   name: string;

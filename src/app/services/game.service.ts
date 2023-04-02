@@ -1,5 +1,4 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { DatabaseService } from './database.service';
 import { Direction, getDirectionOffset } from '../direction/Direction';
 import { Player } from '../models/Player';
 import { Puzzle } from '../models/Puzzle';
@@ -9,6 +8,8 @@ import { Tile } from '../models/Tile';
 import { GameState } from '../models/GameState';
 import { BehaviorSubject } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { PuzzleService } from './puzzle.service';
+import { LeaderboardService } from './leaderboard.service';
 
 @Injectable({
   providedIn: 'root',
@@ -46,7 +47,7 @@ export class GameService {
   public newestPuzzleId: string;
   public isPuzzleBeingTested: boolean = false;
 
-  constructor(private databaseService: DatabaseService, private fireAuth: AngularFireAuth) {
+  constructor(private puzzleService: PuzzleService, private leaderboardService: LeaderboardService, private fireAuth: AngularFireAuth) {
     this.puzzle = new Puzzle(this.defaultPuzzleData);
     this.puzzleBoard = this.puzzle.puzzleBoard;
     this.newestPuzzleId = this.puzzle.id;
@@ -68,7 +69,6 @@ export class GameService {
       console.warn('No puzzles found. Default puzzle will be used.');
     }
   }  
-
 
   get tiles(): Tile[][] {
     return this.puzzle.puzzleBoard;
@@ -110,22 +110,18 @@ export class GameService {
       timestamp: timestamp,
     };
 
-    await this.databaseService.addScoreToLeaderboard(entry);
-
-    return Promise.resolve(entry);
+    await this.leaderboardService.addScoreToLeaderboard(entry);
+    return entry;
   }
 
   async getLeaderboard(levelId: string): Promise<ScoreEntry[]> {
-    return this.databaseService.getLeaderboardScores(levelId)
-      .then((entries: ScoreEntry[]) => {
-        return entries.sort((a, b) => a.score - b.score);
-      })
+    return this.leaderboardService.getLeaderboardScores(levelId);
   }
 
   async savePuzzle(puzzleData: PuzzleData): Promise<PuzzleData> {
     const newPuzzleData: PuzzleData = { ...puzzleData, id: puzzleData.id };
-    await this.databaseService.savePuzzle(newPuzzleData);
     this.createdPuzzleName = '';
+    await this.puzzleService.savePuzzle(puzzleData);
     return newPuzzleData;
   }
 
@@ -156,7 +152,7 @@ export class GameService {
 
   async loadPuzzlesData(): Promise<void> {
     try {
-      this.puzzlesData = await this.databaseService.getPuzzlesData();
+      this.puzzlesData = await this.puzzleService.getPuzzlesData();
       this.puzzlesLoaded$.next(true);
     } catch (error) {
       console.error('Failed to load puzzle data:', error);

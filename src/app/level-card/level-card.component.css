@@ -1,0 +1,68 @@
+.level-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    width: 200px; /* Adjust width as needed */
+    height: 250px; /* Adjust height as needed */
+    cursor: pointer;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .level-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .puzzle-preview {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .level-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 200px;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    width: 150px;
+    /* Adjust width as needed */
+    height: 200px;
+    /* Adjust height as needed */
+    cursor: pointer;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.level-card:hover {
+    transform: scale(1.05);
+}
+
+.puzzle-preview {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.level-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.level-name {
+    margin: 0;
+    margin-bottom: 0.5rem;
+}
+
+.level-author {
+    margin: 0;
+    font-size: 0.8rem;
+}
