@@ -25,7 +25,17 @@ export class LeaderboardModalComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     try {
-      this.leaderboardEntries = await this.gameService.getLeaderboard(this.puzzleId);
+      const rawLeaderboardEntries = await this.gameService.getLeaderboard(this.puzzleId);
+
+      const groupedEntries: { [playerName: string]: ScoreEntry } = {};
+
+      rawLeaderboardEntries.forEach((entry) => {
+        if (!groupedEntries[entry.playerName] || entry.score < groupedEntries[entry.playerName].score) {
+          groupedEntries[entry.playerName] = entry;
+        }
+      });
+
+      this.leaderboardEntries = Object.values(groupedEntries).sort((a, b) => a.score - b.score);
       this.changeDetectorRef.detectChanges();
     } catch (error) {
       console.error('Failed to load leaderboard scores:', error);
@@ -37,6 +47,6 @@ export class LeaderboardModalComponent implements OnInit {
   }
 
   isPlayerScore(entry: ScoreEntry): boolean {
-    return entry.levelId_score_timestamp == this.puzzleScore?.levelId_score_timestamp;
+    return entry.playerName == this.puzzleScore?.playerName;
   }
 }
