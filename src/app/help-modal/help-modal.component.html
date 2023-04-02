@@ -14,7 +14,8 @@
     <p>
         When testing a puzzle, play through the level to ensure it's solvable. If
         the level is too difficult or impossible, you may have to return to the creation screen to
-        make adjustments. Once the puzzle is complete and satisfactory, and you have successfully completed the level once, submit it
+        make adjustments. Once the puzzle is complete and satisfactory, and you have successfully completed the level
+        once, submit it
         for others to play!
     </p>
 </div>
@@ -27,3 +28,9 @@
         hit an obstacle or the edge of the board. Mow over each grass tile on the board to complete the level!
     </p>
 </div>
+
+<form (submit)="submitFeedback(feedbackTextarea.value)">
+  <label for="feedbackTextarea">What feedback do you have?</label>
+  <textarea #feedbackTextarea id="feedbackTextarea" name="feedbackTextarea" rows="5"></textarea>
+  <button type="submit">Submit Feedback</button>
+</form>

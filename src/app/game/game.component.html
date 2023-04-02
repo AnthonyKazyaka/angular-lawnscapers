@@ -1,6 +1,6 @@
 <!-- Render the game board directly when loading has completed and the game has started -->
 <div *ngIf="!loading" appSwipe (swipe)="onMovePlayer($event)">
-  <button mat-icon-button (click)="openHelpModal()">
+  <button mat-icon-button (click)="openHelpModal()" class="help-button">
     <mat-icon>help_outline</mat-icon>
   </button>
   

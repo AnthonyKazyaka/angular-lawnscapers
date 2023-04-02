@@ -57,3 +57,10 @@
     height: 100vh;
     /* Use 100% of the viewport height */
 }
+
+.help-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+}
