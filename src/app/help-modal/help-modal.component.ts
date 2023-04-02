@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Feedback } from '../models/Feedback';
 import { DatabaseService } from '../services/database.service';
 
@@ -9,19 +9,28 @@ import { DatabaseService } from '../services/database.service';
   styleUrls: ['./help-modal.component.css']
 })
 export class HelpModalComponent implements OnInit {
-  constructor(@Inject(MAT_DIALOG_DATA) public helpContext: string, private databaseService: DatabaseService) {}
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public helpContext: string,
+    private dialogRef: MatDialogRef<HelpModalComponent>,
+    private databaseService: DatabaseService
+  ) {}
 
   ngOnInit(): void {
   }
 
-  submitFeedback(feedbackText: string) {
+  async submitFeedback(feedbackText: string): Promise<void> {
     if (feedbackText) {
       const feedback: Feedback = {
         context: this.helpContext,
         text: feedbackText
       };
+
+      await this.databaseService.submitFeedback(feedback);
       
-      this.databaseService.submitFeedback(feedback);
+      // Clear the textarea content and close the modal
+      const textarea = document.getElementById('feedbackTextarea') as HTMLTextAreaElement;
+      textarea.value = '';
+      this.dialogRef.close();
     }
   }  
 }
