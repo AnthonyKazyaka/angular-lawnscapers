@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { PuzzleData } from '../models/PuzzleData';
 
 @Component({
   selector: 'app-level-card',
@@ -6,8 +7,8 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./level-card.component.css']
 })
 export class LevelCardComponent {
-  @Input() puzzle: any;
-  @Output() selected = new EventEmitter<any>();
+  @Input() puzzle!: PuzzleData;
+  @Output() selected = new EventEmitter<PuzzleData>();
 
   onSelected(): void {
     this.selected.emit(this.puzzle);

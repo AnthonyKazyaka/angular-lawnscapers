@@ -1,0 +1,30 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm install -g @angular/cli
+        - npm ci
+    build:
+      commands:
+        - ng build --configuration production
+  artifacts:
+    baseDirectory: dist/angular-lawnscapers
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+  customHeaders:
+    - pattern: '**/*'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=0, must-revalidate'
+    - pattern: 'index.html'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=0, must-revalidate'
+  rewrites:
+    - source: '</^((?!\\.(css|gif|ico|jpg|js|png|txt|svg|woff|ttf)).)*$/>'
+      target: '/index.html'
+      status: '200'
