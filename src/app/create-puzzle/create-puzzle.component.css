@@ -65,3 +65,10 @@ td.player {
   justify-content: center;
   gap: 1em;
 }
+
+.help-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+}

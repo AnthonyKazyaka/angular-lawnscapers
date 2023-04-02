@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { HelpModalComponent } from '../help-modal/help-modal.component';
 import { PuzzleData } from '../models/PuzzleData';
 import { GameService } from '../services/game.service';
 
@@ -13,7 +15,7 @@ export class LevelSelectScreenComponent implements OnInit {
   communityPuzzles: PuzzleData[] = [];
   officialPuzzles: PuzzleData[] = [];
 
-  constructor(private gameService: GameService, private router: Router) {}
+  constructor(private gameService: GameService, private router: Router, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     const puzzles = this.gameService.getSortedPuzzles();
@@ -30,5 +32,9 @@ export class LevelSelectScreenComponent implements OnInit {
 
   onTabChange(index: number): void {
     this.selectedTabIndex = index;
+  }
+
+  openHelpModal(): void {
+    this.dialog.open(HelpModalComponent);
   }
 }
