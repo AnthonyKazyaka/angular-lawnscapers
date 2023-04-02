@@ -5,39 +5,65 @@
     justify-content: center;
     height: 100%;
     width: 100%;
-  }
-  
-  ::ng-deep .mat-tab-header-pagination {
-    display: none !important;
-  }
-  
-  ::ng-deep .mat-tab-header {
-    justify-content: center;
-  }
-  
-  .content-container {
+}
+
+.content-container {
     display: flex;
     flex-direction: column;
     height: 100%;
-  }
-  
-  .tabs-wrapper {
+}
+
+.tabs-wrapper {
+    width: 100%;
     display: flex;
     justify-content: center;
+}
+
+.custom-tabs {
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #ccc;
+}
+
+.tab {
+    cursor: pointer;
+    padding: 1rem 2rem;
+    text-align: center;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.6);
+    user-select: none;
+    position: relative;
+    transition: color 0.2s;
+}
+
+.tab:hover {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.tab.active {
+    color: rgba(0, 0, 0, 1);
+    font-weight: 600;
+}
+
+.tab.active::after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: -1px;
+    left: 0;
     width: 100%;
-  }
-  
-  .centered-tab-group {
-    width: 100%;
-    margin-bottom: 1rem;
-  }
-  
-  .mat-dialog-content {
-    height: calc(100% - 104px); /* Adjust the height value based on the tab height and back button height */
+    height: 2px;
+    background-color: #3f51b5;
+    /* Change this color to match your theme */
+}
+
+.mat-dialog-content {
+    height: calc(100% - 104px);
+    /* Adjust the height value based on the tab height and back button height */
     overflow-y: auto;
-  }
-  
-  .level-grid {
+}
+
+.level-grid {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -45,19 +71,27 @@
     padding: 1rem;
     max-width: 100%;
     overflow-y: auto;
-  }
-  
-  .level-card {
+}
+
+.level-card {
     cursor: pointer;
     transition: transform 0.2s;
-  }
-  
-  .level-card:hover {
+}
+
+.level-card:hover {
     transform: scale(1.05);
-  }
-  
-  .back-to-menu-button {
+}
+
+.back-to-menu-button {
     display: block;
     margin: 1rem auto;
-  }
-  
+}
+
+.no-puzzles-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+}
