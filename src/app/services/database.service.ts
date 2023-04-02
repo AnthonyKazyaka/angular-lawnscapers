@@ -26,7 +26,7 @@ export class DatabaseService {
 
   async getCommunityPuzzlesData(): Promise<PuzzleData[]> {
     const puzzles$ = this.db
-      .object<{ [key: string]: PuzzleData }>('communityPuzzles')
+      .object<{ [key: string]: PuzzleData }>('submittedPuzzles')
       .valueChanges()
       .pipe(
         map((puzzleObj) => {
