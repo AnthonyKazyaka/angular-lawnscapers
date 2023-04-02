@@ -3,6 +3,7 @@ import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { PuzzleData } from '../models/PuzzleData';
 import { ScoreEntry } from '../models/ScoreEntry';
 import { firstValueFrom, map } from 'rxjs';
+import { Feedback } from '../models/Feedback';
 
 @Injectable({
   providedIn: 'root',
@@ -50,5 +51,10 @@ export class DatabaseService {
 
   addScoreToLeaderboard(scoreEntry: ScoreEntry): Promise<void> {
     return this.db.list<ScoreEntry>(`leaderboards/${scoreEntry.levelId}`).push(scoreEntry).then(() => {});
+  }
+
+  async submitFeedback(feedback: Feedback): Promise<void> {
+    var timestamp = new Date().getTime();
+    return this.db.object(`feedback/${timestamp}`).set(feedback);
   }
 }
