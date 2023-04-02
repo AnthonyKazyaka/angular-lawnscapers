@@ -6,6 +6,7 @@ import { HowToPlayModalComponent } from '../how-to-play-modal/how-to-play-modal.
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { LevelSelectScreenComponent } from '../level-select-screen/level-select-screen.component';
+import { HelpModalComponent } from '../help-modal/help-modal.component';
 
 @Component({
   selector: 'app-main-menu',
@@ -85,4 +86,7 @@ export class MainMenuComponent implements OnInit {
     this.router.navigate(['/level-select']);
   }
 
+  openHelpModal(): void {
+    this.dialog.open(HelpModalComponent);
+  }
 }

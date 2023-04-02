@@ -3,6 +3,9 @@
 </div>
 
 <div *ngIf="!loading" class="main-container">
+    <button mat-icon-button (click)="openHelpModal()" class="help-button">
+        <mat-icon>help_outline</mat-icon>
+      </button>
     <div class="game-title">
         <h1>Lawnscapers</h1>
     </div>
