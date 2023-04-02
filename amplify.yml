@@ -1,0 +1,21 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - echo "Preparing the environment..."
+        - nvm install --lts
+        - nvm use --lts
+        - npm install -g @angular/cli
+        - npm ci
+    build:
+      commands:
+        - echo "Building the app..."
+        - ng build --configuration production
+  artifacts:
+    baseDirectory: dist/angular-lawnscapers
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
