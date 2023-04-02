@@ -35,13 +35,18 @@ export class GameComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    const savedPlayerName = localStorage.getItem('playerName');
+    if (!this.gameService.playerName && savedPlayerName) {
+      this.gameService.playerName = savedPlayerName;
+    }
+
     this.route.paramMap.subscribe(async (params) => {
       const puzzleId = params.get('puzzleId');
       if (puzzleId) {
         this.selectedPuzzleId = puzzleId;
         this.gameService.currentPuzzleId = puzzleId;
         // Call startGame when the component initializes with a valid puzzleId
-        await this.startGame(this.gameService.playerName, puzzleId);
+        this.startGame(this.gameService.playerName, puzzleId);
       }
     });
 

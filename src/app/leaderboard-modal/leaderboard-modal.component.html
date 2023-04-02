@@ -2,9 +2,9 @@
 <div mat-dialog-content>
   <table>
     <tr>
+      <th>Rank</th>
       <th>Player</th>
       <th>Score</th>
-      <th>Date</th>
     </tr>
     <tr *ngFor="let entry of leaderboardEntries; index as i" [ngClass]="{'highlight': isPlayerScore(entry)}">
       <td>{{ i + 1 }}</td>
