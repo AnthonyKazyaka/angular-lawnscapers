@@ -17,7 +17,6 @@ import { HelpModalComponent } from '../help-modal/help-modal.component';
 })
 export class GameComponent implements OnInit {
   GameState = GameState;
-  newestPuzzleId: string = '';
   selectedPuzzleId: string = '';
   leaderboard: ScoreEntry[] = [];
   player: Player = this.gameService.player ?? new Player({ x: 0, y: 0 });
@@ -50,7 +49,6 @@ export class GameComponent implements OnInit {
       }
     });
 
-    this.newestPuzzleId = this.gameService.newestPuzzleId;
     this.loading = false;
 
     this.gameService.puzzleCompletedEvent.subscribe((completed: boolean) => {
