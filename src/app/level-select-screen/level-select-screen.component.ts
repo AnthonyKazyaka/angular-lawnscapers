@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { HelpModalComponent } from '../help-modal/help-modal.component';
 import { PuzzleData } from '../models/PuzzleData';
 import { GameService } from '../services/game.service';
+import { PuzzleService } from '../services/puzzle.service';
 
 @Component({
   selector: 'app-level-select-screen',
@@ -15,11 +16,11 @@ export class LevelSelectScreenComponent implements OnInit {
   communityPuzzles: PuzzleData[] = [];
   officialPuzzles: PuzzleData[] = [];
 
-  constructor(private gameService: GameService, private router: Router, private dialog: MatDialog) {}
+  constructor(private gameService: GameService, private puzzleService: PuzzleService, private router: Router, private dialog: MatDialog) {}
 
-  ngOnInit(): void {
-    const puzzles = this.gameService.getSortedPuzzles();
-    this.officialPuzzles = puzzles;
+  async ngOnInit(): Promise<void> {
+    this.officialPuzzles = await this.puzzleService.getOfficialPuzzlesData();
+    this.communityPuzzles = await this.puzzleService.getCommunityPuzzlesData();
   }
 
   onLevelSelected(puzzle:PuzzleData): void {
