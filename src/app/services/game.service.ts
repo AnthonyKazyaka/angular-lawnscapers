@@ -152,7 +152,7 @@ export class GameService {
 
   async loadPuzzlesData(): Promise<void> {
     try {
-      this.puzzlesData = await this.puzzleService.getOfficialPuzzlesData();
+      this.puzzlesData = (await this.puzzleService.getOfficialPuzzlesData()).concat(await this.puzzleService.getCommunityPuzzlesData());
       this.puzzlesLoaded$.next(true);
     } catch (error) {
       console.error('Failed to load puzzle data:', error);

@@ -16,9 +16,8 @@
   }
   
   .game-cell {
-    width: 5px; /* Adjust the size of the cell based on the desired preview size */
-    height: 5px;
-    border: 1px solid #ccc;
+    width: 7px; /* Adjust the size of the cell based on the desired preview size */
+    height: 7px;
     text-align: center;
     vertical-align: middle;
   }
