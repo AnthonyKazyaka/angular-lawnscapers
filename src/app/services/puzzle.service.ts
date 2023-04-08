@@ -8,7 +8,7 @@ import { PuzzleData } from '../models/PuzzleData';
 export class PuzzleService {
   constructor(private databaseService: DatabaseService) {}
 
-  getPuzzlesData(): Promise<PuzzleData[]> {
+  getOfficialPuzzlesData(): Promise<PuzzleData[]> {
     return this.databaseService.getPuzzlesData();
   }
 
