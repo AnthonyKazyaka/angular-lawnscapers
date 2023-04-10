@@ -1,52 +1,23 @@
-:host {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-
-.game-board-wrapper {
-  width: 100%;
-  max-width: calc(100vh - 200px);
-  max-height: calc(100vh - 200px);
-  overflow: hidden;
-}
-
 .game-board {
   display: flex;
   flex-direction: column;
-  position: relative;
-  width: 100%;
-  height: 0;
-  padding-bottom: 100%;
-  background-color: #ccc;
 }
 
 .game-row {
   display: flex;
-  flex: 1;
-  flex-direction: row;
 }
 
 .game-cell {
-  border: 1px solid #fff;
+  width: 50px;
+  height: 50px;
+  border: 1px solid #ccc;
   text-align: center;
   vertical-align: middle;
-  position: relative;
-  flex: 1;
-  box-sizing: border-box;
-}
-
-.game-cell::before {
-  content: "";
-  display: block;
-  padding-top: 100%;
 }
 
 .obstacle {
-  background-color: rgb(0, 0, 0);
-}
+  background-color: rgb(94, 92, 92);
+}  
 
 .visited {
   background-color: lightgreen;
@@ -58,4 +29,13 @@
 
 .player {
   background-color: red;
+}
+
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  max-height: calc(100vh - 100px); /* Adjust this value to accommodate the Moves counter and other elements */
+  aspect-ratio: 1 / 1; /* Change the aspect ratio if needed */
 }

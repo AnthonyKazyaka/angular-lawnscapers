@@ -1,7 +1,6 @@
-<div class="game-board-wrapper" appSwipe (swipe)="onSwipe($event)">
-  <div class="game-board">
+<div class="game-board" appSwipe (swipe)="onSwipe($event)">
     <div *ngFor="let row of boardDisplay" class="game-row">
       <div *ngFor="let cell of row" [ngClass]="['game-cell', cell]"></div>
     </div>
   </div>
-</div>
+  
