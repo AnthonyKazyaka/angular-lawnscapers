@@ -82,7 +82,6 @@ export class MainMenuComponent implements OnInit {
   }
 
   onLevelSelectClick(): void {
-    
     this.router.navigate(['/level-select']);
   }
 

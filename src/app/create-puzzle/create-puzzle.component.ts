@@ -2,7 +2,9 @@ import { ChangeDetectorRef, ChangeDetectionStrategy, Component, OnInit } from '@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { GameService } from '../services/game.service';
 import { PuzzleData } from '../models/PuzzleData';
+import { Puzzle } from '../models/Puzzle';
 import { GameState } from '../models/GameState';
+import { LevelGeneratorService } from '../services/level-generator.service';
 import { v4 as uuidv4 } from 'uuid';
 import { Router } from '@angular/router';
 import { HelpModalComponent } from '../help-modal/help-modal.component';
@@ -20,14 +22,14 @@ export class CreatePuzzleComponent implements OnInit {
   success = false;
   board: string[][] = [];
   playerPosition = { x: -1, y: -1 };
-  minWidth = 3;
+  minWidth = 4;
   maxWidth = 12;
-  minHeight = 3;
+  minHeight = 4;
   maxHeight = 12;
 
   puzzleCompleted: boolean = false;
 
-  constructor(public gameService: GameService, private changeDetector: ChangeDetectorRef, private router: Router, private dialog: MatDialog) {
+  constructor(public gameService: GameService, private levelGenerator: LevelGeneratorService, private changeDetector: ChangeDetectorRef, private router: Router, private dialog: MatDialog) {
     this.createForm();
 
     this.gameService.gameState$.subscribe((newState: GameState) => {
@@ -59,6 +61,26 @@ export class CreatePuzzleComponent implements OnInit {
     });
   }
 
+  generateRandomBoard(): void {
+    const width = this.puzzleForm.value.width;
+    const height = this.puzzleForm.value.height;
+  
+    const puzzleData = this.levelGenerator.generateRandomLevel(width, height, width, height);
+    const puzzle = new Puzzle(puzzleData);
+
+    // Update the board with the generated puzzle
+    this.board = puzzle.puzzleBoard.map(row => row.map(cell => cell.isOccupiable ? (cell.isOccupied ? 'player' : 'empty') : 'obstacle'));
+    this.playerPosition = puzzle.player.position;
+    this.gameService.createdPuzzleBoard = this.board;
+    this.gameService.createdPuzzleDimensions.width = width;
+    this.gameService.createdPuzzleDimensions.height = height;
+    this.gameService.createdPuzzlePlayerPosition = this.playerPosition;
+
+    //const minimumNumberOfMoves = this.levelGenerator.calculateMinimumMoves(puzzleData);
+    // puzzle.minimumNumberOfMoves = minimumNumberOfMoves;
+    // console.log(`Minimum number of moves: ${minimumNumberOfMoves}`);
+  }
+  
   onSizeSubmit(): void {
     const width = this.puzzleForm.value.width;
     const height = this.puzzleForm.value.height;

@@ -11,23 +11,21 @@ import { Feedback } from '../models/Feedback';
 export class DatabaseService {
   constructor(private db: AngularFireDatabase) {}
 
-  async getPuzzlesData(): Promise<PuzzleData[]> {
-    const puzzles$ = this.db
-      .object<{ [key: string]: PuzzleData }>('puzzles')
-      .valueChanges()
-      .pipe(
-        map((puzzleObj) => {
-          if (!puzzleObj) return [];
-          return Object.values(puzzleObj);
-        })
-      );
-    const puzzles = await firstValueFrom(puzzles$);
-    return puzzles || [];
+  async getOfficialPuzzlesData(): Promise<PuzzleData[]> {
+    return await this.getPuzzlesData('puzzles')
   }
 
   async getCommunityPuzzlesData(): Promise<PuzzleData[]> {
+    return await this.getPuzzlesData('submittedPuzzles')
+  }
+
+  async getGeneratedPuzzlesData(): Promise<PuzzleData[]> {
+    return await this.getPuzzlesData('generatedPuzzles')
+  }
+
+  async getPuzzlesData(puzzlesKeyName: string): Promise<PuzzleData[]> {
     const puzzles$ = this.db
-      .object<{ [key: string]: PuzzleData }>('submittedPuzzles')
+      .object<{ [key: string]: PuzzleData }>(puzzlesKeyName)
       .valueChanges()
       .pipe(
         map((puzzleObj) => {
@@ -39,7 +37,11 @@ export class DatabaseService {
     return puzzles || [];
   }
 
-  async savePuzzle(puzzleData: PuzzleData): Promise<void> {
+  async saveGeneratedPuzzle(puzzleData: PuzzleData): Promise<void> {
+    return this.db.object(`generatedPuzzles/${puzzleData.id}`).set(puzzleData);
+  }
+
+  async submitPuzzle(puzzleData: PuzzleData): Promise<void> {
     return this.db.object(`submittedPuzzles/${puzzleData.id}`).set(puzzleData);
   }
 
