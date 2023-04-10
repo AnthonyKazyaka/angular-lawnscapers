@@ -4,14 +4,12 @@
     <mat-icon>help_outline</mat-icon>
   </button>
   
-  <div class="main-container">
+  <div class="game-container">
     <div class="moves-counter">
       <h3>Moves: {{ moveCount }}</h3>
     </div>
-    <div class="puzzle-board-container"> <!-- Add this container -->
-      <app-puzzle-board [boardDisplay]="boardDisplay" [puzzle]="puzzle" [player]="player"
-        (movePlayer)="onMovePlayer($event)" (gameCompleted)="completeGame()"></app-puzzle-board>
-    </div>
+    <app-puzzle-board [boardDisplay]="boardDisplay" [puzzle]="puzzle" [player]="player"
+      (movePlayer)="onMovePlayer($event)" (gameCompleted)="completeGame()"></app-puzzle-board>
     <div class="button-container">
       <button mat-raised-button class="restart-game-button" (click)="promptRestart()">Restart Game</button>
       <button mat-raised-button class="go-back-button" (click)="goBack()">Go Back</button>
