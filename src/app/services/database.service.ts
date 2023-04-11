@@ -19,10 +19,6 @@ export class DatabaseService {
     return await this.getPuzzlesData('submittedPuzzles')
   }
 
-  async getGeneratedPuzzlesData(): Promise<PuzzleData[]> {
-    return await this.getPuzzlesData('generatedPuzzles')
-  }
-
   async getPuzzlesData(puzzlesKeyName: string): Promise<PuzzleData[]> {
     const puzzles$ = this.db
       .object<{ [key: string]: PuzzleData }>(puzzlesKeyName)
@@ -35,10 +31,6 @@ export class DatabaseService {
       );
     const puzzles = await firstValueFrom(puzzles$);
     return puzzles || [];
-  }
-
-  async saveGeneratedPuzzle(puzzleData: PuzzleData): Promise<void> {
-    return this.db.object(`generatedPuzzles/${puzzleData.id}`).set(puzzleData);
   }
 
   async submitPuzzle(puzzleData: PuzzleData): Promise<void> {
