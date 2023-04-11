@@ -3,8 +3,8 @@
   grid-template-rows: auto 1fr auto;
   align-items: center;
   justify-content: center;
-  width: 100%; /* Adjust this value based on the gap in the game-container */
-  height: calc(100vh - 200px);
+  width: 100%;
+  height: calc(100vh - 200px); /* Reduce the height to accommodate the Moves counter and buttons */
   gap: 20px; /* Add gap between the rows */
 }
 

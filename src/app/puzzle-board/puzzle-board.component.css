@@ -1,4 +1,5 @@
 .game-board {
+  margin: 1em;
   display: grid;
   grid-template-columns: repeat(var(--board-width), 1fr);
   grid-template-rows: repeat(var(--board-height), 1fr);
@@ -8,6 +9,7 @@
   max-width: 100vw;
   max-height: 90vh; /* Increase the max-height */
 }
+
 
 .game-cell {
   /* Make the cell's width be set to the game-board's width in pixels divided by the height or the width in terms of tiles*/
@@ -51,8 +53,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100%;
+  height: 80%;
   max-height: calc(100vh - 100px); /* Adjust this value to accommodate the Moves counter and other elements */;
   aspect-ratio: 1 / 1; /* Change the aspect ratio if needed */
 }
