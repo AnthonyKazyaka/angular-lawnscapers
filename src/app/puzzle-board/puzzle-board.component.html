@@ -1,7 +1,6 @@
 <div class="game-board" [style.--board-width]="puzzle?.width" [style.--board-height]="puzzle?.height">
   <ng-container *ngFor="let row of boardDisplay">
     <div *ngFor="let cell of row" class="game-cell" [ngClass]="cell">
-      <div class="game-cell-content"></div>
     </div>
   </ng-container>
 </div>

@@ -5,13 +5,12 @@
   justify-content: center;
   width: 100%;
   height: calc(100vh - 200px);
-  max-height: 800px; /* Reduce the height to accommodate the Moves counter and buttons */
-  gap: 20px; /* Add gap between the rows */
+  gap: 20px;
 }
 
 .moves-counter {
   text-align: center;
-  padding-top: 50px
+  padding-top: 50px;
 }
 
 .start-game-container {
@@ -30,13 +29,11 @@
 
 .main-menu-button {
   background-color: #3f51b5;
-  /* Use any color you prefer */
   color: white;
 }
 
 .restart-game-button {
   background-color: #d62121;
-  /* Use any color you prefer */
   color: white;
 }
 
@@ -45,7 +42,6 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  /* Use 100% of the viewport height */
 }
 
 .help-button {
