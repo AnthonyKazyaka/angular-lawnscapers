@@ -1,6 +1,7 @@
 import { Player } from './Player';
 import { PuzzleData } from "./PuzzleData";
 import { Tile } from "./Tile";
+import { Obstacle } from './Obstacle';
 import { Direction, getDirectionOffset } from "../direction/Direction";
 
 export class Puzzle {
@@ -11,7 +12,9 @@ export class Puzzle {
   public height: number;
   public puzzleBoard: Tile[][];
   player: Player;
+  obstacles: Obstacle[];
   isComplete: boolean;
+  minimumNumberOfMoves: number = -1;
 
   constructor(puzzleData: PuzzleData) {
     this.id = puzzleData.id;
@@ -22,7 +25,9 @@ export class Puzzle {
     this.player = new Player(puzzleData.playerStartPosition);
     this.puzzleBoard = [];
     const obstaclePositions: string[] = puzzleData.obstacles.map(obstacle => `${obstacle.x}-${obstacle.y}`);
-  
+
+    this.obstacles = puzzleData.obstacles.map(obstacle => new Obstacle(obstacle));
+
     for (let y = 0; y < this.height; y++) {
       const row: Tile[] = [];
       for (let x = 0; x < this.width; x++) {

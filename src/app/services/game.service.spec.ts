@@ -25,11 +25,11 @@ describe('GameService', () => {
     const puzzleData: PuzzleData[] = [
       // Replace this with actual puzzle data from your application
     ];
-    databaseService.getPuzzlesData.and.returnValue(Promise.resolve(puzzleData));
+    databaseService.getOfficialPuzzlesData.and.returnValue(Promise.resolve(puzzleData));
 
     await service.initializePuzzle('testPuzzleId');
 
-    expect(databaseService.getPuzzlesData).toHaveBeenCalled();
+    expect(databaseService.getOfficialPuzzlesData).toHaveBeenCalled();
     expect(service.puzzle).toBeDefined();
     // Add more assertions to check if the puzzle object is created as expected
   });

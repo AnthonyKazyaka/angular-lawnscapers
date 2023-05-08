@@ -9,7 +9,7 @@ export class PuzzleService {
   constructor(private databaseService: DatabaseService) {}
 
   getOfficialPuzzlesData(): Promise<PuzzleData[]> {
-    return this.databaseService.getPuzzlesData();
+    return this.databaseService.getOfficialPuzzlesData();
   }
 
   getCommunityPuzzlesData(): Promise<PuzzleData[]> {
@@ -17,6 +17,6 @@ export class PuzzleService {
   }
 
   savePuzzle(puzzleData: PuzzleData): Promise<void> {
-    return this.databaseService.savePuzzle(puzzleData);
+    return this.databaseService.submitPuzzle(puzzleData);
   }
 }
