@@ -27,9 +27,12 @@ export class LeaderboardModalComponent implements OnInit {
     try {
       const rawLeaderboardEntries = await this.gameService.getLeaderboard(this.puzzleId);
 
+      // Filter out entries with empty player names
+      const filteredEntries = rawLeaderboardEntries.filter((entry) => entry.playerName.trim() !== '');
+
       const groupedEntries: { [playerName: string]: ScoreEntry } = {};
 
-      rawLeaderboardEntries.forEach((entry) => {
+      filteredEntries.forEach((entry) => {
         if (!groupedEntries[entry.playerName] || entry.score < groupedEntries[entry.playerName].score) {
           groupedEntries[entry.playerName] = entry;
         }
