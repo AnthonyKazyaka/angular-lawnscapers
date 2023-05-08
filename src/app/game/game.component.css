@@ -1,15 +1,16 @@
-.main-container {
+.game-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
   width: 100%;
-  gap: 16px;
+  height: calc(100vh - 200px);
+  gap: 20px;
 }
 
 .moves-counter {
   text-align: center;
+  padding-top: 50px;
 }
 
 .start-game-container {
@@ -48,12 +49,4 @@
   top: 10px;
   left: 10px;
   z-index: 10;
-}
-
-.puzzle-board-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: calc(100vw - 32px); /* Adjust this value based on the gap in the game-container */
-  height: calc(100vh - 200px);
 }

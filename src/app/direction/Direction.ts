@@ -1,5 +1,5 @@
 
-export enum Direction { Up, Down, Left, Right }
+export enum Direction { Up = "Up", Down = "Down", Left = "Left", Right = "Right" }
 
 export function getDirectionOffset(direction: Direction): { x: number; y: number; } {
     switch (direction) {
