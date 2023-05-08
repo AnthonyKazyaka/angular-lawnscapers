@@ -28,7 +28,7 @@ export class LeaderboardModalComponent implements OnInit {
       const rawLeaderboardEntries = await this.gameService.getLeaderboard(this.puzzleId);
 
       // Filter out entries with empty player names
-      const filteredEntries = rawLeaderboardEntries.filter((entry) => entry.playerName.trim() !== '');
+      const filteredEntries = rawLeaderboardEntries.filter((entry) => entry.playerName.trim() !== '' && this.hasPrintableCharacters(entry.playerName));
 
       const groupedEntries: { [playerName: string]: ScoreEntry } = {};
 
@@ -52,4 +52,10 @@ export class LeaderboardModalComponent implements OnInit {
   isPlayerScore(entry: ScoreEntry): boolean {
     return entry.playerName == this.puzzleScore?.playerName;
   }
+
+  private hasPrintableCharacters(str: string): boolean {
+    const nonPrintableRegex = /^[\x20-\x7E]*$/;
+    return nonPrintableRegex.test(str.trim());
+  }
+  
 }
