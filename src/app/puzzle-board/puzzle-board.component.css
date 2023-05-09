@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 80%;
+  height: auto;
   max-height: calc(100vh - 100px);
 }
 
@@ -12,9 +12,9 @@
   grid-template-columns: repeat(var(--board-width), 1fr);
   grid-template-rows: repeat(var(--board-height), 1fr);
   gap: 1px;
-  width: calc(100vw - 2em); /* - 2em to account for margin */
-  max-width: calc((100vh - 100px - 2em) * (var(--board-width) / var(--board-height)));
-  max-height: calc(90vh - 2em);
+  width: calc(100vw - 2em);
+  max-width: calc((var(--game-board-max-height) - 2em) * (var(--board-width) / var(--board-height)));
+  max-height: var(--game-board-max-height);
 }
 
 .game-cell {
