@@ -2,23 +2,23 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   width: 100%;
   height: calc(100vh - 200px);
-  gap: 20px;
+  padding: 2em 0;
 }
 
 .moves-counter {
   text-align: center;
-  margin-top: 2em;
-  padding-top: 50px;
 }
 
-.start-game-container {
+.puzzle-board-container {
+  flex-grow: 1;
   display: flex;
-  justify-content: center;
   align-items: center;
-  height: 100%;
+  justify-content: center;
+  width: 100%;
+  max-height: 100%;
 }
 
 .button-container {
@@ -28,9 +28,17 @@
   margin-top: 1rem;
 }
 
+.start-game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
 .main-menu-button {
   background-color: #3f51b5;
   color: white;
+  padding: 1rem;
 }
 
 .restart-game-button {
