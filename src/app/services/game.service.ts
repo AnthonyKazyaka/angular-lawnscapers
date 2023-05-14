@@ -17,6 +17,7 @@ import { LeaderboardService } from './leaderboard.service';
 export class GameService {
   player: Player = new Player({ x: 0, y: 0 });
   playerName: string = '';
+  theme: string = 'Light';
   puzzle: Puzzle;
   puzzleBoard: Tile[][];
   puzzlesData: PuzzleData[] = [];
@@ -68,6 +69,8 @@ export class GameService {
     } else {
       console.warn('No puzzles found. Default puzzle will be used.');
     }
+
+    this.theme = localStorage.getItem('theme') || this.theme;
   }  
 
   get tiles(): Tile[][] {
@@ -99,6 +102,11 @@ export class GameService {
     return [...this.puzzlesData].sort((a, b) => b.id.localeCompare(a.id));
   }
 
+  getAllPuzzles(): PuzzleData[] {
+    // Currently sorted by id in descending order - need to decide how to order the puzzles
+    return this.puzzlesData;
+  }
+
   async saveScore(playerName: string, score: number, levelId: string): Promise<ScoreEntry> {
     const timestamp: string = new Date().toISOString()
 
@@ -116,6 +124,10 @@ export class GameService {
 
   async getLeaderboard(levelId: string): Promise<ScoreEntry[]> {
     return this.leaderboardService.getLeaderboardScores(levelId);
+  }
+
+  async getLeaderboards(): Promise<Map<string, ScoreEntry[]>> {
+    return this.leaderboardService.getAllLeaderboardScores();
   }
 
   async savePuzzle(puzzleData: PuzzleData): Promise<PuzzleData> {
