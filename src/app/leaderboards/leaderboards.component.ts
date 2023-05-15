@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { GameService } from '../services/game.service';
+import { LeaderboardService } from '../services/leaderboard.service';
 import { ScoreEntry } from '../models/ScoreEntry';
 import { RankedScoreEntry } from '../models/RankedScoreEntry';
 import { Puzzle } from '../models/Puzzle';
+import { PuzzleService } from '../services/puzzle.service';
+import { GameService } from '../services/game.service';
 
 @Component({
   selector: 'app-leaderboards',
@@ -10,66 +12,42 @@ import { Puzzle } from '../models/Puzzle';
   styleUrls: ['./leaderboards.component.css']
 })
 export class LeaderboardsComponent implements OnInit {
+  officialLeaderboards: Map<string, RankedScoreEntry[]> = new Map();
+  communityLeaderboards: Map<string, RankedScoreEntry[]> = new Map();
+  activeTab: 'official' | 'community' = 'official';
 
-  leaderboards: Map<string, RankedScoreEntry[]> = new Map();
-
-  constructor(private gameService: GameService) { }
+  constructor(private gameService: GameService, private leaderboardService: LeaderboardService, private puzzleService: PuzzleService) { }
 
   async ngOnInit(): Promise<void> {
-    const scoreEntryMap: Map<string, ScoreEntry[]> = await this.gameService.getLeaderboards();
-    const puzzleData = await this.gameService.getAllPuzzles();
+    const scoreEntryMap: Map<string, ScoreEntry[]> = await this.leaderboardService.getAllLeaderboardScores();
+    const officialPuzzleData = await this.puzzleService.getOfficialPuzzlesData();
+    const communityPuzzleData = await this.puzzleService.getCommunityPuzzlesData();
   
-    // map each puzzleData into a Puzzle using the constructor
-    const puzzles: Map<string, Puzzle> = new Map(puzzleData.map(puzzle => [puzzle.id, new Puzzle(puzzle)]));
+    const officialPuzzles: Map<string, Puzzle> = new Map(officialPuzzleData.map(puzzle => [puzzle.id, new Puzzle(puzzle)]));
+    const communityPuzzles: Map<string, Puzzle> = new Map(communityPuzzleData.map(puzzle => [puzzle.id, new Puzzle(puzzle)]));
   
-    this.leaderboards = this.convertToRankedScoreEntryMap(scoreEntryMap, puzzles);
-    this.sortLeaderboard();
+    this.officialLeaderboards = this.leaderboardService.convertToRankedScoreEntryMap(scoreEntryMap, officialPuzzles);
+    this.communityLeaderboards = this.leaderboardService.convertToRankedScoreEntryMap(scoreEntryMap, communityPuzzles);
+
+    this.officialLeaderboards = this.leaderboardService.sortLeaderboardsByUser(this.officialLeaderboards, this.gameService.playerName);
   }
-  
-  sortLeaderboard(): void {
-    // Create a new map for the player's ranked leaderboard
-    const playerLeaderboard: Map<string, RankedScoreEntry[]> = new Map();
-  
-    // Iterate over each leaderboard
-    for (const [levelId, scores] of this.leaderboards.entries()) {
-      // Sort the scores of each leaderboard
-      scores.sort((a, b) => {
-        const scoreDifference = b.score - a.score;
-        if (scoreDifference !== 0) {
-          return scoreDifference;
-        }
-        return a.timestamp.localeCompare(b.timestamp);
-      });
-  
-      // Filter the player's scores and get the best one
-      const playerScores = scores.filter(score => score.playerName === this.gameService.playerName);
-      if (playerScores.length > 0) {
-        const bestPlayerScore = playerScores[0];
-  
-        // Assign rank and add it to playerLeaderboard
-        playerLeaderboard.set(levelId, [{
-          ...bestPlayerScore,
-          rank: scores.indexOf(bestPlayerScore) + 1 // calculate rank in full leaderboard
-        }]);
-      }
+
+  changeTab(tab: 'official' | 'community') {
+    this.activeTab = tab;
+  }
+
+  openTab(evt: MouseEvent, tabName: string): void {
+    const tabcontent = document.getElementsByClassName('tabcontent');
+    for (let i = 0; i < tabcontent.length; i++) {
+      (tabcontent[i] as HTMLElement).style.display = 'none';
     }
-  
-    // Replace the leaderboard with the player's leaderboard
-    this.leaderboards = playerLeaderboard;
-  }  
-  
-  convertToRankedScoreEntryMap(scoreEntryMap: Map<string, ScoreEntry[]>, puzzles: Map<string, Puzzle>): Map<string, RankedScoreEntry[]> {
-    const rankedScoreEntryMap: Map<string, RankedScoreEntry[]> = new Map();
-    
-    for (const [levelId, scores] of scoreEntryMap.entries()) {
-      const rankedScores: RankedScoreEntry[] = scores.map(score => ({
-        ...score,
-        rank: 0,  // initialize rank as 0
-        name: puzzles.get(levelId)?.name || "" // set the name from the puzzles map or an empty string if not found
-      }));
-      rankedScoreEntryMap.set(levelId, rankedScores);
+
+    const tablinks = document.getElementsByClassName('tablinks');
+    for (let i = 0; i < tablinks.length; i++) {
+      tablinks[i].classList.remove('active');
     }
-  
-    return rankedScoreEntryMap;
+
+    document.getElementById(tabName)!.style.display = 'block';
+    (evt.target as HTMLElement).classList.add('active');
   }
 }

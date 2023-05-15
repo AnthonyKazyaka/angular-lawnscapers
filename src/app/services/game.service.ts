@@ -70,6 +70,8 @@ export class GameService {
       console.warn('No puzzles found. Default puzzle will be used.');
     }
 
+    this.playerName = localStorage.getItem('playerName') ?? '';
+
     this.theme = localStorage.getItem('theme') || this.theme;
   }  
 

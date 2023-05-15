@@ -70,7 +70,6 @@ export class DatabaseService {
   
     return allScoresMap;
   }
-  
 
   addScoreToLeaderboard(scoreEntry: ScoreEntry): Promise<void> {
     return this.db.list<ScoreEntry>(`leaderboards/${scoreEntry.levelId}`).push(scoreEntry).then(() => {});
