@@ -1,20 +1,51 @@
-<div *ngFor="let leaderboardEntry of leaderboards | keyvalue">
-    <h2>{{leaderboardEntry.key}}</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Rank</th>
-          <th>Player</th>
-          <th>Score</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let scoreEntry of leaderboardEntry.value">
-          <td>{{scoreEntry.rank}}</td>
-          <td>{{scoreEntry.playerName}}</td>
-          <td>{{scoreEntry.score}}</td>
-        </tr>
-      </tbody>
-    </table>
+<div class="leaderboards-page">
+    <div class="tab">
+      <button class="tablinks" [class.active]="activeTab === 'official'" (click)="activeTab = 'official'">Official Puzzles</button>
+      <button class="tablinks" [class.active]="activeTab === 'community'" (click)="activeTab = 'community'">Community Puzzles</button>
+    </div>
+  
+    <div *ngIf="activeTab === 'official'">
+      <div *ngFor="let leaderboardEntry of officialLeaderboards | keyvalue">
+        <h2>{{leaderboardEntry.value[0].name}}</h2>
+        <table>
+          <thead>
+              <tr>
+                  <th>Rank</th>
+                  <th>Player</th>
+                  <th>Score</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr *ngFor="let scoreEntry of leaderboardEntry.value">
+                  <td>{{scoreEntry.rank}}</td>
+                  <td>{{scoreEntry.playerName}}</td>
+                  <td>{{scoreEntry.score}}</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <div *ngIf="activeTab === 'community'">
+      <div *ngFor="let leaderboardEntry of communityLeaderboards | keyvalue">
+        <h2>{{leaderboardEntry.value[0].name}}</h2>
+        <table>
+          <thead>
+              <tr>
+                  <th>Rank</th>
+                  <th>Player</th>
+                  <th>Score</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr *ngFor="let scoreEntry of leaderboardEntry.value">
+                  <td>{{scoreEntry.rank}}</td>
+                  <td>{{scoreEntry.playerName}}</td>
+                  <td>{{scoreEntry.score}}</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
   
