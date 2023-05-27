@@ -30,6 +30,7 @@ export class LeaderboardsComponent implements OnInit {
     this.communityLeaderboards = this.leaderboardService.convertToRankedScoreEntryMap(scoreEntryMap, communityPuzzles);
 
     this.officialLeaderboards = this.leaderboardService.sortLeaderboardsByUser(this.officialLeaderboards, this.gameService.playerName);
+    this.communityLeaderboards = this.leaderboardService.sortLeaderboardsByUser(this.communityLeaderboards, this.gameService.playerName);
   }
 
   changeTab(tab: 'official' | 'community') {
