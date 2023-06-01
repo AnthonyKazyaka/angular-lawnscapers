@@ -43,6 +43,34 @@ export class DatabaseService {
     return scores || [];
   }
 
+  async getAllLeaderboardScores(): Promise<Map<string, ScoreEntry[]>> {
+    // First, get the keys (level IDs) of all the leaderboards
+    const leaderboardKeys$ = this.db.list<ScoreEntry>('leaderboards').snapshotChanges();
+    const leaderboardKeys = await firstValueFrom(leaderboardKeys$);
+  
+    // Then, create a Promise for each leaderboard to get its scores
+    const scorePromises: Promise<ScoreEntry[]>[] = leaderboardKeys.map(async leaderboardKey => {
+      if (leaderboardKey.key) {
+          const scores$ = this.db.list<ScoreEntry>(`leaderboards/${leaderboardKey.key}`).valueChanges();
+          return await firstValueFrom(scores$);
+      }
+      return [];
+    });
+  
+    // Wait for all the Promises to resolve
+    const allScores: ScoreEntry[][] = await Promise.all(scorePromises);
+  
+    // Then, combine the level IDs with their scores into a Map
+    const allScoresMap: Map<string, ScoreEntry[]> = new Map();
+    leaderboardKeys.forEach((leaderboardKey, i) => {
+      if (leaderboardKey.key){
+        allScoresMap.set(leaderboardKey.key, allScores[i]);
+      }
+    });
+  
+    return allScoresMap;
+  }
+
   addScoreToLeaderboard(scoreEntry: ScoreEntry): Promise<void> {
     return this.db.list<ScoreEntry>(`leaderboards/${scoreEntry.levelId}`).push(scoreEntry).then(() => {});
   }

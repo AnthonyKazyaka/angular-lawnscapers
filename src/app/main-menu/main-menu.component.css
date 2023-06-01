@@ -5,6 +5,7 @@
     justify-content: center;
     height: 100vh;
     background-color: #e0f2f1;
+    font-family: Arial, sans-serif;
 }
 
 .game-title {
@@ -24,19 +25,22 @@
     gap: 1rem;
     box-shadow: black 0px 0px 10px 0px;
     padding: 2rem;
+    max-width: 500px;
+    width: 100%;
 }
 
 .button-container {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     gap: 1rem;
-    margin-top: 1rem;
+    width: 100%;
 }
 
 .form-inputs {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    width: 100%;
 }
 
 .form-container {
@@ -47,6 +51,7 @@
 
 .form-field {
     width: 100%;
+    margin-bottom: 1rem;
 }
 
 .main-container {
@@ -55,12 +60,40 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    /* Use 100% of the viewport height */
+    padding: 20px;
+}
+
+.play-game-button {
+    background-color: forestgreen;
+    color: white;
+    text-shadow: black 0px 0px 15px;
+}
+
+.create-level-button {
+    background-color: darkslateblue;
+    color: white;
+}
+
+.secondary-button {
+    background-color: darkslategrey;
+    color: white;
 }
 
 .help-button {
-    position: absolute;
+    position: fixed;
     top: 10px;
     left: 10px;
     z-index: 10;
+}
+
+button {
+    padding: 10px 10px;
+    border-radius: 5px;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    cursor: pointer;
+    opacity: 0.8;
 }

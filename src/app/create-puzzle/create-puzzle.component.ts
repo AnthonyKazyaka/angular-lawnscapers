@@ -106,6 +106,10 @@ export class CreatePuzzleComponent implements OnInit {
       this.board[row][col] = 'empty';
       this.playerPosition = { x: -1, y: -1 };
     }
+
+    if(this.puzzleCompleted) {
+      this.puzzleCompleted = false;
+    }
   }
 
   async onSubmit(): Promise<void> {

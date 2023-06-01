@@ -93,6 +93,7 @@ export class GameComponent implements OnInit {
       console.warn('Default puzzle is not allowed.');
       return;
     }
+    
     this.gameService.playerName = playerName;
     localStorage.setItem('playerName', playerName);
 

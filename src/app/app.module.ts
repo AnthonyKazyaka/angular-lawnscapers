@@ -25,18 +25,35 @@ import { PuzzleBoardComponent } from './puzzle-board/puzzle-board.component';
 import { CreatePuzzleComponent } from './create-puzzle/create-puzzle.component';
 import { MainMenuComponent } from './main-menu/main-menu.component';
 import { AppRoutingModule } from './app-routing.module';
-import { HowToPlayModalComponent } from './how-to-play-modal/how-to-play-modal.component';
 import { HelpModalComponent } from './help-modal/help-modal.component';
 import { LevelCardComponent } from './level-card/level-card.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { PuzzlePreviewComponent } from './puzzle-preview/puzzle-preview.component';
+import { PlayerNameDialogComponent } from './player-name-dialog/player-name-dialog.component';
+import { PreferencesModalComponent } from './preferences-modal/preferences-modal.component';
+import { LeaderboardsComponent } from './leaderboards/leaderboards.component';
 
 export function initializeApp(gameService: GameService) {
   return () => gameService.initializeApp();
 }
 
 @NgModule({
-  declarations: [AppComponent, LeaderboardModalComponent, GameComponent, SwipeDirective, LevelSelectScreenComponent, PuzzleBoardComponent, CreatePuzzleComponent, MainMenuComponent, HowToPlayModalComponent, HelpModalComponent, LevelCardComponent, PuzzlePreviewComponent],
+  declarations: [
+    AppComponent,
+    LeaderboardModalComponent,
+    GameComponent,
+    SwipeDirective,
+    LevelSelectScreenComponent,
+    PuzzleBoardComponent,
+    CreatePuzzleComponent,
+    MainMenuComponent,
+    HelpModalComponent,
+    LevelCardComponent,
+    PuzzlePreviewComponent,
+    PlayerNameDialogComponent,
+    PreferencesModalComponent,
+    LeaderboardsComponent,
+  ],
   imports: [
     BrowserModule,
     FormsModule,

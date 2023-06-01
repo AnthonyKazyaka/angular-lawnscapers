@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>Player Preferences</h2>
+
+<mat-dialog-content class="content">
+  <form [formGroup]="preferenceForm" class="form" (ngSubmit)="onPreferenceChange()">
+    <mat-form-field class="input">
+      <mat-label>Player Name</mat-label>
+      <input matInput formControlName="playerName" />
+    </mat-form-field>
+
+    <mat-form-field class="input">
+      <mat-label>Theme</mat-label>
+      <mat-select formControlName="theme">
+        <mat-option *ngFor="let theme of themes" [value]="theme">{{theme}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div mat-dialog-actions>
+      <button mat-button mat-dialog-close>Cancel</button>
+      <button mat-button type="submit">Save</button>
+    </div>
+  </form>
+</mat-dialog-content>

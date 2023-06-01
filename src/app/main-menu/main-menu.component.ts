@@ -1,11 +1,10 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameService } from '../services/game.service';
-import { GameState } from "../models/GameState";
-import { HowToPlayModalComponent } from '../how-to-play-modal/how-to-play-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
-import { LevelSelectScreenComponent } from '../level-select-screen/level-select-screen.component';
+import { PlayerNameDialogComponent } from '../player-name-dialog/player-name-dialog.component';
+import { PreferencesModalComponent } from '../preferences-modal/preferences-modal.component';
 import { HelpModalComponent } from '../help-modal/help-modal.component';
 
 @Component({
@@ -26,17 +25,13 @@ export class MainMenuComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.gameService.getSortedPuzzles().length === 0) {
-      this.gameService.initializeApp();
-    }
-  
+    this.gameService.initializeApp();
+
     this.puzzlesLoadedSubscription = this.gameService.puzzlesLoaded$.subscribe((loaded: boolean) => {
       if (loaded) {
         this.selectedPuzzleId = this.gameService.currentPuzzleId ? this.gameService.currentPuzzleId : this.gameService.newestPuzzleId;
       }
     });
-
-    this.selectedPuzzleId = this.gameService.currentPuzzleId ? this.gameService.currentPuzzleId : this.gameService.newestPuzzleId;
 
     const savedPlayerName = localStorage.getItem('playerName');
     if (savedPlayerName) {
@@ -49,43 +44,56 @@ export class MainMenuComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.puzzlesLoadedSubscription?.unsubscribe();
-  }  
-
-  startGame(playerName: string, puzzleId: string): void {
-    console.log("puzzleId", puzzleId)
-    this.gameService.playerName = playerName;
-    this.gameService.currentPuzzleId = puzzleId;
-    this.router.navigate(['/play', puzzleId]);
   }
 
-  onSelectedPuzzleIdChange(puzzleId: string): void {
-    this.selectedPuzzleId = puzzleId;
-    this.gameService.currentPuzzleId = puzzleId;
-    this.gameService.playerName = this.playerName;
-  }
-
-  createPuzzle(): void {
-    this.router.navigate(['/create']);
-  }
-
-  openHowToPlayModal(): void {
-    this.dialog.open(HowToPlayModalComponent);
-  }
-
-  openLevelSelectScreen(): void {
-
-  }
-
-  onPlayerNameBlur(): void {
-    localStorage.setItem('playerName', this.playerName);
-    this.gameService.playerName = this.playerName;
+  navigateToLeaderboards(): void {
+    if (!this.playerName) {
+      this.openPlayerNameDialog();
+      return;
+    }
+    this.router.navigate(['/leaderboards']);
   }
 
   onLevelSelectClick(): void {
+    if (!this.playerName) {
+      this.openPlayerNameDialog();
+      return;
+    }
     this.router.navigate(['/level-select']);
   }
 
+  createPuzzle(): void {
+    if (!this.playerName) {
+      this.openPlayerNameDialog();
+      return;
+    }
+    this.router.navigate(['/create']);
+  }
+
+  openPlayerNameDialog(): void {
+    const dialogRef = this.dialog.open(PlayerNameDialogComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      // name is required, so if the user closes the dialog without entering a name, don't do anything
+      if (result) {
+        this.playerName = result;
+        this.gameService.playerName = result;
+        localStorage.setItem('playerName', result);
+      }
+    });
+  }
+
+  openSettingsModal(): void {
+    this.dialog.open(PreferencesModalComponent);
+  }
+
   openHelpModal(): void {
-    this.dialog.open(HelpModalComponent);
+    this.dialog.open(HelpModalComponent, {
+      data: 'main-menu'
+    });
+  }
+
+  openHowToPlayModal(): void {
+    this.openHelpModal();
   }
 }
