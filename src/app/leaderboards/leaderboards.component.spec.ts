@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HowToPlayModalComponent } from './how-to-play-modal.component';
+import { LeaderboardsComponent } from './leaderboards.component';
 
-describe('HowToPlayModalComponent', () => {
-  let component: HowToPlayModalComponent;
-  let fixture: ComponentFixture<HowToPlayModalComponent>;
+describe('LeaderboardsComponent', () => {
+  let component: LeaderboardsComponent;
+  let fixture: ComponentFixture<LeaderboardsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ HowToPlayModalComponent ]
+      declarations: [ LeaderboardsComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(HowToPlayModalComponent);
+    fixture = TestBed.createComponent(LeaderboardsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
