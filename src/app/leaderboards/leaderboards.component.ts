@@ -15,6 +15,7 @@ export class LeaderboardsComponent implements OnInit {
   officialLeaderboards: Map<string, RankedScoreEntry[]> = new Map();
   communityLeaderboards: Map<string, RankedScoreEntry[]> = new Map();
   activeTab: 'official' | 'community' = 'official';
+  activeTabIndex = 0;
 
   constructor(private gameService: GameService, private leaderboardService: LeaderboardService, private puzzleService: PuzzleService) { }
 
@@ -35,6 +36,7 @@ export class LeaderboardsComponent implements OnInit {
 
   changeTab(tab: 'official' | 'community') {
     this.activeTab = tab;
+    this.activeTabIndex = tab === 'official' ? 0 : 1;
   }
 
   openTab(evt: MouseEvent, tabName: string): void {

@@ -1,59 +1,57 @@
 .tab {
-    overflow: hidden;
-    border: 1px solid #ccc;
-    background-color: #f1f1f1;
-  }
-  
-  .leaderboards-page {
-    max-height: 100vh;
-    overflow-y: auto;
-  }
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
 
-  .tab button {
-    background-color: inherit;
-    float: left;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    padding: 14px 16px;
-    transition: 0.3s;
-    font-size: 17px;
-  }
-  
-  .tab button:hover {
-    background-color: #ddd;
-  }
-  
-  .tab button.active {
-    background-color: #ccc;
-  }
-  
-  .tabcontent {
-    display: none;
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    border-top: none;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  th, td {
-    text-align: left;
-    padding: 8px;
-  }
-  
-  tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
+.leaderboards-page {
+  max-height: 100vh;
+  overflow-y: auto;
+}
 
-  .leaderboard-container {
-    height: 400px;
-    overflow-y: scroll;
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    border-top: none;
-  }
-    
+.tab button {
+  background-color: inherit;
+  border: none;
+  float: left;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+.tab button:hover {
+  background-color: #ddd;
+}
+
+.tab button.active {
+  background-color: #ccc;
+}
+
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+table {
+  margin: 0 auto;
+  max-width: 800px;
+  min-width: 300px;
+  border: 1px solid black;
+}
+
+.text-center {
+  text-align: center;
+}
