@@ -8,6 +8,7 @@ import { PuzzleData } from '../models/PuzzleData';
 })
 export class LevelCardComponent {
   @Input() puzzle!: PuzzleData;
+  @Input() showCreatorName: boolean = true;
   @Output() selected = new EventEmitter<PuzzleData>();
 
   onSelected(): void {
