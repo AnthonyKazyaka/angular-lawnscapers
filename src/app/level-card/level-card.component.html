@@ -4,6 +4,6 @@
     </div>
     <div class="level-info">
       <h4 class="level-name">{{ puzzle.name }}</h4>
-      <p class="level-author">{{ puzzle.creator ? 'By ' + puzzle.creator : 'By Anonymous' }}</p>
+      <p *ngIf="showCreatorName !== false" class="level-author">{{ puzzle.creator ? 'By ' + puzzle.creator : 'By Anonymous' }}</p>
     </div>
   </div>

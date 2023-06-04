@@ -19,7 +19,7 @@
   <mat-dialog-content>
     <div *ngIf="selectedTabIndex === 0" class="level-grid">
       <ng-container *ngFor="let puzzle of officialPuzzles">
-        <app-level-card [puzzle]="puzzle" (selected)="onLevelSelected(puzzle)"></app-level-card>
+        <app-level-card [puzzle]="puzzle" [showCreatorName]="false" (selected)="onLevelSelected(puzzle)"></app-level-card>
       </ng-container>
       <div class="no-puzzles-message" *ngIf="officialPuzzles.length === 0">
         <mat-icon>sentiment_very_dissatisfied</mat-icon>
