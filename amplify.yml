@@ -7,6 +7,8 @@ frontend:
         - npm ci
     build:
       commands:
+        - pwd
+        - ls -al
         - node ./dev/set-env.ts
         - ng build --configuration production
   artifacts:
