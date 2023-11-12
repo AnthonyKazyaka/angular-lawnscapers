@@ -4,7 +4,7 @@ const fs = require('fs');
 const environment = process.env["ENVIRONMENT"] || 'dev';
 const isProd = environment === 'prod';
 
-const targetPath = '../src/environments/environment.ts';
+const targetPath = './src/environments/environment.ts';
 
 const envConfigFile = `
 export const environment = {
