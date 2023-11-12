@@ -4,7 +4,7 @@ import { ScoreEntry } from "../models/ScoreEntry";
 import { Player } from "../models/Player";
 import { MatDialog } from '@angular/material/dialog';
 import { LeaderboardModalComponent } from '../leaderboard-modal/leaderboard-modal.component';
-import { Direction } from '../direction/Direction';
+import { Direction } from '../models/Direction';
 import { GameState } from '../models/GameState';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';

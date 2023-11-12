@@ -1,5 +1,5 @@
 import { Directive, Output, EventEmitter, ElementRef, OnInit, OnDestroy } from '@angular/core';
-import { Direction } from "../direction/Direction";
+import { Direction } from "../models/Direction";
 import * as Hammer from 'hammerjs';
 
 @Directive({

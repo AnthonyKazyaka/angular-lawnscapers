@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { Direction, getDirectionOffset } from '../direction/Direction';
+import { Direction, getDirectionOffset } from '../models/Direction';
 import { Player } from '../models/Player';
 import { Puzzle } from '../models/Puzzle';
 import { PuzzleData } from '../models/PuzzleData';

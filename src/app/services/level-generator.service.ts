@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Direction, getDirectionOffset } from '../direction/Direction';
+import { Direction, getDirectionOffset } from '../models/Direction';
 import { Puzzle } from '../models/Puzzle';
 import { PuzzleData } from '../models/PuzzleData';
 

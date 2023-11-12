@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, HostListener, ChangeDetectorRef, SimpleChanges, OnChanges } from '@angular/core';
-import { Direction } from '../direction/Direction';
+import { Direction } from '../models/Direction';
 import { Puzzle } from "../models/Puzzle";
 import { Player } from "../models/Player";
 
@@ -55,9 +55,14 @@ export class PuzzleBoardComponent implements OnInit, OnChanges {
   }
 
   handleMovePlayer(direction: Direction): void {
-    this.movePlayer.emit(direction);
-    this.updateBoardDisplay();
-    this.changeDetector.detectChanges(); // Manually trigger change detection
+    if(this.puzzle && !this.puzzle.isComplete && this.player)
+    {
+      this.player.direction = direction;
+      this.puzzle.player.direction = direction;
+      this.movePlayer.emit(direction);
+      this.updateBoardDisplay();
+      this.changeDetector.detectChanges(); // Manually trigger change detection
+    }
   }
   
   updateBoardDisplay(): void {
@@ -65,5 +70,5 @@ export class PuzzleBoardComponent implements OnInit, OnChanges {
       this.boardDisplay = this.puzzle.getDisplayBoard();
       this.changeDetector.detectChanges(); // Manually trigger change detection
     }
-  }  
+  }
 }
