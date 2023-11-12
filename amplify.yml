@@ -3,12 +3,12 @@ frontend:
   phases:
     preBuild:
       commands:
+        - nvm install 18
+        - nvm use 18
         - npm install -g @angular/cli
         - npm ci
     build:
       commands:
-        - pwd
-        - ls -al
         - node ./dev/set-env.ts
         - ng build --configuration production
   artifacts:
