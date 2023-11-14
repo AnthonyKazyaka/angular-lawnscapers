@@ -3,9 +3,8 @@ frontend:
   phases:
     preBuild:
       commands:
-        - pwd
-        - ls -al
-        - node ./dev/set-env.ts
+        - chmod +x ./dev/set-env.sh
+        - cd dev && ./set-env.sh && cd ..
         - npm install -g @angular/cli
         - npm ci
     build:
