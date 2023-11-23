@@ -72,7 +72,6 @@ export class Puzzle {
         const isPlayerHere = this.player.position.y === i && this.player.position.x === j;
   
         // If the player is here, append '-player' to the base tile type.
-        console.log(this.player.direction);
         displayBoard[i][j] = isPlayerHere ? `player ${this.player.getPlayerClass(this.player.direction)}` : baseTileType;
         
         // If the player is here, mark the tile as visited.

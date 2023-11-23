@@ -47,7 +47,7 @@ export class CreatePuzzleComponent implements OnInit {
     this.playerPosition = this.gameService.createdPuzzlePlayerPosition;
     this.puzzleCompleted = this.gameService.createdPuzzleCompleted;
     this.createForm();
-    this.gameService.puzzleTestCompletedEvent.subscribe((completed: boolean) => {
+    this.gameService.puzzleTestCompletedEvent$.subscribe((completed: boolean) => {
       this.puzzleCompleted = completed;
     });
   }

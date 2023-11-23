@@ -19,6 +19,7 @@ export class GameService {
   playerName: string = '';
   theme: string = 'Light';
   puzzle: Puzzle;
+  puzzleScore: ScoreEntry | null = null;
   puzzleBoard: Tile[][];
   puzzlesData: PuzzleData[] = [];
   defaultPuzzleData: PuzzleData = {
@@ -32,10 +33,13 @@ export class GameService {
     created_at: new Date().toISOString()
   };
   gameState: GameState = GameState.MainMenu;
+  leaderboard: ScoreEntry[] = [];
+  
   gameState$ = new BehaviorSubject<GameState>(this.gameState);
   puzzlesLoaded$ = new BehaviorSubject<boolean>(false);
 
   currentPuzzleId: string = '';
+  currentMoveCount: number = 0;
 
   createdPuzzleName: string = '';
   createdPuzzleBoard: string[][] = [];
@@ -43,12 +47,14 @@ export class GameService {
   createdPuzzleDimensions: { width: number, height: number } = { width: 3, height: 3 };
   createdPuzzleCompleted: boolean = false;
 
-  puzzleCompletedEvent: EventEmitter<boolean> = new EventEmitter<boolean>();
-  public puzzleTestCompletedEvent: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  public newestPuzzleId: string;
-  public isPuzzleBeingTested: boolean = false;
+  puzzleCompletedEvent$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  puzzleTestCompletedEvent$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  newestPuzzleId: string;
+  isPuzzleBeingTested: boolean = false;
 
   constructor(private puzzleService: PuzzleService, private leaderboardService: LeaderboardService, private fireAuth: AngularFireAuth) {
+    console.log("GameService: constructor: Initializing...")
+
     this.puzzle = new Puzzle(this.defaultPuzzleData);
     this.puzzleBoard = this.puzzle.puzzleBoard;
     this.newestPuzzleId = this.puzzle.id;
@@ -80,7 +86,7 @@ export class GameService {
   }
 
   setPuzzleTestCompleted(completed: boolean): void {
-    this.puzzleTestCompletedEvent.next(completed);
+    this.puzzleTestCompletedEvent$.next(completed);
     this.createdPuzzleCompleted = true;
     this.isPuzzleBeingTested = false;
     this.setGameState(GameState.CreatingPuzzle);
@@ -91,7 +97,11 @@ export class GameService {
   }
 
   setPuzzleCompleted(completed: boolean): void {
-    this.puzzleCompletedEvent.emit(completed);
+    console.log("GameService: Setting Puzzle Completed to ", completed);
+    this.setGameState(GameState.Completed);
+
+    console.log(`GameService: puzzleCompletedEvent$ emitted to ${this.puzzleTestCompletedEvent$.observers.length} observers`)
+    this.puzzleCompletedEvent$.next(completed);
   }
 
   setGameState(newState: GameState): void {
@@ -205,4 +215,69 @@ export class GameService {
     const desiredTile = this.puzzleBoard[newPosition.y][newPosition.x];
     return desiredTile.isOccupiable && !desiredTile.isOccupied && !this.puzzle.isComplete;
   }
+
+  movePlayer(direction: Direction) {
+    console.log("GameService: Moving player in direction", direction);
+    if (this.puzzle && this.player && this.canMovePlayer(direction) && !(this.gameState == GameState.Completed)) {
+      this.puzzle.player.direction = direction;
+      this.puzzle.movePlayerUntilStopped(direction);
+      
+      this.currentMoveCount++;
+      console.log("GameService: Current move count", this.currentMoveCount);
+
+      if (this.puzzle.isComplete) {
+          console.log("GameService: Puzzle is complete, handling game completion");
+          setTimeout(async () => {
+              await this.handleGameCompletion();
+          }, 100);
+      }
+    }
+  }
+
+  async handleGameCompletion(): Promise<void> {
+    console.log("GameService: Handling game completion");
+    this.setGameState(GameState.Completed);
+    this.saveScore(this.playerName, this.currentMoveCount, this.puzzle.id);
+
+    if (this.puzzle) {
+      if (this.gameState == GameState.TestingPuzzle) {
+          console.log("GameService: Puzzle Test Completed");
+          this.setPuzzleTestCompleted(true);
+      }
+      else {
+          console.log("GameService: Puzzle Completed");
+          this.setPuzzleCompleted(true);
+          await this.submitScore();
+          if (this.puzzle !== null) {
+              this.leaderboard = await this.getLeaderboard(this.puzzle.id);
+          }
+      }
+    }
+  }
+
+  async submitScore(): Promise<void> {
+    if (this.puzzle !== null) {
+      this.puzzleScore = await this.saveScore(
+        this.playerName,
+        this.currentMoveCount,
+        this.puzzle.id
+      );
+      if (this.puzzle !== null) {
+        this.leaderboard = await this.getLeaderboard(
+          this.puzzle.id
+        );
+      }
+    }
+  }
+
+  startNewPuzzle(puzzleId: string) {
+    console.log("GameService: Starting new puzzle with id", puzzleId);
+    // Reset the game state
+    this.currentMoveCount = 0;
+    this.puzzleScore = null;
+    this.puzzle.isComplete = false;
+  
+    // Initialize the new puzzle
+    this.initializePuzzle(puzzleId);
+  }  
 }
