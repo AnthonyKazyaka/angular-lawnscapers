@@ -1,6 +1,8 @@
 <div class="game-board" [style.--board-width]="puzzle?.width" [style.--board-height]="puzzle?.height">
   <ng-container *ngFor="let row of boardDisplay">
-    <div *ngFor="let cell of row" class="game-cell" [ngClass]="cell === 'player' ? player?.getPlayerClass(player?.direction ?? null) : cell">
+    <div *ngFor="let cell of row" class="game-cell" [ngClass]="getCellClass(cell)">
+      <div *ngIf="isGrassCell(cell)" class="grass-tile"></div>
+      <div *ngIf="isPlayerCell(cell)" class="player-image"></div>
     </div>
   </ng-container>
 </div>

@@ -56,33 +56,31 @@ export class Puzzle {
   
   getDisplayBoard(): string[][] {
     const displayBoard: string[][] = [];
-  
+
     for (let i = 0; i < this.height; i++) {
       displayBoard[i] = [];
       for (let j = 0; j < this.width; j++) {
         const tile = this.puzzleBoard[i][j];
-        // Determine the base tile type.
         const baseTileType = tile.isOccupiable
-          ? tile.visited
-            ? 'visited'
-            : 'unvisited'
+          ? tile.visited ? 'visited' : 'unvisited'
           : 'obstacle';
-        
-        // Check if the player is on this tile.
+
         const isPlayerHere = this.player.position.y === i && this.player.position.x === j;
-  
-        // If the player is here, append '-player' to the base tile type.
-        displayBoard[i][j] = isPlayerHere ? `player ${this.player.getPlayerClass(this.player.direction)}` : baseTileType;
-        
-        // If the player is here, mark the tile as visited.
+
+        // Append player class if the player is here
+        displayBoard[i][j] = isPlayerHere 
+          ? `player ${this.player.getPlayerClass(this.player.direction)}` 
+          : baseTileType;
+
         if (isPlayerHere) {
           tile.visited = true;
         }
       }
     }
-  
+
     return displayBoard;
   }
+
   
 
   addObstacle(obstacle: { x: number; y: number; }): void {

@@ -87,7 +87,6 @@ export class GameComponent implements OnInit, OnDestroy {
       this.changeDetector.detectChanges();
     }
     console.log(`GameComponent: Game State: ${this.gameService.gameState}`);
-    //console.log(`GameComponent: Subscriptions: ${JSON.stringify(this.subscriptions)}`)
   }
 
   private unsubscribeAll(): void {

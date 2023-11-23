@@ -63,4 +63,23 @@ export class PuzzleBoardComponent implements OnInit, OnChanges {
       this.changeDetector.detectChanges();
     }
   }
+
+  isGrassCell(cell: string): boolean {
+    return cell.includes('visited'); // Adjust based on your logic
+  }
+  
+  isPlayerCell(cell: string): boolean {
+    return cell.startsWith('player');
+  }  
+
+  getCellClass(cell: string): string {
+    // Implement logic to determine the CSS class based on the cell value
+    if (this.isPlayerCell(cell)) {
+      // Return the CSS class for the player
+      return 'player ' + cell.split(' ')[1]; // Assuming the format is "player [direction]"
+    } else {
+      // Return the CSS class for other cell types (e.g., 'visited', 'unvisited', 'obstacle')
+      return cell;
+    }
+  }
 }

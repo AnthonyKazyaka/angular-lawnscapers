@@ -40,7 +40,11 @@
 }
 
 .visited {
-  background-color: lightgreen;
+  background-image: url(/assets/img/NewCutBasicGrassTile_02.png);
+  background-repeat: no-repeat; /* Stops the grass tiles from repeating */
+  background-size: 85%; /* Ensures the grass image covers the entire cell */
+  background-position: center; /* Centers the image in the cell */
+  offset-anchor: center; /* Centers the image in the cell */
 }
 
 .unvisited {
@@ -52,25 +56,51 @@
 }
 
 .game-cell.player {
-  background-image: url(/assets/img/Lawnmower.png);
-  background-size: 90%;
+  background-image: url(/assets/img/NewCutBasicGrassTile_02.png); /* Background tile */
+  background-size: 85%;
   background-repeat: no-repeat;
-  background-position: center, center;
+  background-position: center;
 }
 
-.player-up {
+.player-image {
+  width: 100%;
+  height: 100%;
+  background-image: url(/assets/img/Lawnmower.png); /* Player image */
+  background-size: 90%;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.game-cell {
+  position: relative;
+  /*border: 1px solid rgba(0, 0, 0, 0.2); /* Set border opacity to 50% */
+}
+
+.grass-tile {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  background-image: url(/assets/img/NewCutBasicGrassTile_02.png);
+  z-index: 1; /* Ensure grass tile is below the mower */
+}
+
+.player-up .player-image {
   transform: rotate(0deg);
 }
 
-.player-down {
+.player-down .player-image {
   transform: rotate(180deg);
 }
 
-.player-left {
+.player-left .player-image {
   transform: rotate(270deg);
 }
 
-.player-right {
+.player-right .player-image {
   transform: rotate(90deg);
 }
-
