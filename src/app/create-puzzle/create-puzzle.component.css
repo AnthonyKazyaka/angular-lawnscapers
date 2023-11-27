@@ -22,9 +22,9 @@ td.player {
 }
 
 .main-container {
-  max-height: 100vh;
+  height: 100%;
   overflow-y: auto;
-  background-color: #f5f5f5;
+  background-color: #e0f2f1;
 }
 
 .container {

@@ -20,6 +20,7 @@ export class GameComponent implements OnInit, OnDestroy {
   loading: boolean = true;
   private isLeaderboardModalOpen: boolean = false;
   private puzzleCompletedSubscription: Subscription = new Subscription();
+  private puzzleTestCompletedSubscription: Subscription = new Subscription();
   private gameStateSubscription: Subscription = new Subscription();
 
   constructor(
@@ -35,6 +36,8 @@ export class GameComponent implements OnInit, OnDestroy {
     this.initializePlayer();
     this.handleRouteParams();
     this.subscribeToGameEvents();
+
+    this.loading = false;
   }
 
   ngOnDestroy(): void {
@@ -48,6 +51,8 @@ export class GameComponent implements OnInit, OnDestroy {
     if (!this.gameService.playerName && savedPlayerName) {
       this.gameService.playerName = savedPlayerName;
     }
+
+    this.gameService.currentMoveCount = 0;
   }
 
   private handleRouteParams(): void {
@@ -62,13 +67,18 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   private subscribeToGameEvents(): void {
-
-
     console.log('GameComponent: Subscribing to Game Events');
     this.puzzleCompletedSubscription.add(
       this.gameService.puzzleCompletedEvent$.subscribe(completed => {
         console.log(`GameComponent: Puzzle Completed: ${completed}`);
         if (completed) this.handleGameCompletion();
+      })
+    );
+
+    this.puzzleTestCompletedSubscription.add(
+      this.gameService.puzzleTestCompletedEvent$.subscribe(testCompleted => {
+        console.log(`GameComponent: Test Puzzle Completed: ${testCompleted}`);
+        if (testCompleted) this.handleGameCompletion();
       })
     );
 
@@ -83,6 +93,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private handleGameStateChange(newState: GameState): void {
     console.log(`GameComponent: Handling Game State Change: ${newState}`);
     if ([GameState.TestingPuzzle, GameState.Playing].includes(newState)) {
+      console.log('GameComponent: Game State is TestingPuzzle or Playing, updating board display')
       this.boardDisplay = this.gameService.getDisplayBoard();
       this.changeDetector.detectChanges();
     }
@@ -93,6 +104,7 @@ export class GameComponent implements OnInit, OnDestroy {
     console.log('GameComponent: Unsubscribing from all Subscriptions');
     this.puzzleCompletedSubscription.unsubscribe();
     this.gameStateSubscription.unsubscribe();
+    this.puzzleTestCompletedSubscription.unsubscribe();
   }
 
   onMovePlayer(direction: Direction): void {
@@ -106,7 +118,6 @@ export class GameComponent implements OnInit, OnDestroy {
 
   startGame(playerName: string, puzzleId: string): void {
     console.log(`GameComponent: Starting Game: ${puzzleId}`);
-    this.loading = false;
     if (puzzleId === 'default') {
       console.warn('GameComponent: Default puzzle is not allowed.');
       return;
@@ -116,7 +127,7 @@ export class GameComponent implements OnInit, OnDestroy {
     localStorage.setItem('playerName', playerName);
     
     this.setGameState(GameState.Playing);
-    this.gameService.startNewPuzzle(puzzleId);
+    this.gameService.startPuzzle(puzzleId);
   }
 
   setGameState(newState: GameState): void {
@@ -127,8 +138,16 @@ export class GameComponent implements OnInit, OnDestroy {
 
   restartGame(): void {
     console.log('GameComponent: Restarting Game');
-    if (this.gameService.puzzle) {
+  
+    // Check if the puzzle is being tested and there's data to restart from
+    if (this.gameService.isPuzzleBeingTested && this.gameService.testPuzzleData) {
+      this.gameService.initializePuzzleFromData(this.gameService.testPuzzleData);
+    } else if (this.gameService.puzzle && this.gameService.puzzle.id) {
+      // Normal restart flow for non-test puzzles
       this.startGame(this.gameService.playerName, this.gameService.puzzle.id);
+    } else {
+      console.error('GameComponent: Unable to restart the game. Puzzle data is missing.');
+      console.log('GameComponent: Current GameService state: ', this.gameService);
     }
   }
 
@@ -142,13 +161,14 @@ export class GameComponent implements OnInit, OnDestroy {
     console.log('GameComponent: Going Back to Puzzle Creation');
     this.gameService.setGameState(GameState.CreatingPuzzle);
     this.boardDisplay = this.gameService.getDisplayBoard();
+    this.isLeaderboardModalOpen = false;
     this.changeDetector.detectChanges();
     this.router.navigate(['/create']);
   }
   
   goBack(): void {
     console.log('GameComponent: Going Back');
-    if(this.gameService.gameState == GameState.TestingPuzzle) {
+    if(this.gameService.isPuzzleBeingTested) {
       this.goBackToPuzzleCreation();
     }
     else {
@@ -180,19 +200,12 @@ export class GameComponent implements OnInit, OnDestroy {
   private openLeaderboardModal(): void {
     console.log('GameComponent: Attempting to open Leaderboard Modal');
     if (!this.isLeaderboardModalOpen) {
-        console.log('GameComponent: Leaderboard modal is not open, proceeding to open');
-    } else {
-        console.log('GameComponent: Leaderboard modal is already open');
-    }
-    
-    if (this.gameService.puzzle && this.gameService.gameState === GameState.Completed) {
+      console.log('GameComponent: Opening Leaderboard Modal');
       this.isLeaderboardModalOpen = true;
-      const modalRef = this.dialog.open(LeaderboardModalComponent, {
-        data: {
-          puzzleId: this.gameService.puzzle.id,
-          puzzleScore: this.gameService.puzzleScore
-        }
-      });
+      const modalData = this.gameService.isPuzzleBeingTested 
+        ? { testScores: this.gameService.testScores } 
+        : { puzzleId: this.gameService.puzzle.id, puzzleScore: this.gameService.puzzleScore };
+      const modalRef = this.dialog.open(LeaderboardModalComponent, { data: modalData });
 
       modalRef.afterClosed().subscribe(() => {
         console.log('GameComponent: Leaderboard Modal Closed');

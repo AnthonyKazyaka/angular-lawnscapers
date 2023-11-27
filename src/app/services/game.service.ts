@@ -6,7 +6,7 @@ import { PuzzleData } from '../models/PuzzleData';
 import { ScoreEntry } from '../models/ScoreEntry';
 import { Tile } from '../models/Tile';
 import { GameState } from '../models/GameState';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { PuzzleService } from './puzzle.service';
 import { LeaderboardService } from './leaderboard.service';
@@ -20,8 +20,11 @@ export class GameService {
   theme: string = 'Light';
   puzzle: Puzzle;
   puzzleScore: ScoreEntry | null = null;
+  testScores: ScoreEntry[] = [];
   puzzleBoard: Tile[][];
+  puzzleData: PuzzleData | null = null;
   puzzlesData: PuzzleData[] = [];
+  testPuzzleData: PuzzleData | null = null;
   defaultPuzzleData: PuzzleData = {
     height: 5,
     id: "default",
@@ -35,8 +38,8 @@ export class GameService {
   gameState: GameState = GameState.MainMenu;
   leaderboard: ScoreEntry[] = [];
   
-  gameState$ = new BehaviorSubject<GameState>(this.gameState);
-  puzzlesLoaded$ = new BehaviorSubject<boolean>(false);
+  gameState$ = new Subject<GameState>();
+  puzzlesLoaded$ = new Subject<boolean>();
 
   currentPuzzleId: string = '';
   currentMoveCount: number = 0;
@@ -47,8 +50,8 @@ export class GameService {
   createdPuzzleDimensions: { width: number, height: number } = { width: 3, height: 3 };
   createdPuzzleCompleted: boolean = false;
 
-  puzzleCompletedEvent$: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  puzzleTestCompletedEvent$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  puzzleCompletedEvent$: Subject<boolean> = new Subject();
+  puzzleTestCompletedEvent$: Subject<boolean> = new Subject();
   newestPuzzleId: string;
   isPuzzleBeingTested: boolean = false;
 
@@ -88,7 +91,8 @@ export class GameService {
   setPuzzleTestCompleted(completed: boolean): void {
     this.puzzleTestCompletedEvent$.next(completed);
     this.createdPuzzleCompleted = true;
-    this.isPuzzleBeingTested = false;
+    this.leaderboard = [];
+    this.currentMoveCount = 0;
     this.setGameState(GameState.CreatingPuzzle);
   }
 
@@ -100,7 +104,7 @@ export class GameService {
     console.log("GameService: Setting Puzzle Completed to ", completed);
     this.setGameState(GameState.Completed);
 
-    console.log(`GameService: puzzleCompletedEvent$ emitted to ${this.puzzleTestCompletedEvent$.observers.length} observers`)
+    console.log(`GameService: puzzleCompletedEvent$ emitted to ${this.puzzleCompletedEvent$.observers.length} observers`)
     this.puzzleCompletedEvent$.next(completed);
   }
 
@@ -119,7 +123,7 @@ export class GameService {
     return this.puzzlesData;
   }
 
-  async saveScore(playerName: string, score: number, levelId: string): Promise<ScoreEntry> {
+  createScoreEntry(playerName: string, score: number, levelId: string): ScoreEntry {
     const timestamp: string = new Date().toISOString()
 
     const entry: ScoreEntry = {
@@ -130,7 +134,6 @@ export class GameService {
       timestamp: timestamp,
     };
 
-    await this.leaderboardService.addScoreToLeaderboard(entry);
     return entry;
   }
 
@@ -154,6 +157,7 @@ export class GameService {
 
     if (puzzleData) {
       this.puzzle = new Puzzle(puzzleData);
+      this.isPuzzleBeingTested = false;
       this.puzzleBoard = this.puzzle.puzzleBoard; // Add this line to update the puzzleBoard reference
       this.player = new Player({ x: puzzleData.playerStartPosition.x, y: puzzleData.playerStartPosition.y });
       this.puzzle.puzzleBoard[this.player.position.y][this.player.position.x].occupier = this.player;
@@ -163,14 +167,25 @@ export class GameService {
   }
 
   async initializePuzzleFromData(puzzleData: PuzzleData): Promise<void> {
-    this.isPuzzleBeingTested = true;
     if (puzzleData) {
+      this.setGameState(GameState.TestingPuzzle);
+      this.isPuzzleBeingTested = true;
+      this.testPuzzleData = puzzleData;
       this.puzzle = new Puzzle(puzzleData);
       this.puzzleBoard = this.puzzle.puzzleBoard; // Add this line to update the puzzleBoard reference
       this.player = new Player({ x: puzzleData.playerStartPosition.x, y: puzzleData.playerStartPosition.y });
       this.puzzle.puzzleBoard[this.player.position.y][this.player.position.x].occupier = this.player;
+      this.leaderboard = [];
     } else {
       throw new Error('Provided puzzle data was null');
+    }
+  }
+
+  async reinitializePuzzleFromData(): Promise<void> {
+    if (this.puzzleData) {
+      await this.initializePuzzleFromData(this.puzzleData);
+    } else {
+      throw new Error('Puzzle data was null');
     }
   }
 
@@ -236,41 +251,49 @@ export class GameService {
 
   async handleGameCompletion(): Promise<void> {
     console.log("GameService: Handling game completion");
-    this.setGameState(GameState.Completed);
-    this.saveScore(this.playerName, this.currentMoveCount, this.puzzle.id);
-
+  
     if (this.puzzle) {
-      if (this.gameState == GameState.TestingPuzzle) {
-          console.log("GameService: Puzzle Test Completed");
-          this.setPuzzleTestCompleted(true);
-      }
-      else {
-          console.log("GameService: Puzzle Completed");
-          this.setPuzzleCompleted(true);
+      if (this.isPuzzleBeingTested) {
+        console.log("GameService: Puzzle Test Completed");
+        this.setPuzzleTestCompleted(true);
+        // Add test score to the testScores array
+        const testScoreEntry = this.createScoreEntry(this.playerName, this.currentMoveCount, this.puzzle.id);
+        this.testScores.push(testScoreEntry);
+      } else {
+        console.log(`GameService: Puzzle Completed in ${this.currentMoveCount} moves`);
+        this.setPuzzleCompleted(true);
+        if (!this.isPuzzleBeingTested) {
           await this.submitScore();
-          if (this.puzzle !== null) {
-              this.leaderboard = await this.getLeaderboard(this.puzzle.id);
-          }
+        }
       }
+    }
+  }
+  
+  async updateLeaderboard(): Promise<void> {
+    if (this.puzzle !== null) {
+      console.log("GameService: Updating leaderboard")
+      this.leaderboard = await this.getLeaderboard(this.puzzle.id);
     }
   }
 
   async submitScore(): Promise<void> {
     if (this.puzzle !== null) {
-      this.puzzleScore = await this.saveScore(
-        this.playerName,
-        this.currentMoveCount,
-        this.puzzle.id
-      );
-      if (this.puzzle !== null) {
-        this.leaderboard = await this.getLeaderboard(
-          this.puzzle.id
-        );
-      }
+      this.puzzleScore = this.createScoreEntry(this.playerName, this.currentMoveCount, this.puzzle.id);
+      await this.leaderboardService.addScoreToLeaderboard(this.puzzleScore);
+      this.leaderboard = await this.getLeaderboard(this.puzzle.id);
     }
   }
 
-  startNewPuzzle(puzzleId: string) {
+  submitTestScore(): void {
+    // Find the best (lowest) score from testScores and submit it
+    if (this.testScores.length > 0) {
+      const bestTestScore = this.testScores.reduce((min, p) => p.score < min.score ? p : min, this.testScores[0]);
+      this.leaderboardService.addScoreToLeaderboard(bestTestScore);
+    }
+    this.testScores = []; // Reset test scores
+  }
+
+  startPuzzle(puzzleId: string) {
     console.log("GameService: Starting new puzzle with id", puzzleId);
     // Reset the game state
     this.currentMoveCount = 0;

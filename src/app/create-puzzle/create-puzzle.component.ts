@@ -135,6 +135,7 @@ export class CreatePuzzleComponent implements OnInit {
       };
 
       const newPuzzleData = await this.gameService.savePuzzle(puzzleData);
+      this.gameService.submitTestScore();
       console.log("Saved puzzle data: ", newPuzzleData);
       this.success = true;
       this.gameService.createdPuzzleCompleted = false;
@@ -190,7 +191,6 @@ export class CreatePuzzleComponent implements OnInit {
     
     await this.gameService.initializePuzzleFromData(puzzleData);
 
-    this.gameService.setGameState(GameState.TestingPuzzle);
     this.router.navigate(['/testing']);
   }
 }
