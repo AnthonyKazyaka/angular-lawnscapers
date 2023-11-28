@@ -63,10 +63,9 @@ body, html {
 .leaderboard-section {
   overflow-y: auto; /* Allow scrolling within this section */
   flex-grow: 1; /* Grow to fill the available space */
-  background-color: white;
+  background-color: transparent;
   padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Table Styling */
