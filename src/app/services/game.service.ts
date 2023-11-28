@@ -274,7 +274,7 @@ export class GameService {
       } else {
         console.log(`GameService: Puzzle Completed in ${this.currentMoveCount} moves`);
         this.setPuzzleCompleted(true);
-        if (!this.isPuzzleBeingTested) {
+        if (!this.isPuzzleBeingTested) {          
           await this.submitScore();
         }
       }
@@ -289,10 +289,20 @@ export class GameService {
   }
 
   async submitScore(): Promise<void> {
-    if (this.puzzle !== null) {
+    if (this.puzzle !== null && this.playerName !== '') {
       this.puzzleScore = this.createScoreEntry(this.playerName, this.currentMoveCount, this.puzzle.id);
       await this.leaderboardService.addScoreToLeaderboard(this.puzzleScore);
       this.leaderboard = await this.getLeaderboard(this.puzzle.id);
+
+      // Add score to the playerScores map if it's better than the current score if one exists
+      if (this.playerScores.has(this.puzzle.id)) {
+        const currentScore = this.playerScores.get(this.puzzle.id);
+        if (currentScore && this.currentMoveCount < currentScore) {
+          this.playerScores.set(this.puzzle.id, this.currentMoveCount);
+        }
+      } else {
+        this.playerScores.set(this.puzzle.id, this.currentMoveCount);
+      }
     }
   }
 
