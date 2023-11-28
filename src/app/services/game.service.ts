@@ -92,7 +92,6 @@ export class GameService {
     this.puzzleTestCompletedEvent$.next(completed);
     this.createdPuzzleCompleted = true;
     this.leaderboard = [];
-    this.currentMoveCount = 0;
     this.setGameState(GameState.CreatingPuzzle);
   }
 
@@ -169,6 +168,7 @@ export class GameService {
   async initializePuzzleFromData(puzzleData: PuzzleData): Promise<void> {
     if (puzzleData) {
       this.setGameState(GameState.TestingPuzzle);
+      this.currentMoveCount = 0;
       this.isPuzzleBeingTested = true;
       this.testPuzzleData = puzzleData;
       this.puzzle = new Puzzle(puzzleData);
@@ -284,11 +284,11 @@ export class GameService {
     }
   }
 
-  submitTestScore(): void {
+  async submitTestScore(): Promise<void> {
     // Find the best (lowest) score from testScores and submit it
     if (this.testScores.length > 0) {
       const bestTestScore = this.testScores.reduce((min, p) => p.score < min.score ? p : min, this.testScores[0]);
-      this.leaderboardService.addScoreToLeaderboard(bestTestScore);
+      await this.leaderboardService.addScoreToLeaderboard(bestTestScore);
     }
     this.testScores = []; // Reset test scores
   }

@@ -93,6 +93,8 @@ export class CreatePuzzleComponent implements OnInit {
 
   onCellClick(row: number, col: number): void {
     const cell = this.board[row][col];
+    this.gameService.testScores = [];
+
     if (cell === 'empty') {
       this.board[row][col] = 'obstacle';
     } else if (cell === 'obstacle') {
@@ -135,7 +137,7 @@ export class CreatePuzzleComponent implements OnInit {
       };
 
       const newPuzzleData = await this.gameService.savePuzzle(puzzleData);
-      this.gameService.submitTestScore();
+      await this.gameService.submitTestScore();
       console.log("Saved puzzle data: ", newPuzzleData);
       this.success = true;
       this.gameService.createdPuzzleCompleted = false;

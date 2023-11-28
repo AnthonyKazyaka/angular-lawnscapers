@@ -3,7 +3,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { HelpModalComponent } from '../help-modal/help-modal.component';
 import { PuzzleData } from '../models/PuzzleData';
-import { GameService } from '../services/game.service';
 import { PuzzleService } from '../services/puzzle.service';
 
 @Component({
@@ -16,11 +15,15 @@ export class LevelSelectScreenComponent implements OnInit {
   communityPuzzles: PuzzleData[] = [];
   officialPuzzles: PuzzleData[] = [];
 
-  constructor(private gameService: GameService, private puzzleService: PuzzleService, private router: Router, private dialog: MatDialog) {}
+  constructor(private puzzleService: PuzzleService, private router: Router, private dialog: MatDialog) {}
 
   async ngOnInit(): Promise<void> {
     this.officialPuzzles = await this.puzzleService.getOfficialPuzzlesData();
     this.communityPuzzles = await this.puzzleService.getCommunityPuzzlesData();
+
+    // Sort puzzles in ascending order by area (width * height) and number of obstacles
+    this.officialPuzzles.sort((a, b) => (a.width * a.height + a.obstacles.length) - (b.width * b.height + b.obstacles.length));
+    this.communityPuzzles.sort((a, b) => (a.width * a.height + a.obstacles.length) - (b.width * b.height + b.obstacles.length));
   }
 
   onLevelSelected(puzzle:PuzzleData): void {
