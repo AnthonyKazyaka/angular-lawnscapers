@@ -38,7 +38,7 @@
     </div>
   </div>
   <div *ngIf="activeTab === 'community'" class="leaderboard-section">
-    <div *ngFor="let leaderboardEntry of communityLeaderboards | keyvalue">
+    <div *ngFor="let leaderboardEntry of communityLeaderboards | keyvalue" class="level-leaderboard">
       <h2 class="text-center">{{leaderboardEntry.value[0].name}}</h2>
       <table>
         <thead>
