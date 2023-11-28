@@ -18,8 +18,16 @@
   </div>
   <mat-dialog-content>
     <div *ngIf="selectedTabIndex === 0" class="level-grid">
-      <ng-container *ngFor="let puzzle of officialPuzzles">
-        <app-level-card [puzzle]="puzzle" [showCreatorName]="false" (selected)="onLevelSelected(puzzle)"></app-level-card>
+      <ng-container *ngFor="let group of officialPuzzleGroups">
+        <div class="dimension-divider" [ngClass]="{'collapsed': !group.isOpen}" (click)="toggleGroup(group)">
+          <span>{{ group.dimension }} - {{ group.displayText }}</span>
+          <mat-icon>expand_more</mat-icon>
+        </div>
+        <div [ngClass]="{'hidden': !group.isOpen}" class="puzzle-section">
+          <ng-container *ngFor="let puzzle of group.puzzles">
+            <app-level-card [puzzle]="puzzle" [showCreatorName]="false" (selected)="onLevelSelected(puzzle)"></app-level-card>
+          </ng-container>
+        </div>
       </ng-container>
       <div class="no-puzzles-message" *ngIf="officialPuzzles.length === 0">
         <mat-icon>sentiment_very_dissatisfied</mat-icon>
@@ -27,8 +35,16 @@
       </div>
     </div>
     <div *ngIf="selectedTabIndex === 1" class="level-grid">
-        <ng-container *ngFor="let puzzle of communityPuzzles">
-        <app-level-card [puzzle]="puzzle" (selected)="onLevelSelected(puzzle)"></app-level-card>
+      <ng-container *ngFor="let group of communityPuzzleGroups">
+        <div class="dimension-divider" [ngClass]="{'collapsed': !group.isOpen}" (click)="toggleGroup(group)">
+          <span>{{ group.dimension }} - {{ group.displayText }}</span>
+          <mat-icon>expand_more</mat-icon>
+        </div>
+        <div [ngClass]="{'hidden': !group.isOpen}" class="puzzle-section">
+          <ng-container *ngFor="let puzzle of group.puzzles">
+            <app-level-card [puzzle]="puzzle" (selected)="onLevelSelected(puzzle)"></app-level-card>
+          </ng-container>
+        </div>
       </ng-container>
       <div class="no-puzzles-message" *ngIf="communityPuzzles.length === 0">
         <mat-icon>sentiment_very_dissatisfied</mat-icon>

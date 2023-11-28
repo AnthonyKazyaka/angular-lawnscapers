@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    border-radius: 4px;
     border: 1px solid #ccc;
     padding: 0.75rem;
     width: 120px; /* Adjust width as needed */
@@ -29,6 +30,7 @@
     align-items: center;
     justify-content: center;
     border: 1px solid #ccc;
+    border-radius: 4px;
     padding: 0.4rem;
     cursor: pointer;
     transition: transform 0.2s;
