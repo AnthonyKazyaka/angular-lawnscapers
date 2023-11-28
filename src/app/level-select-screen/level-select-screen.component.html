@@ -25,7 +25,12 @@
         </div>
         <div [ngClass]="{'hidden': !group.isOpen}" class="puzzle-section">
           <ng-container *ngFor="let puzzle of group.puzzles">
-            <app-level-card [puzzle]="puzzle" [showCreatorName]="false" (selected)="onLevelSelected(puzzle)"></app-level-card>
+            <app-level-card 
+              [puzzle]="puzzle" 
+              [playerScore]="this.gameService.playerScores.get(puzzle.id) || null"
+              [showCreatorName]="false" 
+              (selected)="onLevelSelected(puzzle)">
+            </app-level-card>
           </ng-container>
         </div>
       </ng-container>
@@ -42,7 +47,11 @@
         </div>
         <div [ngClass]="{'hidden': !group.isOpen}" class="puzzle-section">
           <ng-container *ngFor="let puzzle of group.puzzles">
-            <app-level-card [puzzle]="puzzle" (selected)="onLevelSelected(puzzle)"></app-level-card>
+            <app-level-card 
+            [puzzle]="puzzle" 
+            [playerScore]="this.gameService.playerScores.get(puzzle.id) || null"
+            (selected)="onLevelSelected(puzzle)">
+          </app-level-card>
           </ng-container>
         </div>
       </ng-container>

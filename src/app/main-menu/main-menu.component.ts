@@ -14,7 +14,6 @@ import { HelpModalComponent } from '../help-modal/help-modal.component';
 })
 export class MainMenuComponent implements OnInit {
   loading: boolean = true;
-  playerName: string = '';
   selectedPuzzleId: string = '';
   preSelectedPuzzleId: string = '';
 
@@ -35,8 +34,7 @@ export class MainMenuComponent implements OnInit {
 
     const savedPlayerName = localStorage.getItem('playerName');
     if (savedPlayerName) {
-      this.playerName = savedPlayerName;
-      this.gameService.playerName = savedPlayerName;
+      this.setPlayerName(savedPlayerName);
     }
 
     this.loading = false;
@@ -47,27 +45,15 @@ export class MainMenuComponent implements OnInit {
   }
 
   navigateToLeaderboards(): void {
-    if (!this.playerName) {
-      this.openPlayerNameDialog();
-      return;
-    }
-    this.router.navigate(['/leaderboards']);
+    this.validatePlayerAndNavigate('/leaderboards');
   }
 
   onLevelSelectClick(): void {
-    if (!this.playerName) {
-      this.openPlayerNameDialog();
-      return;
-    }
-    this.router.navigate(['/level-select']);
+    this.validatePlayerAndNavigate('/level-select');
   }
 
   createPuzzle(): void {
-    if (!this.playerName) {
-      this.openPlayerNameDialog();
-      return;
-    }
-    this.router.navigate(['/create']);
+    this.validatePlayerAndNavigate('/create');
   }
 
   openPlayerNameDialog(): void {
@@ -76,11 +62,15 @@ export class MainMenuComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       // name is required, so if the user closes the dialog without entering a name, don't do anything
       if (result) {
-        this.playerName = result;
-        this.gameService.playerName = result;
-        localStorage.setItem('playerName', result);
+        this.setPlayerName(result);
       }
     });
+  }
+
+  setPlayerName(name: string): void {
+    this.gameService.playerName = name;
+    localStorage.setItem('playerName', name);
+    this.gameService.fetchAndStorePlayerScores();
   }
 
   openSettingsModal(): void {
@@ -95,5 +85,17 @@ export class MainMenuComponent implements OnInit {
 
   openHowToPlayModal(): void {
     this.openHelpModal();
+  }
+
+  isPlayerNameSet(): boolean {
+    return this.gameService.playerName !== '';
+  }
+
+  validatePlayerAndNavigate(route: string): void {
+    if (!this.isPlayerNameSet()) {
+      this.openPlayerNameDialog();
+      return;
+    }
+    this.router.navigate([route]);
   }
 }

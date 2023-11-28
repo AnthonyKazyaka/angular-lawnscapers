@@ -75,10 +75,6 @@
     overflow-y: auto;
 }
 
-.level-card:hover {
-    transform: scale(1.05);
-}
-
 .back-to-menu-button {
     display: block;
     margin: 1rem auto;
@@ -106,7 +102,7 @@
     gap: 10px; /* Space between cards */
     padding: 10px 0;
     margin-bottom: 15px;
-  }
+}
   
 .hidden {
     display: none;

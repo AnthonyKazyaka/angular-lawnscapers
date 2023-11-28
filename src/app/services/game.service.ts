@@ -21,6 +21,7 @@ export class GameService {
   puzzle: Puzzle;
   puzzleScore: ScoreEntry | null = null;
   testScores: ScoreEntry[] = [];
+  playerScores: Map<string, number> = new Map();
   puzzleBoard: Tile[][];
   puzzleData: PuzzleData | null = null;
   puzzlesData: PuzzleData[] = [];
@@ -65,6 +66,10 @@ export class GameService {
 
   async initializeApp(): Promise<void> {
     console.log("Initializing app...")
+    
+    this.playerName = localStorage.getItem('playerName') ?? '';
+    this.theme = localStorage.getItem('theme') || this.theme;
+    
     await this.fireAuth.signInAnonymously().catch((error) => {
       console.error("Error signing in anonymously:", error);
     });
@@ -75,17 +80,24 @@ export class GameService {
       this.newestPuzzleId = puzzles[0].id;
       this.puzzle = new Puzzle(puzzles[0]);
       this.puzzleBoard = this.puzzle.puzzleBoard;
+      if(this.playerName != '') {
+        this.fetchAndStorePlayerScores();
+      }
     } else {
       console.warn('No puzzles found. Default puzzle will be used.');
     }
-
-    this.playerName = localStorage.getItem('playerName') ?? '';
-
-    this.theme = localStorage.getItem('theme') || this.theme;
   }  
 
   get tiles(): Tile[][] {
     return this.puzzle.puzzleBoard;
+  }
+
+  async fetchAndStorePlayerScores(): Promise<void> {
+    console.log("GameService: Fetching and storing player scores")
+    if (this.playerName) {
+      const scores = await this.leaderboardService.getPlayerBestScores(this.playerName);
+      this.playerScores = scores;
+    }
   }
 
   setPuzzleTestCompleted(completed: boolean): void {

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { HelpModalComponent } from '../help-modal/help-modal.component';
 import { PuzzleData } from '../models/PuzzleData';
 import { PuzzleService } from '../services/puzzle.service';
+import { GameService } from '../services/game.service';
 
 interface PuzzleGroup {
   dimension: string;
@@ -24,7 +25,7 @@ export class LevelSelectScreenComponent implements OnInit {
   officialPuzzleGroups: PuzzleGroup[] = [];
   communityPuzzleGroups: PuzzleGroup[] = [];
 
-  constructor(private puzzleService: PuzzleService, private router: Router, private dialog: MatDialog) {}
+  constructor(public gameService: GameService, private puzzleService: PuzzleService, private router: Router, private dialog: MatDialog) { }
 
   async ngOnInit(): Promise<void> {
     this.officialPuzzles = await this.puzzleService.getOfficialPuzzlesData();
@@ -36,6 +37,11 @@ export class LevelSelectScreenComponent implements OnInit {
     
     this.officialPuzzleGroups = this.groupPuzzlesByDimensions(this.officialPuzzles);
     this.communityPuzzleGroups = this.groupPuzzlesByDimensions(this.communityPuzzles);
+
+    if(this.gameService.playerScores.size === 0) {
+      this.gameService.fetchAndStorePlayerScores();
+    }
+    console.log('LevelSelectScreenComponent: GameService.playerScores: ', this.gameService.playerScores);
   }
 
   onLevelSelected(puzzle:PuzzleData): void {

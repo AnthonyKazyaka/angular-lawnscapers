@@ -46,6 +46,21 @@ export class LeaderboardService {
     return rankedScoreEntryMap;
   }
 
+  async getPlayerBestScores(playerName: string): Promise<Map<string, number>> {
+    const allScores = await this.getAllLeaderboardScores();
+    const playerBestScores = new Map<string, number>();
+
+    allScores.forEach((scores, levelId) => {
+      const playerScores = scores.filter(score => score.playerName === playerName);
+      if (playerScores.length > 0) {
+        const bestScore = Math.min(...playerScores.map(score => score.score));
+        playerBestScores.set(levelId, bestScore);
+      }
+    });
+
+    return playerBestScores;
+  }
+
   sortLeaderboardsByUser(leaderboards: Map<string, RankedScoreEntry[]>, playerName: string): Map<string, RankedScoreEntry[]> {
     const playerLeaderboard: Map<string, RankedScoreEntry[]> = new Map();
 
