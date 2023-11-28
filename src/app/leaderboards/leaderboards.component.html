@@ -1,51 +1,62 @@
 <div class="leaderboards-page">
-    <div class="tab">
-      <button class="tablinks" [class.active]="activeTab === 'official'" (click)="activeTab = 'official'">Official Puzzles</button>
-      <button class="tablinks" [class.active]="activeTab === 'community'" (click)="activeTab = 'community'">Community Puzzles</button>
-    </div>
-  
-      <div *ngIf="activeTab === 'official'">
-        <div *ngFor="let leaderboardEntry of officialLeaderboards | keyvalue">
-          <h2 class="text-center">{{leaderboardEntry.value[0].name}}</h2>
-          <table>
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Player</th>
-                    <th>Score</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let scoreEntry of leaderboardEntry.value">
-                    <td>{{scoreEntry.rank}}</td>
-                    <td>{{scoreEntry.playerName}}</td>
-                    <td>{{scoreEntry.score}}</td>
-                </tr>
-            </tbody>
-          </table>
-        </div>
+  <button mat-icon-button (click)="openHelpModal()" class="help-button">
+    <mat-icon>help_outline</mat-icon>
+  </button>
+  <div class="tabs-wrapper">
+    <div class="custom-tabs">
+      <div class="tab"
+           [ngClass]="{ 'active': activeTabIndex === 0 }"
+           (click)="onTabChange('official')">
+        Official Leaderboards
       </div>
-    
-      <div *ngIf="activeTab === 'community'">
-        <div *ngFor="let leaderboardEntry of communityLeaderboards | keyvalue">
-          <h2 class="text-center">{{leaderboardEntry.value[0].name}}</h2>
-          <table>
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Player</th>
-                    <th>Score</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let scoreEntry of leaderboardEntry.value">
-                    <td>{{scoreEntry.rank}}</td>
-                    <td>{{scoreEntry.playerName}}</td>
-                    <td>{{scoreEntry.score}}</td>
-                </tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="tab"
+           [ngClass]="{ 'active': activeTabIndex === 1 }"
+           (click)="onTabChange('community')">
+        Community Leaderboards
       </div>
     </div>
-  
+  </div>
+  <div *ngIf="activeTab === 'official'" class="leaderboard-section">
+    <div *ngFor="let leaderboardEntry of officialLeaderboards | keyvalue" class="level-leaderboard">
+      <h2 class="text-center">{{leaderboardEntry.value[0].name}}</h2>
+      <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let scoreEntry of leaderboardEntry.value">
+                <td>{{scoreEntry.rank}}</td>
+                <td>{{scoreEntry.playerName}}</td>
+                <td>{{scoreEntry.score}}</td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div *ngIf="activeTab === 'community'" class="leaderboard-section">
+    <div *ngFor="let leaderboardEntry of communityLeaderboards | keyvalue" class="level-leaderboard">
+      <h2 class="text-center">{{leaderboardEntry.value[0].name}}</h2>
+      <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let scoreEntry of leaderboardEntry.value">
+                <td>{{scoreEntry.rank}}</td>
+                <td>{{scoreEntry.playerName}}</td>
+                <td>{{scoreEntry.score}}</td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <button mat-button color="primary" class="back-to-menu-button" (click)="goBackToMainMenu()">Back to Main Menu</button>
+</div>

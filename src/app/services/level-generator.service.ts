@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Direction, getDirectionOffset } from '../direction/Direction';
+import { Direction, getDirectionOffset } from '../models/Direction';
 import { Puzzle } from '../models/Puzzle';
 import { PuzzleData } from '../models/PuzzleData';
+import { GameService } from './game.service';
 
 type State = {
   position: { x: number; y: number };
@@ -13,7 +14,7 @@ type State = {
 })
 export class LevelGeneratorService {
 
-  constructor() { }
+  constructor(public gameService: GameService) { }
 
   generateRandomLevel(minWidth: number, maxWidth: number, minHeight: number, maxHeight: number): PuzzleData {
     let puzzleData: PuzzleData;
@@ -40,8 +41,10 @@ export class LevelGeneratorService {
         }
       }
 
+      var currentDate = new Date();
+
       puzzleData = {
-        id: 'generated-level',
+        id: `generated-level-${this.gameService.playerName}-${currentDate.getTime()}`,
         name: 'Generated Level',
         creator: 'Level Generator',
         width,

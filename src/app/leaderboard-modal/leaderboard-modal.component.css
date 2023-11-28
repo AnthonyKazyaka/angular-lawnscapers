@@ -1,3 +1,7 @@
 .highlight {
   background-color: #8cdcf0; /* You can use any color you prefer */
 }
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}

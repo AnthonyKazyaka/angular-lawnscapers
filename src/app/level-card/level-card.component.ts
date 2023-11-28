@@ -9,7 +9,16 @@ import { PuzzleData } from '../models/PuzzleData';
 export class LevelCardComponent {
   @Input() puzzle!: PuzzleData;
   @Input() showCreatorName: boolean = true;
+  @Input() playerScore: number | null = null;
   @Output() selected = new EventEmitter<PuzzleData>();
+  isCompleted: boolean = false;
+
+  ngOnInit(): void {
+    console.log('LevelCardComponent: Initialized');
+    this.isCompleted = this.playerScore !== null;
+    console.log('LevelCardComponent: isCompleted: ', this.isCompleted);
+    console.log('LevelCardComponent: playerScore: ', this.playerScore);
+  }
 
   onSelected(): void {
     this.selected.emit(this.puzzle);

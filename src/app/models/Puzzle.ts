@@ -2,7 +2,7 @@ import { Player } from './Player';
 import { PuzzleData } from "./PuzzleData";
 import { Tile } from "./Tile";
 import { Obstacle } from './Obstacle';
-import { Direction, getDirectionOffset } from "../direction/Direction";
+import { Direction, getDirectionOffset } from "./Direction";
 
 export class Puzzle {
   public id: string;
@@ -56,25 +56,32 @@ export class Puzzle {
   
   getDisplayBoard(): string[][] {
     const displayBoard: string[][] = [];
-  
+
     for (let i = 0; i < this.height; i++) {
       displayBoard[i] = [];
       for (let j = 0; j < this.width; j++) {
-        if (this.player.position.y === i && this.player.position.x === j) { // Swap i and j here
-          displayBoard[i][j] = "player";
-        } else {
-          const tile = this.puzzleBoard[i][j];
-          displayBoard[i][j] = tile.isOccupiable
-            ? tile.visited
-              ? "visited"
-              : "unvisited"
-            : "obstacle";
+        const tile = this.puzzleBoard[i][j];
+        const baseTileType = tile.isOccupiable
+          ? tile.visited ? 'visited' : 'unvisited'
+          : 'obstacle';
+
+        const isPlayerHere = this.player.position.y === i && this.player.position.x === j;
+
+        // Append player class if the player is here
+        displayBoard[i][j] = isPlayerHere 
+          ? `player ${this.player.getPlayerClass(this.player.direction)}` 
+          : baseTileType;
+
+        if (isPlayerHere) {
+          tile.visited = true;
         }
       }
     }
-  
+
     return displayBoard;
-  }  
+  }
+
+  
 
   addObstacle(obstacle: { x: number; y: number; }): void {
     this.puzzleBoard[obstacle.y][obstacle.x].isOccupiable = false;

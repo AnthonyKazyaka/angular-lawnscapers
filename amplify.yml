@@ -3,11 +3,12 @@ frontend:
   phases:
     preBuild:
       commands:
+        - chmod +x ./dev/set-env.sh
+        - cd dev && ./set-env.sh && cd ..
         - npm install -g @angular/cli
         - npm ci
     build:
       commands:
-        - node ./dev/set-env.ts
         - ng build --configuration production
   artifacts:
     baseDirectory: dist/angular-lawnscapers

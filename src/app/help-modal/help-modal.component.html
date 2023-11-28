@@ -47,6 +47,26 @@
     <p>Good luck and have fun!</p>
 </div>
 
+<div *ngIf="helpContext === 'leaderboards'">
+    <h2>Understanding the Leaderboards</h2>
+    <p>
+        The leaderboards display the top scores achieved by players on each level. You can access the leaderboards from the main menu by selecting either 'Official Levels' or 'Community Levels.' These sections showcase the best performances for each type of puzzle.
+    </p>
+    <p>
+        <strong>How to View Scores:</strong> Leaderboards are sorted by rank, showing the player's name and their achieved score. Scores are ordered from the lowest (best) to the highest. If you've played a level, look for your name to see how you rank among other players!
+    </p>
+    <p>
+        <strong>Submitting Your Score:</strong> Achieved a high score? It will automatically submit your high score to the leaderboards when you complete a level, so no worries about missing out on the glory!
+    </p>
+    <p>
+        <strong>Tips for High Scores:</strong> Plan your moves carefully and aim to complete levels using the fewest moves possible. Remember, lower scores indicate better performance!
+    </p>
+    <p>
+        <strong>Leaderboard Updates:</strong> Leaderboards are updated regularly to reflect new high scores. Keep playing and improving your skills to climb up the ranks!
+    </p>
+</div>
+
+
 <form (submit)="submitFeedback(feedbackTextarea.value)" class="submit-feedback-form">
   <label for="feedbackTextarea"><h3>What feedback do you have?</h3></label>
   <textarea #feedbackTextarea id="feedbackTextarea" name="feedbackTextarea" rows="5"></textarea>

@@ -1,10 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { GameService } from '../services/game.service';
-import { ScoreEntry } from "../models/ScoreEntry";
-import { Player } from "../models/Player";
 import { MatDialog } from '@angular/material/dialog';
 import { LeaderboardModalComponent } from '../leaderboard-modal/leaderboard-modal.component';
-import { Direction } from '../direction/Direction';
+import { Direction } from '../models/Direction';
 import { GameState } from '../models/GameState';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -15,135 +13,162 @@ import { HelpModalComponent } from '../help-modal/help-modal.component';
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.css']
 })
-export class GameComponent implements OnInit {
+export class GameComponent implements OnInit, OnDestroy {
   GameState = GameState;
   selectedPuzzleId: string = '';
-  leaderboard: ScoreEntry[] = [];
-  player: Player = this.gameService.player ?? new Player({ x: 0, y: 0 });
   boardDisplay: string[][] = [];
-  moveCount: number = 0;
-  puzzleScore: ScoreEntry | null = null;
   loading: boolean = true;
-  puzzleCompleted: boolean = false;
-  subscription: Subscription = new Subscription;
+  private isLeaderboardModalOpen: boolean = false;
+  private puzzleCompletedSubscription: Subscription = new Subscription();
+  private puzzleTestCompletedSubscription: Subscription = new Subscription();
+  private gameStateSubscription: Subscription = new Subscription();
 
-  constructor(public gameService: GameService, private dialog: MatDialog, private changeDetector: ChangeDetectorRef, private router: Router, private route: ActivatedRoute) { }
+  constructor(
+    public gameService: GameService, 
+    private dialog: MatDialog, 
+    private changeDetector: ChangeDetectorRef, 
+    private router: Router, 
+    private route: ActivatedRoute
+  ) {}
 
-  get puzzle() {
-    return this.gameService.puzzle;
+  ngOnInit(): void {
+    console.log('GameComponent: Initialized');
+    this.initializePlayer();
+    this.handleRouteParams();
+    this.subscribeToGameEvents();
+
+    this.loading = false;
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnDestroy(): void {
+    console.log('GameComponent: Destroyed');
+    this.unsubscribeAll();
+  }
+
+  private initializePlayer(): void {
+    console.log('GameComponent: Initializing Player');
     const savedPlayerName = localStorage.getItem('playerName');
     if (!this.gameService.playerName && savedPlayerName) {
       this.gameService.playerName = savedPlayerName;
     }
 
-    this.route.paramMap.subscribe(async (params) => {
+    this.gameService.currentMoveCount = 0;
+  }
+
+  private handleRouteParams(): void {
+    console.log('GameComponent: Handling Route Parameters');
+    this.route.paramMap.subscribe(params => {
       const puzzleId = params.get('puzzleId');
+      console.log(`GameComponent: Puzzle ID from route: ${puzzleId}`);
       if (puzzleId) {
-        this.selectedPuzzleId = puzzleId;
-        this.gameService.currentPuzzleId = puzzleId;
-        // Call startGame when the component initializes with a valid puzzleId
         this.startGame(this.gameService.playerName, puzzleId);
       }
     });
-
-    this.loading = false;
-
-    this.gameService.puzzleCompletedEvent.subscribe((completed: boolean) => {
-      this.puzzleCompleted = completed;
-    });
-
-    this.subscription = this.gameService.gameState$.subscribe((newState: GameState) => {
-      if (newState === GameState.TestingPuzzle || newState === GameState.Playing) {
-        this.boardDisplay = this.gameService.getDisplayBoard();
-      }
-    });
-
-    this.gameService.puzzleTestCompletedEvent.subscribe((completed: boolean) => {
-      if (completed) {
-        this.gameService.setGameState(GameState.CreatingPuzzle);
-        this.boardDisplay = this.gameService.getDisplayBoard(); // Update the board display
-        this.changeDetector.detectChanges(); // Manually trigger change detection
-      }
-    });
   }
 
-  logCurrentGameState(): void {
-    console.log('Current game state:', GameState[this.gameService.gameState]);
+  private subscribeToGameEvents(): void {
+    console.log('GameComponent: Subscribing to Game Events');
+    this.puzzleCompletedSubscription.add(
+      this.gameService.puzzleCompletedEvent$.subscribe(completed => {
+        console.log(`GameComponent: Puzzle Completed: ${completed}`);
+        if (completed) this.handleGameCompletion();
+      })
+    );
+
+    this.puzzleTestCompletedSubscription.add(
+      this.gameService.puzzleTestCompletedEvent$.subscribe(testCompleted => {
+        console.log(`GameComponent: Test Puzzle Completed: ${testCompleted}`);
+        if (testCompleted) this.handleGameCompletion();
+      })
+    );
+
+    this.gameStateSubscription.add(
+      this.gameService.gameState$.subscribe(newState => {
+        console.log(`GameComponent: Game State Changed: ${newState}`);
+        this.handleGameStateChange(newState);
+      })
+    );
+  }
+
+  private handleGameStateChange(newState: GameState): void {
+    console.log(`GameComponent: Handling Game State Change: ${newState}`);
+    if ([GameState.TestingPuzzle, GameState.Playing].includes(newState)) {
+      console.log('GameComponent: Game State is TestingPuzzle or Playing, updating board display')
+      this.boardDisplay = this.gameService.getDisplayBoard();
+      this.changeDetector.detectChanges();
+    }
+    console.log(`GameComponent: Game State: ${this.gameService.gameState}`);
+  }
+
+  private unsubscribeAll(): void {
+    console.log('GameComponent: Unsubscribing from all Subscriptions');
+    this.puzzleCompletedSubscription.unsubscribe();
+    this.gameStateSubscription.unsubscribe();
+    this.puzzleTestCompletedSubscription.unsubscribe();
   }
 
   onMovePlayer(direction: Direction): void {
-    if (this.gameService.puzzle && this.gameService.canMovePlayer(direction) && !(this.gameService.gameState == GameState.Completed)) {
-      this.gameService.puzzle.movePlayerUntilStopped(direction);
-      this.moveCount++;
-      this.boardDisplay = this.puzzle.getDisplayBoard();
-      this.changeDetector.detectChanges(); // Manually trigger change detection
-      if (this.gameService.puzzle.isComplete) {
-        setTimeout(() => {
-          this.handleGameCompletion();
-        }, 100);
-      }
+    if (this.gameService.puzzle && this.gameService.player && this.gameService.canMovePlayer(direction) && !(this.gameService.gameState == GameState.Completed)) {
+      console.log(`GameComponent: Player Move: ${direction}`);
+      this.gameService.movePlayer(direction);
+      this.boardDisplay = this.gameService.puzzle.getDisplayBoard();
+      this.changeDetector.detectChanges();
     }
   }
 
   startGame(playerName: string, puzzleId: string): void {
+    console.log(`GameComponent: Starting Game: ${puzzleId}`);
     if (puzzleId === 'default') {
-      console.warn('Default puzzle is not allowed.');
+      console.warn('GameComponent: Default puzzle is not allowed.');
       return;
     }
     
     this.gameService.playerName = playerName;
     localStorage.setItem('playerName', playerName);
-
+    
     this.setGameState(GameState.Playing);
-    this.moveCount = 0;
-
-    this.gameService.initializePuzzle(puzzleId).then(() => {
-      // Use the player instance from GameService
-      this.player = this.gameService.player;
-      if (!this.player) {
-        console.error('Player not initialized');
-      }
-
-      this.boardDisplay = this.puzzle.getDisplayBoard();
-      this.changeDetector.detectChanges();
-    }).catch(error => {
-      console.error(error);
-    });
+    this.gameService.startPuzzle(puzzleId);
   }
 
   setGameState(newState: GameState): void {
+    console.log(`GameComponent: Setting Game State: ${newState}`);
     this.gameService.setGameState(newState);
-    this.logCurrentGameState();
-    this.changeDetector.detectChanges(); // Manually trigger change detection
+    this.changeDetector.detectChanges();
   }
 
   restartGame(): void {
-    if (this.gameService.puzzle) {
+    console.log('GameComponent: Restarting Game');
+  
+    // Check if the puzzle is being tested and there's data to restart from
+    if (this.gameService.isPuzzleBeingTested && this.gameService.testPuzzleData) {
+      this.gameService.initializePuzzleFromData(this.gameService.testPuzzleData);
+    } else if (this.gameService.puzzle && this.gameService.puzzle.id) {
+      // Normal restart flow for non-test puzzles
       this.startGame(this.gameService.playerName, this.gameService.puzzle.id);
+    } else {
+      console.error('GameComponent: Unable to restart the game. Puzzle data is missing.');
+      console.log('GameComponent: Current GameService state: ', this.gameService);
     }
   }
 
-  completeGame() {
-    this.gameService.setPuzzleCompleted(true);
-  }
-
   returnToLevelSelect(): void {
+    console.log('GameComponent: Returning to Level Select');
     this.gameService.setGameState(GameState.SelectingLevel);
     this.router.navigate(['/level-select']);
   }
 
   goBackToPuzzleCreation(): void {
+    console.log('GameComponent: Going Back to Puzzle Creation');
     this.gameService.setGameState(GameState.CreatingPuzzle);
-    this.boardDisplay = this.gameService.getDisplayBoard(); // Update the board display
-    this.changeDetector.detectChanges(); // Manually trigger change detection
+    this.boardDisplay = this.gameService.getDisplayBoard();
+    this.isLeaderboardModalOpen = false;
+    this.changeDetector.detectChanges();
     this.router.navigate(['/create']);
   }
   
   goBack(): void {
-    if(this.gameService.gameState == GameState.TestingPuzzle) {
+    console.log('GameComponent: Going Back');
+    if(this.gameService.isPuzzleBeingTested) {
       this.goBackToPuzzleCreation();
     }
     else {
@@ -152,59 +177,39 @@ export class GameComponent implements OnInit {
   }
 
   openHelpModal(): void {
+    console.log('GameComponent: Opening Help Modal');
     this.dialog.open(HelpModalComponent, {
       data: this.gameService.gameState === GameState.TestingPuzzle ? 'testing' : 'playing'
     });
   }
 
-  async handleGameCompletion(): Promise<void> {
-    if (this.gameService.puzzle) {
-      if (this.gameService.gameState == GameState.TestingPuzzle) {
-        this.gameService.setGameState(GameState.CreatingPuzzle);
-        this.gameService.setPuzzleTestCompleted(true);
-        this.goBackToPuzzleCreation();
-      }
-      else {
-        this.setGameState(GameState.Completed);
-        await this.submitScore();
-
-        if (this.gameService.puzzle !== null) {
-          this.leaderboard = await this.gameService.getLeaderboard(this.gameService.puzzle.id);
-        }
-
-        this.openLeaderboardModal();
-      }
-    }
-  }
-
-  async submitScore(): Promise<void> {
-    if (this.gameService.puzzle !== null) {
-      this.puzzleScore = await this.gameService.saveScore(
-        this.gameService.playerName,
-        this.moveCount,
-        this.gameService.puzzle.id
-      );
-      if (this.gameService.puzzle !== null) {
-        this.leaderboard = await this.gameService.getLeaderboard(
-          this.gameService.puzzle.id
-        );
-      }
+  private handleGameCompletion(): void {
+    console.log('GameComponent: Handling Game Completion');
+    if (!this.isLeaderboardModalOpen) {
+      this.openLeaderboardModal();
     }
   }
 
   async promptRestart(): Promise<void> {
+    console.log('GameComponent: Prompting Restart');
     if (this.gameService.gameState == GameState.Completed || confirm('Are you sure you want to restart the game?')) {
       this.restartGame();
     }
   }
 
-  openLeaderboardModal(): void {
-    if (this.gameService.puzzle !== null && !this.gameService.isPuzzleBeingTested) {
-      this.dialog.open(LeaderboardModalComponent, {
-        data: {
-          puzzleId: this.gameService.puzzle.id,
-          puzzleScore: this.puzzleScore
-        }
+  private openLeaderboardModal(): void {
+    console.log('GameComponent: Attempting to open Leaderboard Modal');
+    if (!this.isLeaderboardModalOpen) {
+      console.log('GameComponent: Opening Leaderboard Modal');
+      this.isLeaderboardModalOpen = true;
+      const modalData = this.gameService.isPuzzleBeingTested 
+        ? { testScores: this.gameService.testScores } 
+        : { puzzleId: this.gameService.puzzle.id, puzzleScore: this.gameService.puzzleScore };
+      const modalRef = this.dialog.open(LeaderboardModalComponent, { data: modalData });
+
+      modalRef.afterClosed().subscribe(() => {
+        console.log('GameComponent: Leaderboard Modal Closed');
+        this.isLeaderboardModalOpen = false;
       });
     }
   }

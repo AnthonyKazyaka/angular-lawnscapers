@@ -47,7 +47,7 @@ export class CreatePuzzleComponent implements OnInit {
     this.playerPosition = this.gameService.createdPuzzlePlayerPosition;
     this.puzzleCompleted = this.gameService.createdPuzzleCompleted;
     this.createForm();
-    this.gameService.puzzleTestCompletedEvent.subscribe((completed: boolean) => {
+    this.gameService.puzzleTestCompletedEvent$.subscribe((completed: boolean) => {
       this.puzzleCompleted = completed;
     });
   }
@@ -93,6 +93,8 @@ export class CreatePuzzleComponent implements OnInit {
 
   onCellClick(row: number, col: number): void {
     const cell = this.board[row][col];
+    this.gameService.testScores = [];
+
     if (cell === 'empty') {
       this.board[row][col] = 'obstacle';
     } else if (cell === 'obstacle') {
@@ -135,6 +137,7 @@ export class CreatePuzzleComponent implements OnInit {
       };
 
       const newPuzzleData = await this.gameService.savePuzzle(puzzleData);
+      await this.gameService.submitTestScore();
       console.log("Saved puzzle data: ", newPuzzleData);
       this.success = true;
       this.gameService.createdPuzzleCompleted = false;
@@ -190,7 +193,6 @@ export class CreatePuzzleComponent implements OnInit {
     
     await this.gameService.initializePuzzleFromData(puzzleData);
 
-    this.gameService.setGameState(GameState.TestingPuzzle);
     this.router.navigate(['/testing']);
   }
 }

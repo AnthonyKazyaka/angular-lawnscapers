@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PuzzleBoardComponent } from './puzzle-board.component';
 import { Puzzle } from '../models/Puzzle';
 import { Player } from '../models/Player';
-import { Direction } from '../direction/Direction';
+import { Direction } from '../models/Direction';
 
 describe('PuzzleBoardComponent', () => {
   let component: PuzzleBoardComponent;
