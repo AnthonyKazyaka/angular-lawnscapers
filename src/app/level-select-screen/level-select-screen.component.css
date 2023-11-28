@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh; /* Ensure full viewport height */
+    height: 100%; /* Ensure full viewport height */
     width: 100%;
     background-color: #e0f2f1;
 }

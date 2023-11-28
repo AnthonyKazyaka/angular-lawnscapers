@@ -1,9 +1,19 @@
 /* General Styles */
+body, html {
+  height: 100%; /* Ensure the full height of the page is used */
+  margin: 0; /* Remove default margin */
+}
+
 .leaderboards-page {
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  height: 100vh; /* Full viewport height */
   background-color: #e0f2f1; /* Assuming a light, calming color scheme */
-  padding: 20px;
-  max-height: 90vh;
+}
+
+/* Tab and Header Styling */
+.tabs-wrapper {
+  flex-shrink: 0; /* Prevent tabs from shrinking */
 }
 
 .text-center {
@@ -14,12 +24,6 @@
 }
 
 /* Tab Styling */
-.tabs-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
 .custom-tabs {
   display: flex;
   justify-content: center;
@@ -32,8 +36,6 @@
   text-align: center;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.6);
-  user-select: none;
-  position: relative;
   transition: color 0.2s;
 }
 
@@ -57,16 +59,22 @@
   background-color: #3f51b5;
 }
 
-.level-leaderboard {
-  padding: 1rem 1rem 1.5rem 1rem;
+/* Leaderboard Section Styling */
+.leaderboard-section {
+  overflow-y: auto; /* Allow scrolling within this section */
+  flex-grow: 1; /* Grow to fill the available space */
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Table Styling */
 table {
   width: 100%;
   margin: auto;
-  border-collapse: collapse; /* For a cleaner look */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  border-collapse: collapse;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 th, td {
@@ -76,7 +84,7 @@ th, td {
 }
 
 th {
-  background-color: green; /* Primary color for headers */
+  background-color: green;
   color: white;
   font-weight: bold;
 }
@@ -85,10 +93,19 @@ tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 
-/* Section Styling */
-.leaderboard-section {
-  background-color: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+/* Fixed Position Elements */
+.help-button {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+}
+
+.back-to-menu-button {
+  display: block;
+  margin: 1rem auto;
+}
+
+.level-leaderboard {
+  padding: 1rem 1rem 1.5rem 1rem;
 }

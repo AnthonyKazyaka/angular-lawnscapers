@@ -5,6 +5,9 @@ import { RankedScoreEntry } from '../models/RankedScoreEntry';
 import { Puzzle } from '../models/Puzzle';
 import { PuzzleService } from '../services/puzzle.service';
 import { GameService } from '../services/game.service';
+import { MatDialog } from '@angular/material/dialog';
+import { HelpModalComponent } from '../help-modal/help-modal.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-leaderboards',
@@ -17,7 +20,7 @@ export class LeaderboardsComponent implements OnInit {
   activeTab: 'official' | 'community' = 'official';
   activeTabIndex = 0;
 
-  constructor(private gameService: GameService, private leaderboardService: LeaderboardService, private puzzleService: PuzzleService) { }
+  constructor(private gameService: GameService, private leaderboardService: LeaderboardService, private puzzleService: PuzzleService, private router: Router, private dialog: MatDialog) { }
 
   async ngOnInit(): Promise<void> {
     const scoreEntryMap: Map<string, ScoreEntry[]> = await this.leaderboardService.getAllLeaderboardScores();
@@ -52,5 +55,15 @@ export class LeaderboardsComponent implements OnInit {
 
     document.getElementById(tabName)!.style.display = 'block';
     (evt.target as HTMLElement).classList.add('active');
+  }
+
+  openHelpModal(): void {
+    this.dialog.open(HelpModalComponent, {
+      data: 'leaderboards'
+    });
+  }
+
+  goBackToMainMenu(): void {
+    this.router.navigate(['/']);
   }
 }
