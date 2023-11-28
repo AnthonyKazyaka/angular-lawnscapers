@@ -34,7 +34,7 @@ export class LeaderboardsComponent implements OnInit {
     this.communityLeaderboards = this.leaderboardService.sortLeaderboardsByUser(this.communityLeaderboards, this.gameService.playerName);
   }
 
-  changeTab(tab: 'official' | 'community') {
+  onTabChange(tab: 'official' | 'community') {
     this.activeTab = tab;
     this.activeTabIndex = tab === 'official' ? 0 : 1;
   }
