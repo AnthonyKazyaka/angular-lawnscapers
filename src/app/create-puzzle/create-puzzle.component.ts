@@ -28,6 +28,7 @@ export class CreatePuzzleComponent implements OnInit {
   maxHeight = 12;
 
   puzzleCompleted: boolean = false;
+  isPuzzleCompletable: boolean = false;
 
   constructor(public gameService: GameService, private levelGenerator: LevelGeneratorService, private changeDetector: ChangeDetectorRef, private router: Router, private dialog: MatDialog) {
     this.createForm();
@@ -76,6 +77,7 @@ export class CreatePuzzleComponent implements OnInit {
     this.gameService.createdPuzzleDimensions.height = height;
     this.gameService.createdPuzzlePlayerPosition = this.playerPosition;
 
+    this.updatePuzzleCompleteness();
     //const minimumNumberOfMoves = this.levelGenerator.calculateMinimumMoves(puzzleData);
     // puzzle.minimumNumberOfMoves = minimumNumberOfMoves;
     // console.log(`Minimum number of moves: ${minimumNumberOfMoves}`);
@@ -88,7 +90,7 @@ export class CreatePuzzleComponent implements OnInit {
     this.gameService.createdPuzzleBoard = this.board;
     this.gameService.createdPuzzleDimensions.width = width; // Add this line
     this.gameService.createdPuzzleDimensions.height = height; // Add this line
-    localStorage.setItem('playerName', this.gameService.playerName);
+    this.updatePuzzleCompleteness();
   }
 
   onCellClick(row: number, col: number): void {
@@ -112,6 +114,31 @@ export class CreatePuzzleComponent implements OnInit {
     if(this.puzzleCompleted) {
       this.puzzleCompleted = false;
     }
+
+    this.updatePuzzleCompleteness();
+  }
+
+  updatePuzzleCompleteness(): void {
+    if (this.playerPosition.x < 0 || this.playerPosition.y < 0 || this.playerPosition.x >= this.puzzleForm.value.width || this.playerPosition.y >= this.puzzleForm.value.height) {
+      console.error('Invalid player position');
+      return;
+    }
+
+    const puzzleData: PuzzleData = {
+      id: '', // An ID may not be necessary for completeness check
+      name: this.puzzleForm.value.puzzleName || '',
+      creator: this.puzzleForm.value.creatorName || '',
+      playerStartPosition: this.playerPosition ?? { x: -1, y: -1 },
+      width: this.puzzleForm.value.width,
+      height: this.puzzleForm.value.height,
+      obstacles: this.getObstaclePositions(),
+      created_at: new Date().toISOString() // This may not be necessary for completeness check
+    };
+
+    const puzzle = new Puzzle(puzzleData);
+  
+    this.isPuzzleCompletable = this.levelGenerator.isLevelCompletable(puzzle);
+    this.changeDetector.markForCheck();
   }
 
   async onSubmit(): Promise<void> {
@@ -141,6 +168,7 @@ export class CreatePuzzleComponent implements OnInit {
       console.log("Saved puzzle data: ", newPuzzleData);
       this.success = true;
       this.gameService.createdPuzzleCompleted = false;
+      this.puzzleCompleted = false;
       this.gameService.createdPuzzleBoard = [];
       this.gameService.createdPuzzlePlayerPosition = { x: -1, y: -1 };
       this.gameService.setGameState(GameState.MainMenu);
@@ -195,4 +223,6 @@ export class CreatePuzzleComponent implements OnInit {
 
     this.router.navigate(['/testing']);
   }
+
+  
 }
