@@ -65,7 +65,7 @@ export class CreatePuzzleComponent implements OnInit {
     const width = this.puzzleForm.value.width;
     const height = this.puzzleForm.value.height;
   
-    const puzzleData = this.levelGenerator.generateRandomLevel(width, height, width, height);
+    const puzzleData = this.levelGenerator.generateRandomLevel(width, height);
     const puzzle = new Puzzle(puzzleData);
 
     // Update the board with the generated puzzle

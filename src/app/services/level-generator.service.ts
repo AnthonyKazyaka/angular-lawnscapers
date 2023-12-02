@@ -16,13 +16,11 @@ export class LevelGeneratorService {
 
   constructor(public gameService: GameService) { }
 
-  generateRandomLevel(minWidth: number, maxWidth: number, minHeight: number, maxHeight: number): PuzzleData {
+  generateRandomLevel(width: number, height: number): PuzzleData {
     let puzzleData: PuzzleData;
     const attempts = 1;
 
     do {
-      const width = Math.floor(Math.random() * (maxWidth - minWidth + 1)) + minWidth;
-      const height = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
       const playerStartPosition = {
         x: Math.floor(Math.random() * width),
         y: Math.floor(Math.random() * height),
